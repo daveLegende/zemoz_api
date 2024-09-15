@@ -1,0 +1,19 @@
+import { IIDParamDTO } from 'app/dto';
+import { Match } from 'src/match/domain';
+import { ICreateMatchDTO, IUpdateMatchDTO } from '../dto';
+
+export abstract class IMatchController {
+  abstract all(): Promise<Match[]>;
+
+  abstract show(param: IIDParamDTO): Promise<Match>;
+
+  abstract create(data: ICreateMatchDTO, file?: any): Promise<Match>;
+
+  abstract search(data: Partial<Match>, file?: any): Promise<Match>;
+
+  abstract update(data: IUpdateMatchDTO, file?: any): Promise<Match>;
+
+  abstract setState(param: IIDParamDTO): Promise<boolean>;
+
+  abstract remove(param: IIDParamDTO): Promise<boolean>;
+}

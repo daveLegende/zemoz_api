@@ -1,0 +1,71 @@
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import {
+  IsDate,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { MatchType, MatchState, MatchScores } from 'src/match/domain';
+import { MatchEvent } from 'src/matchEvents/domain';
+import { Poule } from 'src/poule/domain';
+import { Team } from 'src/team/domain';
+
+export class MatchDocOutputDTO {
+  @ApiProperty({ description: 'Identifiant du match', example: '123e4567-e89b-12d3-a456-426614174000' })
+  @IsString()
+  id: string;
+
+  @ApiProperty({ description: 'Lieu du match', example: 'Stade Municipal' })
+  @IsString()
+  lieu: string;
+
+  @ApiProperty({ description: 'Type de match', enum: MatchType })
+  @IsEnum(MatchType)
+  type: MatchType;
+
+  @ApiProperty({ description: 'État du match', enum: MatchState, required: false })
+  @IsOptional()
+  @IsEnum(MatchState)
+  etat?: MatchState;
+
+  @ApiProperty({ description: 'Numéro de la journée', example: 1, required: false })
+  @IsOptional()
+  @IsInt()
+  journee?: number;
+
+  @ApiProperty({ description: 'Date du match', example: '2024-08-25T14:00:00Z' })
+  @IsDate()
+  @Type(() => Date)
+  date: Date;
+
+  @ApiProperty({ description: 'Équipe à domicile', type: Team })
+  @ValidateNested({ each: true })
+  @Type(() => Team)
+  home: Team;
+
+  @ApiProperty({ description: 'Équipe à l\'extérieur', type: Team })
+  @ValidateNested({ each: true })
+  @Type(() => Team)
+  away: Team;
+
+  @ApiProperty({ description: 'Scores du match', type: MatchScores, required: false })
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => MatchScores)
+  scores?: MatchScores;
+
+  @ApiProperty({ description: 'Événements du match', type: [MatchEvent], required: false })
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => MatchEvent)
+  events?: MatchEvent[];
+
+  @ApiProperty({ description: 'Poule du match', type: Poule, required: false })
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => Poule)
+  poule?: Poule;
+}
