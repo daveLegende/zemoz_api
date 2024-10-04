@@ -37,15 +37,24 @@ import {
   RegisterAccoutDTO,
   UpdateUserDTO,
   UserQueryDTO,
+  ReinitialisePassAccountDTO,
+  ChangePassAccountDTO,
 } from 'user/adapter/dto';
 import { UserFactory } from 'user/adapter/user.factory';
+import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { ForgotPassAccountDto } from 'src/forgotpass/adapter/dto';
+import { UserService } from './user.service';
+import { ForgotPass } from 'src/forgotpass/domain';
+import { IReinitialisePassDTO, IChangePasswordDTO } from 'user/app/dto';
 
 @ApiTags('Users management')
-// @ApiBearerAuth()
-// @UseGuards(UserGuard)
+@ApiBearerAuth()
+@UseGuards(UserGuard, AdminGuard)
 @Controller('users')
 export class UserController implements IUserController {
-  constructor(private readonly userService: IUserService) {}
+  constructor(
+    private readonly userService: IUserService,
+  ) {}
 
   @Get()
   @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
@@ -188,5 +197,41 @@ export class UserController implements IUserController {
   @ApiResponse({ type: Boolean })
   remove(@Param() { id }: IDParamDTO): Promise<boolean> {
     return this.userService.remove(id);
+  }
+
+
+  /**
+   *
+   * @method POST
+   */
+
+  @Post("reinitialise-pass")
+  @ApiConsumes('multipart/form-data', 'application/json')
+  @ApiOperation({
+    summary: 'Réinitialise mot de passe',
+  })
+  async reinitialisePass(
+    @Body() data: ReinitialisePassAccountDTO,
+  ): Promise<User> {
+    const user = await this.userService.reinitialisePass(data);
+    return user;
+  }
+
+  
+  /**
+   *
+   * @method POST
+   */
+
+  @Post("change-pass")
+  @ApiConsumes('multipart/form-data', 'application/json')
+  @ApiOperation({
+    summary: 'Changement de mot de passe',
+  })
+  async changePass(
+    @Body() data: ChangePassAccountDTO,
+  ): Promise<User> {
+    const user = await this.userService.changePass(data);
+    return user;
   }
 }

@@ -7,6 +7,7 @@ import { ArbitreEntity } from 'src/arbitre/framework/database/schema/arbitre.ent
 import { MatchEventEntity } from 'src/matchEvents/framework/database/schema/match.event.entity';
 import { PrononsticEntity } from 'src/prononstic/framework/database/schema/prono.entity';
 import { BetEntity } from 'src/bet/framework/schema/bet.entity';
+import { TicketEntity } from 'src/ticket/framework/database/schema/ticket.entity';
 
 @Entity('matchs')
 // @Index(['email'], { unique: true, where: `deleted_at IS NULL` })

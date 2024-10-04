@@ -1,4 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsDate,
@@ -40,23 +41,26 @@ export class TicketAccoutDTO {
   @IsInt()
   amount: number;
   
-  @ApiProperty({
-    type: Date,
-    name: 'date',
-    description: 'date du ticket',
-  })
+  @ApiProperty({ description: 'Date d\'achat du ticket', type: Date, example: '2024-08-25T14:00:00Z' })
   @IsDate()
+  @Type(() => Date)
   date: Date;
 
-  // @ApiProperty({
-  //   type: String,
-  //   name: 'match',
-  //   description: 'id du match',
-  //   nullable: true
-  // })
-  // @IsOptional()
-  // @IsString()
-  // match?: string;
+  @ApiProperty({ description: 'Date du dernier scan', type: Date, nullable: true })
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  lastScanDate?: Date;
+
+  @ApiProperty({
+    type: Array,
+    name: 'matchs',
+    description: 'id des matchs',
+    default: []
+  })
+  @IsOptional()
+  @IsArray()
+  matchs?: string[];
 }
 
 export class UpdateTicketDTO extends PartialType(TicketAccoutDTO) {

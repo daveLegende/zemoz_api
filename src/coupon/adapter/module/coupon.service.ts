@@ -17,9 +17,10 @@ import { IBetRepository } from 'src/bet/domain/data.abstract';
 import { ICouponBetRepository } from 'src/couponBet/domain/data.abstract';
 import { BetStatus, CouponBet } from 'src/couponBet/domain';
 import { MatchGateway } from 'src/match/adapter/module/match.gateway';
-import { Match, MatchState } from 'src/match/domain';
+import { IMatchRepository, Match, MatchState } from 'src/match/domain';
 import { Connection } from 'typeorm';
 import { CategoryName } from 'src/bet/domain';
+import { UpdateMatchDTO } from 'src/match/adapter/dto';
 
 @Injectable()
 export class CouponService implements ICouponService {
@@ -30,6 +31,7 @@ export class CouponService implements ICouponService {
     private userRepository: IUserRepository,
     private betRepository: IBetRepository,
     private cpRepository: ICouponBetRepository,
+    private matchRepository: IMatchRepository,
     // 
     @Inject(forwardRef(() => MatchGateway)) // Injection du Gateway
     private readonly matchGateway: MatchGateway,
@@ -50,7 +52,11 @@ export class CouponService implements ICouponService {
   async fetchAll(): Promise<Coupon[]> {
     try {
       return await this.couponsRepository.coupons.find({
-        relations: { user: true, couponBets: true }
+        relations: { user: true, couponBets: {
+          bet: {
+            match: true, // Récupérer le match lié au bet
+          },
+        } }
       });
     } catch (error) {
       this.logger.error(error.message, 'ERROR::couponsService.fetchAll');
@@ -62,7 +68,12 @@ export class CouponService implements ICouponService {
     try {
       const coupons = await this.couponsRepository.coupons.findOne({
         where: { id: id },
-        relations: { user: true, couponBets: true }
+        relations: { user: true, couponBets: {
+          bet: {
+            match: true, // Récupérer le match lié au bet
+          },
+        }
+      }
       });
       if (coupons) {
         return coupons;
@@ -239,15 +250,31 @@ export class CouponService implements ICouponService {
 
   // coupon suiie
   // Nouvelle fonction pour vérifier les coupons avec les scores/états mis à jour
-  private async checkCoupons(match: Match) {
+  async checkCoupons(data: UpdateMatchDTO): Promise<any> {
     // 1. Récupérer tous les coupons actifs
-    console.log("-----------------------------------------------------------");
-    
+    const {id} = data;
+    const match = await this.matchRepository.matchs.findOneByID(id);
+    console.log("-----------------------------------------------------------", match);
     const coupons = await this.getActiveCoupons();
+
+    if (!match) {
+      throw new NotFoundException('Match not found');
+    }
   
     // 2. Vérifier chaque coupon pour voir s'il contient des paris pour ce match
     for (const coupon of coupons) {
-      const relevantBets = coupon.couponBets.filter((couponBet) => couponBet.bet.match === match);
+      console.log(coupon);
+      
+      const relevantBets = coupon.couponBets.filter((couponBet) => {
+        console.log("------*******", couponBet.bet);
+        
+        if (!couponBet.bet || !couponBet.bet.match) {
+          console.error(`Bet ${couponBet.bet?.id} does not have a match associated.`);
+          return false; // Ignorer les paris sans match
+        }
+        return couponBet.bet.match.id === match.id; // Comparer les IDs
+      });
+      
   
       // 3. Vérifier si les paris correspondent aux scores/événements du match
       for (const bet of relevantBets) {
@@ -307,7 +334,8 @@ export class CouponService implements ICouponService {
     // Logique pour mettre à jour le statut du pari dans la base de données
     this.logger.log(`Mise à jour du statut du pari`);
     couponBet.status = status;
-    await this.cpRepository.couponBets.update(couponBet);
+    const cb = await this.cpRepository.couponBets.update(couponBet);
+    return cb;
   }
 
   // private async updateBetStatus(couponBet: CouponBet, status: BetStatus) {
@@ -322,7 +350,14 @@ export class CouponService implements ICouponService {
     try {
       const coupons = await this.couponsRepository.coupons.find({
         where: { etat: CouponState.PENDING },
-        relations: { couponBets: true, user: true, }
+        relations: { 
+          couponBets: {
+            bet: {
+              match: true, // Récupérer le match lié au bet
+            },
+          }, 
+          user: true,
+        }
       });
       return coupons;
     } catch (error) {
@@ -335,17 +370,91 @@ export class CouponService implements ICouponService {
   private async updateCouponStatus(coupon: Coupon) {
     const allBetsWon = coupon.couponBets.every(bet => bet.status === BetStatus.GAGNE);
     const anyBetLost = coupon.couponBets.some(bet => bet.status === BetStatus.PERDU);
+
+    const user = await this.userRepository.users.findOneByID(coupon.user.id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
   
     if (allBetsWon) {
       coupon.etat = CouponState.WIN;
+      user.solde += coupon.gains;
     } else if (anyBetLost) {
       coupon.etat = CouponState.LOOSE;
     } else {
       coupon.etat = CouponState.PENDING;
     }
   
-    await this.couponsRepository.coupons.update(coupon);
+    const cp = await this.couponsRepository.coupons.update(coupon);
+    await this.userRepository.users.update(user);
+    return cp;
   }
-  
 
+
+  async validatePendingCoupons(): Promise<void> {
+    // 1. Récupérer tous les coupons avec un état 'PENDING'
+    const coupons = await this.getActiveCoupons();
+
+    // 2. Pour chaque coupon, vérifier les paris associés
+    for (const coupon of coupons) {
+        let couponUpdated = false; // Indicateur pour savoir si le statut du coupon a changé
+
+        for (const couponBet of coupon.couponBets) {
+            const match = couponBet.bet.match;
+
+            // 3. Vérifier si le pari peut être validé en temps réel (par exemple, les deux équipes marquent)
+            if (this.canBetBeValidatedEarly(couponBet, match)) {
+                if (this.isBetWinning(couponBet, match)) {
+                    this.logger.log(`Bet ${couponBet.id} a gagné (validation en temps réel)`);
+                    await this.updateBetStatus(couponBet, BetStatus.GAGNE);
+                } else {
+                    this.logger.log(`Bet ${couponBet.id} a perdu`);
+                    await this.updateBetStatus(couponBet, BetStatus.PERDU);
+                }
+                couponUpdated = true; // Le coupon a été mis à jour
+                continue; // Passer à la prochaine vérification de pari
+            }
+
+            // 4. Si le match n'est pas terminé, continuer avec le prochain pari
+            if (match.etat !== MatchState.TERMINER) {
+                continue; // On ne peut pas valider le pari tant que le match n'est pas terminé
+            }
+
+            // 5. Vérifier le pari une fois le match terminé
+            if (this.isBetWinning(couponBet, match)) {
+                this.logger.log(`Bet ${couponBet.id} a gagné`);
+                await this.updateBetStatus(couponBet, BetStatus.GAGNE);
+            } else {
+                this.logger.log(`Bet ${couponBet.id} a perdu`);
+                await this.updateBetStatus(couponBet, BetStatus.PERDU);
+            }
+            couponUpdated = true; // Le coupon a été mis à jour
+        }
+
+        // 6. Si un ou plusieurs paris ont été mis à jour, mettre à jour le statut global du coupon
+        if (couponUpdated) {
+            await this.updateCouponStatus(coupon);
+        }
+    }
+  }
+
+  
+  private canBetBeValidatedEarly(couponBet: CouponBet, match: Match): boolean {
+    const key = Object.keys(couponBet.selectedOptions)[0];
+
+    switch (couponBet.bet.category) {
+        case CategoryName.DEUX_MARQUENT:
+            // Si les deux équipes ont déjà marqué, on peut valider ce pari
+            return match.scores.home > 0 && match.scores.away > 0;
+
+        case CategoryName.CARTON_ROUGE:
+            // Si un carton rouge a été donné, on peut valider ce pari immédiatement
+            return match.events.some((event) => event.type === 'CARTON_ROUGE');
+
+        // Tu peux ajouter d'autres types de paris ici qui peuvent être validés en temps réel
+
+        default:
+            return false; // Si ce pari ne peut pas être validé en temps réel, on retourne false
+    }
+  }
 }

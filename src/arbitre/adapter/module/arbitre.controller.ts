@@ -9,6 +9,7 @@ import {
     Delete,
     UseInterceptors,
     UploadedFile,
+    UseGuards,
   } from '@nestjs/common';
   import {
     ApiTags,
@@ -17,6 +18,7 @@ import {
     ApiResponse,
     ApiParam,
     ApiConsumes,
+    ApiBearerAuth,
   } from '@nestjs/swagger';
   import { FileInterceptor } from '@nestjs/platform-express';
   import { diskStorage } from 'multer';
@@ -26,8 +28,11 @@ import { IArbitreController, IArbitreService } from 'src/arbitre/app/module';
 import { Arbitre } from 'src/arbitre/domain';
 import { ArbitreFactory } from '../arbitre.factory';
 import { ArbitreAccountDto, DocArbitreOutputDto, UpdateArbitreDTO } from '../dto';
+import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
   
   @ApiTags('Arbitres management')
+  @UseGuards(AdminGuard)
+  @ApiBearerAuth()
   @Controller('arbitres')
   export class ArbitreController implements IArbitreController {
     constructor(private readonly arbitreService: IArbitreService) {}

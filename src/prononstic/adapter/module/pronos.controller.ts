@@ -18,19 +18,23 @@ import {
     ApiResponse,
     ApiParam,
     ApiConsumes,
+    ApiBearerAuth,
   } from '@nestjs/swagger';
   import { FileInterceptor } from '@nestjs/platform-express';
   import { diskStorage } from 'multer';
   import { IDParamDTO } from 'adapter/dto';
   import { BaseConfig } from 'config/base.config';
-import { Team } from 'src/team/domain';
 import { PrononsticFactory } from '../pronos.factory';
 import { PrononsticAccoutDTO, UpdatePrononsticDTO } from '../dto';
 import { IPrononsticController, IPrononsticService } from 'src/prononstic/app/module';
 import { Prononstic } from 'src/prononstic/domain';
 import { DocPrononsticOutputDTO } from '../dto/doc.pronos.dto';
+import { UserGuard } from 'user/adapter/guard/auth.guard';
+import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
   
   @ApiTags('pronos management')
+  @ApiBearerAuth()
+  @UseGuards(UserGuard, AdminGuard)
   @Controller('pronos')
   export class PrononsticController implements IPrononsticController {
     constructor(private readonly pronoService: IPrononsticService) {}
@@ -42,16 +46,16 @@ import { DocPrononsticOutputDTO } from '../dto/doc.pronos.dto';
       summary: 'Prononstics list',
       description: 'Fetch all Prononstics in the DB',
     })
-    // @ApiResponse({ type: [TeamAccountDTO] })
+    // @ApiResponse({ type: [pronoAccountDTO] })
     async all(): Promise<Prononstic[]> {
-      const teams = await this.pronoService.fetchAll();
-      return teams?.map((team) => PrononsticFactory.getPronos(team));
+      const pronos = await this.pronoService.fetchAll();
+      return pronos?.map((prono) => PrononsticFactory.getPronos(prono));
     }
   
     @Get(':id')
     // @HasPermission(AccessEnum.CAN_SHOW_USER)
     @ApiOperation({
-      summary: 'One Team',
+      summary: 'One prono',
       description: 'Fetch user account by ID',
     })
     @ApiParam({
@@ -68,21 +72,10 @@ import { DocPrononsticOutputDTO } from '../dto/doc.pronos.dto';
      *
      * @method POST
      */
-  
     @Post()
-    // @HasPermission(AccessEnum.CAN_CREATE_USER)
-    @UseInterceptors(
-      FileInterceptor('logo', {
-        storage: diskStorage({
-          destination: BaseConfig.setFilePath,
-          filename: BaseConfig.editFileName,
-        }),
-        fileFilter: BaseConfig.imageFileFilter,
-      }),
-    )
     @ApiConsumes('multipart/form-data', 'application/json')
     @ApiOperation({
-      summary: 'Create Team',
+      summary: 'Create prono',
     })
     @ApiResponse({ type: DocPrononsticOutputDTO })
     async create(
@@ -97,16 +90,6 @@ import { DocPrononsticOutputDTO } from '../dto/doc.pronos.dto';
      */
   
     @Patch()
-    // @HasPermission(AccessEnum.CAN_UPDATE_USER)
-    @UseInterceptors(
-      FileInterceptor('logo', {
-        storage: diskStorage({
-          destination: BaseConfig.setFilePath,
-          filename: BaseConfig.editFileName,
-        }),
-        fileFilter: BaseConfig.fileFilter,
-      }),
-    )
     @ApiConsumes('multipart/form-data', 'application/json')
     @ApiOperation({ summary: 'Update user account' })
     @ApiBody({ type: UpdatePrononsticDTO })

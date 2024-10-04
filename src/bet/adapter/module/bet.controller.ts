@@ -9,6 +9,7 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -17,6 +18,7 @@ import {
   ApiResponse,
   ApiParam,
   ApiConsumes,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { IDParamDTO } from 'adapter/dto';
 import { IBetController, IBetService } from 'src/bet/app/module';
@@ -24,8 +26,11 @@ import { Bet } from 'src/bet/domain';
 import { BetFactory } from '../bet.factory';
 import { BetAccountDto, UpdateBetDTO } from '../dto';
 import { DocBetOutputDto } from '../dto/doc.output.dto';
+import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
 
 @ApiTags('Bet management')
+@UseGuards(AdminGuard)
+@ApiBearerAuth()
 @Controller('bets')
 export class BetController implements IBetController {
   constructor(private readonly betService: IBetService) {}
@@ -71,7 +76,6 @@ export class BetController implements IBetController {
    *
    * @method POST
    */
-
   @Post()
   @ApiOperation({
     summary: 'Create Bet',

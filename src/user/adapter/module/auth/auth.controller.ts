@@ -1,52 +1,61 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import {
-  ApiBody,
-  ApiConsumes,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { BadRequestException, Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { SigninAccoutDTO } from 'user/adapter/dto';
+import { ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { OtpAccountDto, SendOtpDTo, VerifyOtpDTo } from 'src/otp/adapter/dto';
+import { OtpFactory } from 'src/otp/adapter/otp.factory';
+import { Otp } from 'src/otp/domain';
+import { User } from 'user/domain';
 
-import { Public } from 'adapter/decorator';
-import {
-  SigninAccoutDTO,
-  DocSignedUserDTO,
-  ForgotPasswordDTO,
-} from 'user/adapter/dto';
-import { UserFactory } from 'user/adapter/user.factory';
-import { SignedUserDTO } from 'user/app/dto';
-import { IAuthController, IAuthService } from 'user/app/module/auth';
-
-@ApiTags('Authentication')
 @Controller('auth')
-export class AuthController implements IAuthController {
-  constructor(private readonly authService: IAuthService) {}
+export class AuthController {
+    constructor(private authService: AuthService) {}
 
-  /**
-   * @method POST
-   */
-
-  @Post('signin')
-  @Public()
-  @ApiConsumes('multipart/form-data', 'application/json')
-  @ApiOperation({ summary: 'Connect the user account' })
-  @ApiBody({ type: SigninAccoutDTO })
-  @ApiResponse({ type: DocSignedUserDTO })
-  async signin(@Body() data: SigninAccoutDTO): Promise<SignedUserDTO> {
-    const { accessToken, user } = await this.authService.signin(data);
-    if (user) return { accessToken, ...UserFactory.getUser(user) };
+//   @UseGuards(LocalAuthGuard) 
+  @Post('login')
+  async login(@Body() loginDto: SigninAccoutDTO): Promise<{ accessToken: string; refreshToken: string; user: User }> {
+    const user = await this.authService.validateUser(loginDto.phone, loginDto.password);
+    if (!user) {
+      throw new BadRequestException('Invalid credentials');
+    }
+    return this.authService.login(user);
   }
 
-  @Post('password.forgot')
-  @ApiConsumes('multipart/form-data', 'application/json')
-  @ApiOperation({
-    summary: 'Forgot password',
-    description:
-      'If the user lost his password, he can ask to define a new password using from this endpoint',
-  })
-  @ApiBody({ type: ForgotPasswordDTO })
-  @ApiResponse({ type: Boolean })
-  forgotPassword(@Body() data: ForgotPasswordDTO): Promise<boolean> {
-    return this.authService.forgotPassword(data);
+
+  @Post('refresh_token')
+  async refreshToken(@Body() body: { refresh_token: string }) {
+    const { refresh_token } = body;
+    return this.authService.refreshTokens(refresh_token);
+  }
+
+
+  @Post('sendOtp')
+  async sendOTP(
+    @Body() data: SendOtpDTo
+  ) {
+    console.log("cdfcxch c v");
+    
+    return await this.authService.sendOTP(data);
+  }
+
+  // @Post()
+  //   @ApiConsumes('multipart/form-data', 'application/json')
+  //   @ApiOperation({
+  //     summary: 'send otp',
+  //   })
+  //   // @ApiBody({ type: RegisterAccoutDTO })
+  //   // @ApiResponse({ type: DocUserOutputDTO })
+  //   async create(
+  //     @Body() data: SendOtpDTo,
+  //   ): Promise<Poule> {
+  //     const poule = await this.pouleService.add(data);
+  //     if (poule) return PouleFactory.getPoule(poule);
+  // }
+
+  @Post("verifyOtp")
+  async verifyOTP(
+    @Body() data: VerifyOtpDTo,
+  ): Promise<Boolean> {
+    return await this.authService.verifyOtp(data);
   }
 }

@@ -18,6 +18,7 @@ import {
     ApiResponse,
     ApiParam,
     ApiConsumes,
+    ApiBearerAuth,
   } from '@nestjs/swagger';
   import { FileInterceptor } from '@nestjs/platform-express';
   import { diskStorage } from 'multer';
@@ -27,6 +28,8 @@ import { MatchEvent } from 'src/matchEvents/domain';
 import { MatchEventDTO, UpdateMatchEventDto } from '../dto';
 import { MatchEventFactory } from '../match.events.factory';
 import { IMatchEventController, IMatchEventService } from 'src/matchEvents/app/module';
+import { UserGuard } from 'user/adapter/guard/auth.guard';
+import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
   
   @ApiTags('matchs management')
   @Controller('matchs_events')
@@ -77,7 +80,8 @@ import { IMatchEventController, IMatchEventService } from 'src/matchEvents/app/m
      *
      * @method POST
      */
-  
+    @ApiBearerAuth()
+    @UseGuards(AdminGuard)
     @Post()
     @ApiConsumes('multipart/form-data', 'application/json')
     @ApiOperation({
@@ -97,8 +101,8 @@ import { IMatchEventController, IMatchEventService } from 'src/matchEvents/app/m
   
     /**
      * @method PATCH
-     */
-  
+     */@ApiBearerAuth()
+    @UseGuards(AdminGuard)
     @Patch()
     // @HasPermission(AccessEnum.CAN_UPDATE_USER)
     @UseInterceptors(
@@ -132,6 +136,8 @@ import { IMatchEventController, IMatchEventService } from 'src/matchEvents/app/m
     /**
      * @method DELETE
      */
+    @ApiBearerAuth()
+    @UseGuards(AdminGuard)
     @Delete(':id')
     // @HasPermission(AccessEnum.CAN_DELETE_USER)
     @ApiOperation({ summary: 'Remove Account' })

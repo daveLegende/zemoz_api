@@ -6,6 +6,7 @@ import { MatchScores } from './match.other.dto';
 import { Arbitre } from 'src/arbitre/domain';
 import { MatchEvent } from 'src/matchEvents/domain';
 import { Bet } from 'src/bet/domain';
+import { Ticket } from 'src/ticket/domain';
 
 export class Match extends ITimestamp {
   id: string;

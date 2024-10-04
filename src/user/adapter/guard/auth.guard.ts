@@ -49,6 +49,7 @@ export class UserGuard implements CanActivate {
       if (user) {
         const account = await this.dataServices.users.findOneBy({
           email: user.email,
+          phone: user.phone,
         });
         if (account) request['user'] = account;
       }

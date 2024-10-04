@@ -4,10 +4,21 @@ import { ITicketService } from 'src/Ticket/app/module';
 import { TicketController } from './ticket.controller';
 import { TicketRepositoryModule } from 'src/ticket/framework/database/ticket.repository.module';
 import { UserRepositoryModule } from 'user/framework/database/user.repository.module';
+import { MatchRepositoryModule } from 'src/match/framework/database/match.repository.module';
+import { AuthApiModule } from 'user/framework/API';
+import { AdminAuthApiModule } from 'src/admin/framework/API';
+import { AdminRepositoryModule } from 'src/admin/framework/database/admin.repository.module';
 
 
 @Module({
-  imports: [TicketRepositoryModule, UserRepositoryModule],
+  imports: [
+    TicketRepositoryModule, 
+    MatchRepositoryModule,
+    UserRepositoryModule,
+    AuthApiModule,
+    AdminRepositoryModule, 
+    AdminAuthApiModule,
+  ],
   controllers: [TicketController],
   providers: [{ provide: ITicketService, useClass: TicketService }],
   exports: [ITicketService, TicketRepositoryModule],

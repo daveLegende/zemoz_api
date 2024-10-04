@@ -18,6 +18,7 @@ import {
     ApiResponse,
     ApiParam,
     ApiConsumes,
+    ApiBearerAuth,
   } from '@nestjs/swagger';
   import { FileInterceptor } from '@nestjs/platform-express';
   import { diskStorage } from 'multer';
@@ -28,6 +29,7 @@ import { IPouleController, IPouleService } from 'src/poule/app/module';
 import { Poule } from 'src/poule/domain';
 import { UpdatePouleDTO } from 'src/poule/adapter/dto';
 import { DocPouleOutputDto, PouleAccountDto } from '../dto';
+import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
   
   @ApiTags('poules management')
   @Controller('poules')
@@ -75,7 +77,9 @@ import { DocPouleOutputDto, PouleAccountDto } from '../dto';
      *
      * @method POST
      */
-  
+    
+    @ApiBearerAuth()
+    @UseGuards(AdminGuard)
     @Post()
     @ApiConsumes('multipart/form-data', 'application/json')
     @ApiOperation({
@@ -85,7 +89,6 @@ import { DocPouleOutputDto, PouleAccountDto } from '../dto';
     // @ApiResponse({ type: DocUserOutputDTO })
     async create(
       @Body() data: PouleAccountDto,
-      @UploadedFile() file: Express.Multer.File,
     ): Promise<Poule> {
       const poule = await this.pouleService.add(data);
       if (poule) return PouleFactory.getPoule(poule);
@@ -94,18 +97,11 @@ import { DocPouleOutputDto, PouleAccountDto } from '../dto';
     /**
      * @method PATCH
      */
-  
+    
+    @ApiBearerAuth()
+    @UseGuards(AdminGuard)
     @Patch()
     // @HasPermission(AccessEnum.CAN_UPDATE_USER)
-    @UseInterceptors(
-      FileInterceptor('avatar', {
-        storage: diskStorage({
-          destination: BaseConfig.setFilePath,
-          filename: BaseConfig.editFileName,
-        }),
-        fileFilter: BaseConfig.fileFilter,
-      }),
-    )
     @ApiConsumes('multipart/form-data', 'application/json')
     @ApiOperation({ summary: 'Update user account' })
     @ApiBody({ type: UpdatePouleDTO })
@@ -129,6 +125,8 @@ import { DocPouleOutputDto, PouleAccountDto } from '../dto';
     /**
      * @method DELETE
      */
+    @ApiBearerAuth()
+    @UseGuards(AdminGuard)
     @Delete(':id')
     // @HasPermission(AccessEnum.CAN_DELETE_USER)
     @ApiOperation({ summary: 'Remove Account' })

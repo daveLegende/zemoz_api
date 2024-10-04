@@ -2,7 +2,8 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
 import { IIDParamDTO } from 'app/dto';
-import { ICreateUserDTO, IUpdateUserDTO } from 'user/app/dto/user.input.dto';
+import { DocUserOutputDTO } from 'user/adapter/dto';
+import { IChangePasswordDTO, ICreateUserDTO, IReinitialisePassDTO, IUpdateUserDTO } from 'user/app/dto/user.input.dto';
 import { User } from 'user/domain/user.model';
 
 export abstract class IUserController {
@@ -19,4 +20,8 @@ export abstract class IUserController {
   abstract setState(param: IIDParamDTO): Promise<boolean>;
 
   abstract remove(param: IIDParamDTO): Promise<boolean>;
+
+  abstract reinitialisePass(data: IReinitialisePassDTO, file?: any): Promise<User>;
+
+  abstract changePass(data: IChangePasswordDTO, file?: any): Promise<User>;
 }

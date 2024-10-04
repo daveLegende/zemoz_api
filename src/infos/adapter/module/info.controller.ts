@@ -28,7 +28,8 @@ import { IInfoController, IInfoService } from 'src/infos/app/module';
 import { InfoFactory } from '../info.factory';
 import { Info } from 'src/infos/domain';
 import { DocInfoOutputDto, InfoAccountDto, UpdateInfoDTO } from '../dto';
-import { UserGuard } from 'user/adapter/guard/auth.guard';
+import {  } from 'user/adapter/guard/auth.guard';
+import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
   
   @ApiTags('infos management')
   @Controller('infos')
@@ -48,14 +49,14 @@ import { UserGuard } from 'user/adapter/guard/auth.guard';
       return infos?.map((info) => InfoFactory.getInfo(info));
     }
 
-  
+    
     @Get('search')
     async search(@Query() param: Info): Promise<Info> {
       if (param) {
         return InfoFactory.getInfo(await this.infoService.search(param));
       }
     }
-  
+    
     @Get(':id')
     // @HasPermission(AccessEnum.CAN_SHOW_USER)
     @ApiOperation({
@@ -76,7 +77,9 @@ import { UserGuard } from 'user/adapter/guard/auth.guard';
      *
      * @method POST
      */
-  
+    
+    @ApiBearerAuth()
+    @UseGuards(AdminGuard)
     @Post()
     // @ApiBearerAuth()
     // @UseGuards(UserGuard)
@@ -107,7 +110,8 @@ import { UserGuard } from 'user/adapter/guard/auth.guard';
     /**
      * @method PATCH
      */
-  
+    @ApiBearerAuth()
+    @UseGuards(AdminGuard)
     @Patch()
     // @HasPermission(AccessEnum.CAN_UPDATE_USER)
     @UseInterceptors(
@@ -143,6 +147,8 @@ import { UserGuard } from 'user/adapter/guard/auth.guard';
     /**
      * @method DELETE
      */
+    @ApiBearerAuth()
+    @UseGuards(AdminGuard)
     @Delete(':id')
     // @HasPermission(AccessEnum.CAN_DELETE_USER)
     @ApiOperation({ summary: 'Remove Account' })

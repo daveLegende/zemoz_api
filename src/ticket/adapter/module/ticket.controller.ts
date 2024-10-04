@@ -1,36 +1,36 @@
 import {
-    Controller,
-    Get,
-    Post,
-    Body,
-    Patch,
-    Param,
-    Query,
-    Delete,
-    UseGuards,
-    UseInterceptors,
-    UploadedFile,
-  } from '@nestjs/common';
-  import {
-    ApiTags,
-    ApiOperation,
-    ApiBody,
-    ApiResponse,
-    ApiParam,
-    ApiConsumes,
-  } from '@nestjs/swagger';
-  import { FileInterceptor } from '@nestjs/platform-express';
-  import { diskStorage } from 'multer';
-  import { IDParamDTO } from 'adapter/dto';
-  import { BaseConfig } from 'config/base.config';
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBody,
+  ApiResponse,
+  ApiParam,
+  ApiConsumes,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
+import { IDParamDTO } from 'adapter/dto';
 import { RegisterAccoutDTO, DocUserOutputDTO } from 'user/adapter/dto';
 import { TicketFactory } from '../ticket.factory';
 import { ITicketController, ITicketService } from 'src/Ticket/app/module';
 import { Ticket } from 'src/ticket/domain';
 import { TicketAccoutDTO, UpdateTicketDTO } from '../dto';
 import { DocTicketOutputDTO } from '../dto/doc.ticket.dto';
+import { UserGuard } from 'user/adapter/guard/auth.guard';
+import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
   
   @ApiTags('tickets management')
+  @ApiBearerAuth()
+  @UseGuards(UserGuard, AdminGuard)
   @Controller('tickets')
   export class TicketController implements ITicketController {
     constructor(private readonly ticketService: ITicketService) {}
@@ -76,7 +76,9 @@ import { DocTicketOutputDTO } from '../dto/doc.ticket.dto';
      *
      * @method POST
      */
-  
+
+    @ApiBearerAuth()
+    @UseGuards(UserGuard)
     @Post()
     @ApiOperation({
       summary: 'Create Ticket',
@@ -116,6 +118,8 @@ import { DocTicketOutputDTO } from '../dto/doc.ticket.dto';
     /**
      * @method DELETE
      */
+    @ApiBearerAuth()
+    @UseGuards(UserGuard)
     @Delete(':id')
     // @HasPermission(AccessEnum.CAN_DELETE_USER)
     @ApiOperation({ summary: 'Remove Account' })

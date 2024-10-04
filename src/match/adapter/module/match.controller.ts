@@ -18,6 +18,7 @@ import {
     ApiResponse,
     ApiParam,
     ApiConsumes,
+    ApiBearerAuth,
   } from '@nestjs/swagger';
   import { FileInterceptor } from '@nestjs/platform-express';
   import { diskStorage } from 'multer';
@@ -28,6 +29,8 @@ import { Match } from 'src/match/domain';
 import { MatchFactory } from '../match.factory';
 import { MatchAccoutDTO, MatchDocOutputDTO, UpdateMatchDTO } from '../dto';
 import { DocArbitreOutputDto } from 'src/arbitre/adapter/dto';
+import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { UserGuard } from 'user/adapter/guard/auth.guard';
   
   @ApiTags('matchs management')
   @Controller('matchs')
@@ -78,7 +81,9 @@ import { DocArbitreOutputDto } from 'src/arbitre/adapter/dto';
      *
      * @method POST
      */
-  
+    
+    @ApiBearerAuth()
+    @UseGuards(AdminGuard)
     @Post()
     @ApiConsumes('multipart/form-data', 'application/json')
     @ApiOperation({
@@ -99,7 +104,9 @@ import { DocArbitreOutputDto } from 'src/arbitre/adapter/dto';
     /**
      * @method PATCH
      */
-  
+    
+    @ApiBearerAuth()
+    @UseGuards(AdminGuard)
     @Patch()
     // @HasPermission(AccessEnum.CAN_UPDATE_USER)
     @UseInterceptors(
@@ -120,7 +127,8 @@ import { DocArbitreOutputDto } from 'src/arbitre/adapter/dto';
     ): Promise<Match> {
       return MatchFactory.getMatch(await this.matchService.edit(data));
     }
-  
+    
+
     @Patch('state/:id')
     // @HasPermission(AccessEnum.CAN_SET_USER_STATE)
     @ApiOperation({ summary: 'Set match account state' })
@@ -133,6 +141,8 @@ import { DocArbitreOutputDto } from 'src/arbitre/adapter/dto';
     /**
      * @method DELETE
      */
+    @ApiBearerAuth()
+    @UseGuards(AdminGuard)
     @Delete(':id')
     // @HasPermission(AccessEnum.CAN_DELETE_USER)
     @ApiOperation({ summary: 'Remove Account' })

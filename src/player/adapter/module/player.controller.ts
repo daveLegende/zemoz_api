@@ -34,6 +34,7 @@ import { Player } from 'src/player/domain';
 import { PlayerAccoutDTO, UpdatePlayerDTO } from '../dto';
 import { PlayerFactory } from '../player.factory';
 import { DocPlayerOutputDTO } from '../dto/doc.player.dto';
+import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
   
   @ApiTags('players management')
   @ApiBearerAuth()
@@ -82,7 +83,8 @@ import { DocPlayerOutputDTO } from '../dto/doc.player.dto';
      *
      * @method POST
      */
-  
+    @ApiBearerAuth()
+    @UseGuards(AdminGuard)
     @Post()
     // @HasPermission(AccessEnum.CAN_CREATE_USER)
     @UseInterceptors(
@@ -112,7 +114,9 @@ import { DocPlayerOutputDTO } from '../dto/doc.player.dto';
     /**
      * @method PATCH
      */
-  
+    
+    @ApiBearerAuth()
+    @UseGuards(AdminGuard)
     @Patch()
     // @HasPermission(AccessEnum.CAN_UPDATE_USER)
     @UseInterceptors(
@@ -148,6 +152,8 @@ import { DocPlayerOutputDTO } from '../dto/doc.player.dto';
     /**
      * @method DELETE
      */
+    @ApiBearerAuth()
+    @UseGuards(AdminGuard)
     @Delete(':id')
     // @HasPermission(AccessEnum.CAN_DELETE_USER)
     @ApiOperation({ summary: 'Remove Account' })

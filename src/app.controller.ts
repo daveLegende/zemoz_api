@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { Response } from 'express';
 import { BaseConfig } from 'config/base.config';
 
+import * as path from 'path';
+
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
@@ -12,6 +14,11 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
+
+  // @Get()
+  // getIndex(@Res() res: Response) {
+  //   res.sendFile(path.join(__dirname, '..', 'src', 'index.html'));
+  // }
 
   @ApiOperation({
     summary: 'Download files',

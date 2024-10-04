@@ -126,15 +126,15 @@ export class ForgotPasswordDTO {
   @IsEmail()
   email?: string;
 
-  @ApiProperty({
-    type: String,
-    name: 'phone',
-    description: 'The phone number if the plateform use it for login',
-    required: false,
-  })
-  @IsOptional()
-  @IsPhoneNumber()
-  phone?: string;
+  // @ApiProperty({
+  //   type: String,
+  //   name: 'phone',
+  //   description: 'The phone number if the plateform use it for login',
+  //   required: false,
+  // })
+  // @IsOptional()
+  // @IsPhoneNumber()
+  // phone?: string;
 }
 export class ResetPasswordDTO extends SigninAccoutDTO {
   @ApiProperty({
@@ -175,4 +175,70 @@ export class UserQueryDTO implements IForgotPasswordDTO {
   @IsOptional()
   @IsString()
   phone?: string;
+}
+
+
+// 
+export class ReinitialisePassAccountDTO {
+
+  @ApiProperty({
+    type: String,
+    name: 'email',
+    description: 'email Password of the user',
+  })
+  @IsString()
+  email: string;
+
+  @ApiProperty({
+    type: String,
+    name: 'password',
+    description: 'Password of the user',
+  })
+  @IsString()
+  password: string;
+
+  @ApiProperty({
+    type: String,
+    name: 'confirm',
+    description: 'Confirm Password of the user',
+  })
+  @IsString()
+  confirm: string;
+}
+
+
+export class ChangePassAccountDTO {
+
+  @ApiProperty({
+    type: String,
+    name: 'user',
+    description: 'id of user',
+  })
+  @IsUUID()
+  @IsString()
+  user: string;
+
+  @ApiProperty({
+    type: String,
+    name: 'oldpass',
+    description: 'Password of the user',
+  })
+  @IsString()
+  oldpass: string;
+
+  @ApiProperty({
+    type: String,
+    name: 'newpass',
+    description: 'Password of the user',
+  })
+  @IsString()
+  newpass: string;
+
+  @ApiProperty({
+    type: String,
+    name: 'confirm',
+    description: 'Confirm Password of the user',
+  })
+  @IsString()
+  confirm: string;
 }

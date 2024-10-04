@@ -37,6 +37,7 @@ export abstract class TicketFactory {
         amount: ticket.amount,
         user: ticket.user,
         date: ticket.date,
+        matchs: ticket.matchs,
         createdAt: ticket.createdAt,
         updatedAt: ticket.updatedAt,
         deletedAt: ticket.deletedAt

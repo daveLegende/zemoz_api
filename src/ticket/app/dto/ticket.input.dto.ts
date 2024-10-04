@@ -14,7 +14,9 @@ export interface ICreateTicketDTO {
 
   date: Date;
 
-  match?: string;
+  lastScanDate?: Date;
+
+  matchs?: string[];
 }
 
 export interface IUpdateTicketDTO extends Partial<ICreateTicketDTO> {

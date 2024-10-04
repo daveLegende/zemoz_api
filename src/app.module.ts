@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -26,11 +26,22 @@ import { TicketModule } from './ticket/adapter/module';
 import { BetModule } from './bet/adapter/module';
 import { CouponModule } from './coupon/adapter/module';
 import { CouponBetModule } from './couponBet/adapter/module';
+import { OtpModule } from './otp/adapter/module';
+import { TwilioModule } from './twilio/twilio.module';
+import { AdminModule } from './admin/adapter/module/admin';
+import { AdminAuthModule } from './admin/adapter/module/auth';
+import { TransactionModule } from './transactions/adapter/module';
+import { PasswordModule } from './password/password.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ForgotPassModule } from './forgotpass/adapter/module';
+// import { TasksModule } from './tasks/task.module';
 
 @Module({
   imports: [
     UserModule, 
-    AuthModule, 
+    AuthModule,
+    AdminModule,
+    AdminAuthModule,
     TodoModule, 
     PlayerModule, 
     TeamModule,
@@ -43,6 +54,11 @@ import { CouponBetModule } from './couponBet/adapter/module';
     BetModule,
     CouponModule,
     CouponBetModule,
+    OtpModule,
+    TwilioModule,
+    TransactionModule,
+    PasswordModule,
+    ForgotPassModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -99,6 +115,7 @@ export class IAppModule {}
       autoLoadEntities: true,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
     }),
+    ScheduleModule.forRoot(),
     ProjectApiModule,
     ApiKeySeedModule,
     SeedsModule,
@@ -110,4 +127,14 @@ export class IAppModule {}
     { provide: APP_FILTER, useClass: HttpExceptionFilter },
   ],
 })
+
 export class AppModule {}
+
+// export class AppModule implements OnModuleInit {
+//   constructor(private readonly passwordService: PasswordService) {}
+
+//   onModuleInit() {
+//     // Démarrer la planification des tâches à l'initialisation du module
+//     this.passwordService.scheduleDailyPasswordGeneration();
+//   }
+// }

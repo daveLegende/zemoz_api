@@ -7,6 +7,7 @@ import { PrononsticEntity } from 'src/prononstic/framework/database/schema/prono
 import { TicketEntity } from 'src/ticket/framework/database/schema/ticket.entity';
 import { Coupon } from 'src/coupon/domain';
 import { CouponEntity } from 'src/coupon/framework/schema/coupon.entity';
+import { TransactionEntity } from 'src/transactions/framework/database/schema/transac.entity';
 
 @Entity('user')
 @Index(['email'], { unique: true, where: `deleted_at IS NULL` })

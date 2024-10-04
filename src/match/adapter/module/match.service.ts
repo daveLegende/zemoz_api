@@ -224,6 +224,7 @@ import { MatchGateway } from './match.gateway';
           } else {
             match.scores.away = awayScore ?? match.scores.away;
             events.equipe = away;
+            player.buts += 1;
             events.joueur = player;
             events.type = eventType;
             events.minute = minuite;

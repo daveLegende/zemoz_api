@@ -26,10 +26,13 @@ export class TicketEntity extends ATimestamp implements Ticket {
     @Column({ type: 'decimal' })
     amount: number;
 
-    @Column({ type: 'date' })
+    @Column('timestamp')
     date: Date;
 
+    @Column({ type: 'timestamp', nullable: true })
+    lastScanDate: Date;
+
     // Pour un ticket simple
-    @ManyToOne(() => MatchEntity, { nullable: true })
-    match: MatchEntity;
+    @Column('text', { array: true, default: [] })
+    matchs: string[];
 }

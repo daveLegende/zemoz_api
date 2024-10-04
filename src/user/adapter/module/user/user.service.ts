@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   Logger,
@@ -6,17 +7,26 @@ import {
 } from '@nestjs/common';
 import { UserFactory } from 'user/adapter/user.factory';
 import {
+  ForgotPasswordDTO,
   RegisterAccoutDTO,
   UpdateUserDTO,
 } from 'user/adapter/dto/user.input.dto';
 import { IUserService } from 'user/app/module/user';
 import { User } from 'user/domain';
 import { IUserRepository } from 'user/domain/data.abstract';
+import { ForgotPass, IForgotPassRepository } from 'src/forgotpass/domain';
+import { ForgotPassAccountDto } from 'src/forgotpass/adapter/dto';
+import { ForgotPassFactory } from 'src/forgotpass/adapter/fgp.factory';
+import { IReinitialisePassDTO, IChangePasswordDTO } from 'user/app/dto';
+import { HashFactory } from 'user/adapter/guard/hash.factory';
 
 @Injectable()
 export class UserService implements IUserService {
   private readonly logger = new Logger();
-  constructor(private userRepository: IUserRepository) {}
+  constructor(
+    private userRepository: IUserRepository,
+    private fgpRepository: IForgotPassRepository,
+  ) {}
 
   async fetchAll(): Promise<User[]> {
     try {
@@ -100,6 +110,108 @@ export class UserService implements IUserService {
     } catch (error) {
       this.logger.error(error.message, 'ERROR::UserService.remove');
       return false;
+    }
+  }
+
+  
+  async fetchByEmail(email: string): Promise<User> {
+    try {
+      const user = await this.userRepository.users.findOne({
+        where: { email: email }
+      });
+
+      if (!user) {
+        throw new NotFoundException("Aucun utilisateur avec cet email");
+      }
+
+      return user;
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::UserService.fetchByEmail');
+      return error;
+    }
+  }
+
+  async fetchByPhone(phone: string): Promise<User> {
+    try {
+      const user = await this.userRepository.users.findOne({
+        where: { phone: phone }
+      });
+
+      if (!user) {
+        throw new NotFoundException("Aucun utilisateur avec ce numero de téléphone");
+      }
+
+      return user;
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
+      return error;
+    }
+  }
+
+  
+  async reinitialisePass(data: IReinitialisePassDTO): Promise<User> {
+    try {
+      const { email, password, confirm  } = data;
+
+      const user = await this.userRepository.users.findOneBy({email});
+
+      if (password.length < 6 || !password || !confirm || !email) {
+        throw new BadRequestException("Données invalides")
+      }
+      if (!user) {
+        throw new NotFoundException("Aucun utilisateur avec cet email");
+      }
+
+      if (password !== confirm) {
+        throw new BadRequestException("Mot de passe incorrecte")
+      }
+
+      const hashPass = await HashFactory.hashPwd(password);
+
+      user.password = hashPass;
+
+      await this.userRepository.users.update(user);
+
+      return user;
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
+      return error;
+    }
+  }
+
+
+  async changePass(data: IChangePasswordDTO): Promise<User> {
+    try {
+      const { user, oldpass, newpass, confirm  } = data;
+
+      const userE = await this.userRepository.users.findOneByID(user);
+
+      if (newpass.length < 6 || !oldpass|| !newpass || !confirm) {
+        throw new BadRequestException("Données invalides")
+      }
+      if (!userE) {
+        throw new NotFoundException("Aucun utilisateur trouvé");
+      }
+
+      const matchOld = await HashFactory.isRightPwd(oldpass, userE.password);
+      if (!matchOld) {
+        throw new BadRequestException("Ancien mot de passe invalide")
+      }
+
+      if (newpass !== confirm) {
+        throw new BadRequestException("Nouveau mot de passe incorrecte")
+      }
+
+      const hashPass = await HashFactory.hashPwd(newpass);
+
+      userE.password = hashPass;
+
+      await this.userRepository.users.update(userE);
+
+      return userE;
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
+      return error;
     }
   }
 }

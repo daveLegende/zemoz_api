@@ -24,3 +24,23 @@ export interface ICreateUserDTO {
 export interface IUpdateUserDTO extends Partial<ICreateUserDTO> {
   id: string;
 }
+
+
+export interface IReinitialisePassDTO {
+  password: string;
+
+  confirm: string;
+
+  email: string;
+}
+
+export interface IChangePasswordDTO {
+
+  oldpass: string;
+
+  newpass: string;
+
+  confirm: string;
+
+  user: string;
+}

@@ -9,6 +9,7 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -17,6 +18,7 @@ import {
   ApiResponse,
   ApiParam,
   ApiConsumes,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { IDParamDTO } from 'adapter/dto';
 import { ICouponController, ICouponService } from 'src/coupon/app/module';
@@ -24,8 +26,13 @@ import { Coupon } from 'src/coupon/domain';
 import { CouponFactory } from '../coupon.factory';
 import { CouponAccountDto, UpdateCouponDTO } from '../dto';
 import { DocCouponOutputDto } from '../dto/doc.output.dto';
+import { UpdateMatchDTO } from 'src/match/adapter/dto';
+import { UserGuard } from 'user/adapter/guard/auth.guard';
+import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
 
 @ApiTags('Coupon management')
+@ApiBearerAuth()
+@UseGuards(UserGuard, AdminGuard)
 @Controller('coupons')
 export class CouponController implements ICouponController {
   constructor(private readonly couponService: ICouponService) {}
@@ -71,7 +78,6 @@ export class CouponController implements ICouponController {
    *
    * @method POST
    */
-
   @Post()
   @ApiOperation({
     summary: 'Create Coupon',
@@ -118,7 +124,17 @@ export class CouponController implements ICouponController {
     description: 'ID of the user to delete',
   })
   @ApiResponse({ type: Boolean })
-  remove(@Param() { id }: IDParamDTO): Promise<boolean> {
+  remove(@Body() { id }: IDParamDTO): Promise<boolean> {
     return this.couponService.remove(id);
+  }
+  
+  @Post('status')
+  @ApiOperation({
+    summary: 'Create Coupon',
+  })
+  async checkCoupons(
+    @Body() data: UpdateMatchDTO
+  ): Promise<any> {
+    return await this.couponService.checkCoupons(data);
   }
 }
