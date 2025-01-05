@@ -10,6 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  Req,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -39,22 +40,35 @@ import {
   UserQueryDTO,
   ReinitialisePassAccountDTO,
   ChangePassAccountDTO,
+  DeleteUserBetDTO,
+  DeleteUserTicketDTO,
 } from 'user/adapter/dto';
 import { UserFactory } from 'user/adapter/user.factory';
 import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
-import { ForgotPassAccountDto } from 'src/forgotpass/adapter/dto';
-import { UserService } from './user.service';
-import { ForgotPass } from 'src/forgotpass/domain';
-import { IReinitialisePassDTO, IChangePasswordDTO } from 'user/app/dto';
+import { Ticket } from 'src/ticket/domain';
+import { AuthGuard } from '@nestjs/passport';
+import { Coupon } from 'src/coupon/domain';
 
 @ApiTags('Users management')
-@ApiBearerAuth()
-@UseGuards(UserGuard, AdminGuard)
+// @ApiBearerAuth()
+// @UseGuards(UserGuard, AdminGuard)
 @Controller('users')
 export class UserController implements IUserController {
   constructor(
     private readonly userService: IUserService,
   ) {}
+
+  @Get("current/:id")
+  async getCurrentUser(@Param() { id }: IDParamDTO): Promise<User> {
+    return await this.userService.getCurrentUser(id);
+  }
+
+  @Get("profile")
+  async getProfile(@Req() req): Promise<User> {
+    console.log(req);
+    
+    return await this.userService.getCurrentUser(req.user);
+  }
 
   @Get()
   @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
@@ -233,5 +247,28 @@ export class UserController implements IUserController {
   ): Promise<User> {
     const user = await this.userService.changePass(data);
     return user;
+  }
+
+
+  @Get('tickets/:id')
+  // @ApiResponse({ type: DocUserOutputDTO })
+  async getUserTickets(@Param() { id }: IDParamDTO): Promise<Ticket[]> {
+    return await this.userService.getUserTickets(id);
+  }
+
+  @Get('coupons/:id')
+  // @ApiResponse({ type: DocUserOutputDTO })
+  async getUserBets(@Param() { id }: IDParamDTO): Promise<Coupon[]> {
+    return await this.userService.getUserBets(id);
+  }
+
+  @Post('bet/delete')
+  async deleteUserBet(@Body() data: DeleteUserBetDTO): Promise<boolean> {
+    return await this.userService.deleteUserBet(data);
+  }
+
+  @Post('ticket/delete')
+  async deleteUserTicket(@Body() data: DeleteUserTicketDTO): Promise<boolean> {
+    return await this.userService.deleteUserTicket(data);
   }
 }

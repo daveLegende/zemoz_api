@@ -150,7 +150,7 @@ export class AuthService {
       }
 
       // Vérifier si l'OTP a expiré
-      if (otp.expiresAt < new Date()) {
+      if (otp.expiresAt < new Date() || otp.isVerified) {
         throw new BadRequestException('OTP expiré');
       }
 

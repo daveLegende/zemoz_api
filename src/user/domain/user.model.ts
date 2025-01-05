@@ -1,5 +1,6 @@
 import { ITimestamp } from 'domain/interface';
 import { AccountRole, SexEnum } from './user.enum';
+import { Ticket } from 'src/ticket/domain';
 
 export class User extends ITimestamp {
   id: string;
@@ -13,4 +14,5 @@ export class User extends ITimestamp {
   avatar?: string;
   isActivated: boolean;
   solde: number;
+  ticket?: Ticket[];
 }

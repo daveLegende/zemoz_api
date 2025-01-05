@@ -13,4 +13,5 @@ export class Ticket extends ITimestamp {
   etat: TicketState;
   user: User;
   matchs?: string[];
+  isDeleted: boolean;
 }

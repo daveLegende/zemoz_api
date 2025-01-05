@@ -61,6 +61,7 @@ export class UserAccoutDTO {
     name: 'country',
     description: 'The complete description of the supplier country',
   })
+  @IsOptional()
   @IsString()
   country: string;
 
@@ -211,12 +212,12 @@ export class ChangePassAccountDTO {
 
   @ApiProperty({
     type: String,
-    name: 'user',
+    name: 'id',
     description: 'id of user',
   })
-  @IsUUID()
+  // @IsUUID()
   @IsString()
-  user: string;
+  id: string;
 
   @ApiProperty({
     type: String,
@@ -241,4 +242,46 @@ export class ChangePassAccountDTO {
   })
   @IsString()
   confirm: string;
+}
+
+
+export class DeleteUserBetDTO {
+
+  @ApiProperty({
+    type: String,
+    name: 'id',
+    description: 'id of coupon',
+  })
+  // @IsUUID()
+  @IsString()
+  id: string;
+
+  @ApiProperty({
+    type: String,
+    name: 'id',
+    description: 'id of user',
+  })
+  @IsString()
+  userId: string;
+}
+
+
+export class DeleteUserTicketDTO {
+
+  @ApiProperty({
+    type: String,
+    name: 'id',
+    description: 'id of ticket',
+  })
+  // @IsUUID()
+  @IsString()
+  id: string;
+
+  @ApiProperty({
+    type: String,
+    name: 'id',
+    description: 'id of user',
+  })
+  @IsString()
+  userId: string;
 }

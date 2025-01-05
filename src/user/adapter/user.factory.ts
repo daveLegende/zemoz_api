@@ -19,11 +19,11 @@ export abstract class UserFactory {
 
   static update(user: User, data: IUpdateUserDTO): User {
     user.email = data.email ?? user.email;
-    user.phone = data.phone ?? user.phone;
+    // user.phone = data.phone ?? user.phone;
     user.firstname = data.firstname ?? user.firstname;
     user.lastname = data.lastname ?? user.lastname;
     user.solde = data.solde ?? user.solde;
-    user.country = data.country ?? user.country;
+    // user.country = data.country ?? user.country;
     user.avatar = data.avatar;
 
     return user;

@@ -42,5 +42,12 @@ export interface IChangePasswordDTO {
 
   confirm: string;
 
-  user: string;
+  id: string;
+}
+
+export interface IDeleteUserBetOrTicketDTO {
+
+  id: string;
+
+  userId: string;
 }

@@ -2,6 +2,7 @@ import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsDate,
   IsEnum,
   IsInt,
@@ -61,6 +62,17 @@ export class TicketAccoutDTO {
   @IsOptional()
   @IsArray()
   matchs?: string[];
+
+  
+
+  @ApiProperty({
+    type: Boolean,
+    name: 'isDeleted',
+    default: false
+  })
+  @IsOptional()
+  @IsBoolean()
+  isDeleted?: boolean;
 }
 
 export class UpdateTicketDTO extends PartialType(TicketAccoutDTO) {

@@ -21,6 +21,8 @@ export interface ICreateCouponDTO {
 
   couponBets: CouponBet[];
 
+  isDeleted?: boolean;
+
 }
 
 export interface IUpdateCouponDTO extends Partial<ICreateCouponDTO> {

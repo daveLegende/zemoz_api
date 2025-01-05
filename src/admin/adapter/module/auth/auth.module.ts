@@ -8,6 +8,7 @@ import { TwilioModule } from 'src/twilio/twilio.module';
 import { AdminModule } from '../admin';
 import { AuthController } from './auth.controller';
 import { AdminAuthService } from './auth.service';
+import { UserRepositoryModule } from 'user/framework/database/user.repository.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AdminAuthService } from './auth.service';
         signOptions: { expiresIn: '1h' },
       }),
     }),
+    UserRepositoryModule,
   ],
   providers: [AdminAuthService, JwtStrategy],
   controllers: [AuthController],

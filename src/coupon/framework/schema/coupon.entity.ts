@@ -27,4 +27,7 @@ export class CouponEntity extends ATimestamp implements Coupon {
 
     @Column({ type: 'enum', enum: CouponState, default: CouponState.PENDING })
     etat: CouponState;
+
+    @Column({ default: false })
+    isDeleted: boolean;
 }

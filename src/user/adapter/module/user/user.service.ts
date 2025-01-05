@@ -7,9 +7,14 @@ import {
 } from '@nestjs/common';
 import { UserFactory } from 'user/adapter/user.factory';
 import {
+  ChangePassAccountDTO,
+  DeleteUserBetDTO,
+  DeleteUserTicketDTO,
   ForgotPasswordDTO,
   RegisterAccoutDTO,
+  ReinitialisePassAccountDTO,
   UpdateUserDTO,
+  UserAccoutDTO,
 } from 'user/adapter/dto/user.input.dto';
 import { IUserService } from 'user/app/module/user';
 import { User } from 'user/domain';
@@ -19,6 +24,11 @@ import { ForgotPassAccountDto } from 'src/forgotpass/adapter/dto';
 import { ForgotPassFactory } from 'src/forgotpass/adapter/fgp.factory';
 import { IReinitialisePassDTO, IChangePasswordDTO } from 'user/app/dto';
 import { HashFactory } from 'user/adapter/guard/hash.factory';
+import { ITicketRepository, Ticket } from 'src/ticket/domain';
+import { DocUserOutputDTO } from 'user/adapter/dto';
+import { Coupon } from 'src/coupon/domain';
+import { ICouponRepository } from 'src/coupon/domain/data.abstract';
+import { CouponFactory } from 'src/coupon/adapter/coupon.factory';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -26,6 +36,8 @@ export class UserService implements IUserService {
   constructor(
     private userRepository: IUserRepository,
     private fgpRepository: IForgotPassRepository,
+    private ticketRepository: ITicketRepository,
+    private couponRepository: ICouponRepository,
   ) {}
 
   async fetchAll(): Promise<User[]> {
@@ -149,7 +161,7 @@ export class UserService implements IUserService {
   }
 
   
-  async reinitialisePass(data: IReinitialisePassDTO): Promise<User> {
+  async reinitialisePass(data: ReinitialisePassAccountDTO): Promise<User> {
     try {
       const { email, password, confirm  } = data;
 
@@ -180,11 +192,11 @@ export class UserService implements IUserService {
   }
 
 
-  async changePass(data: IChangePasswordDTO): Promise<User> {
+  async changePass(data: ChangePassAccountDTO): Promise<User> {
     try {
-      const { user, oldpass, newpass, confirm  } = data;
+      const { id, oldpass, newpass, confirm  } = data;
 
-      const userE = await this.userRepository.users.findOneByID(user);
+      const userE = await this.userRepository.users.findOneByID(id);
 
       if (newpass.length < 6 || !oldpass|| !newpass || !confirm) {
         throw new BadRequestException("Données invalides")
@@ -209,6 +221,143 @@ export class UserService implements IUserService {
       await this.userRepository.users.update(userE);
 
       return userE;
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
+      return error;
+    }
+  }
+
+  // 
+  async getUserTickets(id: string): Promise<Ticket[]> {
+    try {
+      const user = await this.userRepository.users.findOneByID(id);
+
+      if (!user) {
+        throw new NotFoundException("Utilisateur non trouvé");
+      }
+      console.log("wsugsdhfligywsilhvi "+user);
+      
+      const tickets = await this.ticketRepository.tickets.find({
+        where: { 
+          user: { id: user.id },
+          isDeleted: false,
+       },
+        relations: { user: true }
+      });
+
+      return tickets;
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
+      return error;
+    }
+  }
+
+  async deleteUserTicket(data: DeleteUserTicketDTO): Promise<boolean> {
+    try {
+      const { id, userId } = data;
+      const user = await this.userRepository.users.findOneByID(userId);
+
+      if (!user) {
+        throw new NotFoundException("Utilisateur non trouvé");
+      }
+      const ticket = await this.ticketRepository.tickets.findOne(
+        {
+          where: { 
+            id: id,
+            user: { id: user.id },
+        },
+          relations: { user: true }
+        }
+      );
+      if (ticket) {
+        ticket.isDeleted = true;
+        return await this.ticketRepository.tickets.update(ticket).then(() => true);
+      }
+      return false;
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::UserService.remove');
+      return false;
+    }
+  }
+  // 
+  async getUserBets(id: string): Promise<Coupon[]> {
+    try {
+      const user = await this.userRepository.users.findOneByID(id);
+
+      if (!user) {
+        throw new NotFoundException("Utilisateur non trouvé");
+      }
+      console.log("wsugsdhfligywsilhvi "+user);
+      
+      const coupons = await this.couponRepository.coupons.find({
+        where: { 
+          user: { id: user.id },
+          isDeleted: false,
+       },
+        relations: { 
+          user: true, 
+          couponBets: {
+            bet: {
+              match: {
+                home: true,
+                away: true,
+              },
+            },
+          },
+        }
+      });
+
+      return coupons;
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
+      return error;
+    }
+  }
+
+  async deleteUserBet(data: DeleteUserBetDTO): Promise<boolean> {
+    try {
+      const { id, userId } = data;
+      const user = await this.userRepository.users.findOneByID(userId);
+
+      if (!user) {
+        throw new NotFoundException("Utilisateur non trouvé");
+      }
+      const coupon = await this.couponRepository.coupons.findOne(
+        {
+          where: { 
+            id: id,
+            user: { id: user.id },
+        },
+          relations: { user: true }
+        }
+      );
+      if (coupon) {
+        coupon.isDeleted = true;
+        return await this.couponRepository.coupons.update(
+          await CouponFactory.update(coupon, data),
+        ).then(() => true);
+      }
+      return false;
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::UserService.remove');
+      return false;
+    }
+  }
+
+  // 
+  async getCurrentUser(id: string): Promise<User> {
+    try {
+      // const { id } = data;
+      const user = await this.userRepository.users.findOne({
+        where: { id: id },
+        // relations: { ticket: true }
+      });
+
+      if (!user) {
+        throw new NotFoundException("Aucun utilisateur avec ce numero de téléphone");
+      }
+
+      return user;
     } catch (error) {
       this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
       return error;

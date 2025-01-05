@@ -35,4 +35,7 @@ export class TicketEntity extends ATimestamp implements Ticket {
     // Pour un ticket simple
     @Column('text', { array: true, default: [] })
     matchs: string[];
+
+    @Column({ default: false })
+    isDeleted: boolean;
 }

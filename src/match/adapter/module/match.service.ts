@@ -38,7 +38,13 @@ import { MatchGateway } from './match.gateway';
     async fetchAll(): Promise<Match[]> {
       try {
         return await this.matchRepository.matchs.find({ 
-          relations: { home: true, away: true, arbitres: true, events: { joueur: true, equipe: true }, bets: true } 
+          relations: { 
+            home: true, 
+            away: true, 
+            arbitres: true, 
+            events: { joueur: true, equipe: true }, 
+          bets: { match: {home: true, away: true} } 
+        } 
         });
       } catch (error) {
         this.logger.error(error.message, 'ERROR::MatchService.fetchAll');
@@ -50,7 +56,13 @@ import { MatchGateway } from './match.gateway';
       try {
         const match = await this.matchRepository.matchs.findOne({
           where: { id: id },
-          relations: { home: true, away: true, arbitres: true, bets: true, events: { joueur: true, equipe: true } }
+          relations: { 
+            home: true, 
+            away: true, 
+            arbitres: true, 
+            bets: { match: true } , 
+            events: { joueur: true, equipe: true } 
+          }
         });
         if (match) {
           // const referee = await this.arbitreRepository.arbitres.findByIds(match.arbitres);

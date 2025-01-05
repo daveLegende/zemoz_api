@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsArray, IsEnum, IsInt, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from "class-validator";
+import { IsArray, IsBoolean, IsEnum, IsInt, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from "class-validator";
 import { OddsDto } from "src/bet/adapter/dto";
 import { OddsClass } from "src/bet/domain";
 import { BetCoupon } from "src/coupon/app/dto";
@@ -62,6 +62,14 @@ export class CouponAccountDto {
     })
     @IsEnum(CouponState)
     etat: CouponState;
+
+    @ApiProperty({
+        type: Boolean,
+        name: 'isDeleted',
+    })
+    @IsOptional()
+    @IsBoolean()
+    isDeleted?: boolean;
 }
 
 export class UpdateCouponDTO extends PartialType(CouponAccountDto) {

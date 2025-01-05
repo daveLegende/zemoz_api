@@ -1,6 +1,7 @@
 import {
   BadRequestException,
     ConflictException,
+    ForbiddenException,
     Injectable,
     Logger,
     NotFoundException,
@@ -68,7 +69,7 @@ export class TicketService implements ITicketService {
 
       // Vérifier le solde de l'utilisateur
       if (userExist.solde < amount) {
-        throw new BadRequestException('Solde insuffisant pour acheter le ticket');
+        throw new ForbiddenException('Solde insuffisant pour acheter le ticket');
       }
 
       const ticket = await this.ticketRepository.tickets.create(

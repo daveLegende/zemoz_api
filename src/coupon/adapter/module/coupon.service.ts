@@ -37,26 +37,32 @@ export class CouponService implements ICouponService {
     private readonly matchGateway: MatchGateway,
   ) {
     // Écouter les mises à jour des scores
-    this.matchGateway.server.on('scoreUpdated', (match) => {
-      this.logger.log(`Score mis à jour pour le match ${match.id}`);
-      this.checkCoupons(match); // Vérifier les coupons quand le score est mis à jour
-    });
+    // this.matchGateway.server.on('scoreUpdated', (match) => {
+    //   this.logger.log(`Score mis à jour pour le match ${match.id}`);
+    //   this.checkCoupons(match); // Vérifier les coupons quand le score est mis à jour
+    // });
 
-    // Écouter les mises à jour de l'état du match (par exemple : match terminé)
-    this.matchGateway.server.on('stateUpdated', (match) => {
-      this.logger.log(`État mis à jour pour le match ${match.id}`);
-      this.checkCoupons(match); // Vérifier les coupons quand l'état est mis à jour
-    });
+    // // Écouter les mises à jour de l'état du match (par exemple : match terminé)
+    // this.matchGateway.server.on('stateUpdated', (match) => {
+    //   this.logger.log(`État mis à jour pour le match ${match.id}`);
+    //   this.checkCoupons(match); // Vérifier les coupons quand l'état est mis à jour
+    // });
   }
 
   async fetchAll(): Promise<Coupon[]> {
     try {
       return await this.couponsRepository.coupons.find({
-        relations: { user: true, couponBets: {
-          bet: {
-            match: true, // Récupérer le match lié au bet
+        relations: {
+          user: true, 
+          couponBets: {
+            bet: {
+              match: true, // Récupérer le match lié au bet
+            },
           },
-        } }
+        },
+        order: {
+          createdAt: 'DESC',
+        },
       });
     } catch (error) {
       this.logger.error(error.message, 'ERROR::couponsService.fetchAll');
@@ -68,12 +74,17 @@ export class CouponService implements ICouponService {
     try {
       const coupons = await this.couponsRepository.coupons.findOne({
         where: { id: id },
-        relations: { user: true, couponBets: {
-          bet: {
-            match: true, // Récupérer le match lié au bet
+        relations: { 
+          user: true, 
+          couponBets: {
+            bet: {
+              match: true, // Récupérer le match lié au bet
+            },
           },
-        }
-      }
+        },
+        order: {
+          createdAt: 'DESC',
+        },
       });
       if (coupons) {
         return coupons;
@@ -126,8 +137,8 @@ export class CouponService implements ICouponService {
           // Mise à jour du DTO avec les nouveaux calculs
           const couponData = {
             ...data,
-            totalOdds: totalOdds, // On met à jour les cotes
-            gains: gains,         // On met à jour les gains
+            totalOdds: totalOdds,
+            gains: gains,
           };
 
           const coupon = await this.couponsRepository.coupons.create(

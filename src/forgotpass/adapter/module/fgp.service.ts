@@ -12,6 +12,7 @@ import { IForgotPassService } from 'src/forgotpass/app/module';
 import { ForgotPass, IForgotPassRepository } from 'src/forgotpass/domain';
 import * as nodemailer from 'nodemailer';
 import { ICreateForgotPassDTO } from 'src/forgotpass/app/dto';
+import { IsNull, Not } from 'typeorm';
   
   @Injectable()
   export class ForgotPassService implements IForgotPassService {
@@ -46,18 +47,28 @@ import { ICreateForgotPassDTO } from 'src/forgotpass/app/dto';
     async add(data: ForgotPassAccountDto): Promise<ForgotPass> {
       try {
         let { code, email } = data;
-
-        // Générer un OTP de 4 chiffres
+    
+        // Générer un OTP de 6 chiffres
         const codes = Math.floor(100000 + Math.random() * 900000).toString();
-
+    
         const user = await this.userRepository.users.findOne({
           where: { email: email }
         });
-
+    
         if (!user) {
           throw new NotFoundException("Aucun utilisateur avec cet email");
         }
-
+    
+        // Vérifier et supprimer les anciennes entrées ForgotPass pour cet email
+        const existingForgotPasses = await this.fgpRepository.fgps.find({
+          where: { email: email }
+        });
+    
+        // if (existingForgotPasses) {
+        //   await this.fgpRepository.fgps.removeMany(existingForgotPasses);
+        //   console.log(`Suppression des anciennes demandes de réinitialisation pour l'email: ${email}`);
+        // }
+    
         // Configurer l'envoi d'email
         const transporter = nodemailer.createTransport({
           service: 'gmail',
@@ -66,18 +77,16 @@ import { ICreateForgotPassDTO } from 'src/forgotpass/app/dto';
             pass: process.env.EMAIL_PASSWORD,
           },
         });
-      
+    
         const mailOptions = {
           from: process.env.EMAIL_USER,
           to: email,
           subject: 'Récupération de mot de passe',
-          text: `Voici votre code de réinitianilisation de mot de passe : ${codes}`, // Envoyer le mot de passe en clair
+          text: `Voici votre code de réinitialisation de mot de passe : ${codes}`, // Envoyer le code de réinitialisation
         };
-
-        code = codes;
-
-        console.log("--------------------"+data.code);
-
+    
+        code = codes; // Mettre à jour le code dans les données
+    
         // Envoyer l'email
         transporter.sendMail(mailOptions, (error: any, info: { response: any; }) => {
           if (error) {
@@ -86,7 +95,8 @@ import { ICreateForgotPassDTO } from 'src/forgotpass/app/dto';
             console.log('Email envoyé:', info.response);
           }
         });
-
+    
+        // Créer une nouvelle entrée ForgotPass dans la base de données
         return await this.fgpRepository.fgps.create(
           await ForgotPassFactory.create(data),
         );
@@ -95,6 +105,7 @@ import { ICreateForgotPassDTO } from 'src/forgotpass/app/dto';
         throw error;
       }
     }
+    
   
     async remove(id: string): Promise<boolean> {
       try {
@@ -111,7 +122,7 @@ import { ICreateForgotPassDTO } from 'src/forgotpass/app/dto';
 
     
     
-    async verifyCode(data: ICreateForgotPassDTO): Promise<boolean> {
+    async verifyCode(data: ForgotPassAccountDto): Promise<boolean> {
       try {
         const { code, email } = data;
 
@@ -134,5 +145,29 @@ import { ICreateForgotPassDTO } from 'src/forgotpass/app/dto';
         this.logger.error(error.message, 'ERROR::ForgotPassService.remove');
       }
     }
+
+    // async changePassword(data: ForgotPassAccountDto): Promise<boolean> {
+    //   try {
+    //     const { code, email } = data;
+
+    //     const fgp = await this.fgpRepository.fgps.findOne({
+    //       where: {
+    //         code: code,
+    //         email: email,
+    //       },
+    //       order: {
+    //         createdAt: 'DESC',
+    //       },
+    //     });
+
+    //     if (!fgp) {
+    //       throw new BadRequestException("Code incorrecte");
+    //     }
+
+    //     return true;
+    //   } catch (error) {
+    //     this.logger.error(error.message, 'ERROR::ForgotPassService.remove');
+    //   }
+    // }
   }
   

@@ -11,4 +11,5 @@ export class Coupon extends ITimestamp {
     gains: number;
     etat: CouponState;
     couponBets: CouponBet[];
+    isDeleted: boolean;
 }

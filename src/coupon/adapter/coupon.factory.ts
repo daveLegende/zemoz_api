@@ -21,6 +21,7 @@ export abstract class CouponFactory {
     static update(coupon: Coupon, data: IUpdateCouponDTO): Coupon {
 
       coupon.etat = data.etat ?? coupon.etat;
+      coupon.isDeleted = coupon.isDeleted;
   
       return coupon;
     }
@@ -35,6 +36,7 @@ export abstract class CouponFactory {
           amount: coupon.amount,
           etat: coupon.etat,
           couponBets: coupon.couponBets,
+          isDeleted: coupon.isDeleted,
           createdAt: coupon.createdAt,
           updatedAt: coupon.updatedAt,
           deletedAt: coupon.deletedAt

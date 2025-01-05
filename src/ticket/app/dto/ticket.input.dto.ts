@@ -17,6 +17,8 @@ export interface ICreateTicketDTO {
   lastScanDate?: Date;
 
   matchs?: string[];
+
+  isDeleted?: boolean;
 }
 
 export interface IUpdateTicketDTO extends Partial<ICreateTicketDTO> {
