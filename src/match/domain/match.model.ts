@@ -22,6 +22,8 @@ export class Match extends ITimestamp {
   events?: MatchEvent[];
   poule?: Poule;
   bets?: Bet[];
+  isProlongation?: boolean;
+  teamQualify?: string;
 
   // getArbitreIds(): string[] {
   //   return this.arbitres.map(arbitre => arbitre.id);

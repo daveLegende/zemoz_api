@@ -24,45 +24,45 @@ import {
   import { diskStorage } from 'multer';
   import { IDParamDTO } from 'adapter/dto';
   import { BaseConfig } from 'config/base.config';
-import { UpdateTeamDTO } from 'src/team/adapter/dto';
-import { Team } from 'src/team/domain';
+import { UpdateTournoiDTO } from 'src/tournoi/adapter/dto';
+import { Tournoi } from 'src/tournoi/domain';
 import { RegisterAccoutDTO, DocUserOutputDTO } from 'user/adapter/dto';
-import { TeamFactory } from '../team.factory';
-import { ITeamController, ITeamService } from 'src/team/app/module';
-import { TeamAccoutDTO } from '../dto';
-import { DocTeamOutputDTO } from '../dto/doc.team.dto';
+import { TournoiFactory } from '../tournoi.factory';
+import { ITournoiController, ITournoiService } from 'src/tournoi/app/module';
+import { TournoiAccoutDTO } from '../dto';
+import { DocTournoiOutputDTO } from '../dto/doc.tournoi.dto';
 import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
   
-@ApiTags('teams management')
-@Controller('teams')
-export class TeamController implements ITeamController {
-  constructor(private readonly teamService: ITeamService) {}
+@ApiTags('Tournois management')
+@Controller('tournois')
+export class TournoiController implements ITournoiController {
+  constructor(private readonly tournoiService: ITournoiService) {}
 
   @Get()
   // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
   @ApiConsumes('multipart/form-data', 'application/json')
   @ApiOperation({
-    summary: 'Teams list',
-    description: 'Fetch all Teams in the DB',
+    summary: 'Tournois list',
+    description: 'Fetch all Tournois in the DB',
   })
-  // @ApiResponse({ type: [TeamAccountDTO] })
-  async all(): Promise<Team[]> {
-    const teams = await this.teamService.fetchAll();
-    return teams?.map((team) => TeamFactory.getTeam(team));
+  // @ApiResponse({ type: [TournoiAccountDTO] })
+  async all(): Promise<Tournoi[]> {
+    const tournois = await this.tournoiService.fetchAll();
+    return tournois?.map((tournoi) => TournoiFactory.getTournoi(tournoi));
   }
 
 
   @Get('search')
-  async search(@Query() param: TeamAccoutDTO): Promise<Team> {
+  async search(@Query() param: TournoiAccoutDTO): Promise<Tournoi> {
     if (param) {
-      return TeamFactory.getTeam(await this.teamService.search(param));
+      return TournoiFactory.getTournoi(await this.tournoiService.search(param));
     }
   }
 
   @Get(':id')
   // @HasPermission(AccessEnum.CAN_SHOW_USER)
   @ApiOperation({
-    summary: 'One Team',
+    summary: 'One Tournoi',
     description: 'Fetch user account by ID',
   })
   @ApiParam({
@@ -70,9 +70,9 @@ export class TeamController implements ITeamController {
     name: 'id',
     description: 'ID of the needed account',
   })
-  @ApiResponse({ type: DocTeamOutputDTO })
-  async show(@Param() { id }: IDParamDTO): Promise<Team> {
-    return TeamFactory.getTeam(await this.teamService.fetchOne(id));
+  @ApiResponse({ type: DocTournoiOutputDTO })
+  async show(@Param() { id }: IDParamDTO): Promise<Tournoi> {
+    return TournoiFactory.getTournoi(await this.tournoiService.fetchOne(id));
   }
 
   /**
@@ -94,17 +94,15 @@ export class TeamController implements ITeamController {
   )
   @ApiConsumes('multipart/form-data', 'application/json')
   @ApiOperation({
-    summary: 'Create Team',
+    summary: 'Create Tournoi',
   })
   @ApiBody({ type: RegisterAccoutDTO })
   @ApiResponse({ type: DocUserOutputDTO })
   async create(
-    @Body() data: TeamAccoutDTO,
-    @UploadedFile() file: Express.Multer.File,
-  ): Promise<Team> {
-    data.logo = file?.filename;
-    const team = await this.teamService.add(data);
-    if (team) return TeamFactory.getTeam(team);
+    @Body() data: TournoiAccoutDTO,
+  ): Promise<Tournoi> {
+    const tournoi = await this.tournoiService.add(data);
+    if (tournoi) return TournoiFactory.getTournoi(tournoi);
   }
 
   /**
@@ -114,25 +112,13 @@ export class TeamController implements ITeamController {
   @UseGuards(AdminGuard)
   @Patch()
   // @HasPermission(AccessEnum.CAN_UPDATE_USER)
-  @UseInterceptors(
-    FileInterceptor('logo', {
-      storage: diskStorage({
-        destination: BaseConfig.setFilePath,
-        filename: BaseConfig.editFileName,
-      }),
-      fileFilter: BaseConfig.fileFilter,
-    }),
-  )
-  @ApiConsumes('multipart/form-data', 'application/json')
   @ApiOperation({ summary: 'Update user account' })
-  @ApiBody({ type: UpdateTeamDTO })
-  @ApiResponse({ type: DocTeamOutputDTO })
+  @ApiBody({ type: UpdateTournoiDTO })
+  @ApiResponse({ type: DocTournoiOutputDTO })
   async update(
-    @Body() data: UpdateTeamDTO,
-    @UploadedFile() file: Express.Multer.File,
-  ): Promise<Team> {
-    data.logo = file?.filename;
-    return TeamFactory.getTeam(await this.teamService.edit(data));
+    @Body() data: UpdateTournoiDTO,
+  ): Promise<Tournoi> {
+    return TournoiFactory.getTournoi(await this.tournoiService.edit(data));
   }
 
   @Patch('state/:id')
@@ -141,7 +127,7 @@ export class TeamController implements ITeamController {
   @ApiParam({ type: String, name: 'id', description: 'ID of the user' })
   @ApiResponse({ type: Boolean })
   async setState(@Param() { id }: IDParamDTO): Promise<boolean> {
-    return await this.teamService.setState(id);
+    return await this.tournoiService.setState(id);
   }
 
   /**
@@ -159,6 +145,6 @@ export class TeamController implements ITeamController {
   })
   @ApiResponse({ type: Boolean })
   remove(@Param() { id }: IDParamDTO): Promise<boolean> {
-    return this.teamService.remove(id);
+    return this.tournoiService.remove(id);
   }
 }

@@ -12,7 +12,9 @@ export abstract class MatchFactory {
     match.type = data.type;
     match.lieu = data.lieu;
     match.date = data.date;
-    match.etat = data.etat
+    match.etat = data.etat;
+    match.isProlongation = data.isProlongation;
+    match.teamQualify = data.teamQualify;
     // 
     
     match.arbitres = referees;
@@ -38,6 +40,8 @@ export abstract class MatchFactory {
     match.away = away ?? match.away;
     match.home = home ?? match.home;
     match.journee = data.journee ?? match.journee;
+    match.isProlongation = data.isProlongation ?? match.isProlongation;
+    match.teamQualify = data.teamQualify ?? match.teamQualify;
     match.events = data.events ?? match.events;
     match.scores = /*data.scores ??*/ match.scores;
     match.poule = /*data.poule ??*/ match.poule;
@@ -79,6 +83,8 @@ export abstract class MatchFactory {
         events: match.events,
         bets: match.bets,
         poule: match.poule,
+        isProlongation: match.isProlongation,
+        teamQualify: match.teamQualify,
         createdAt: match.createdAt,
         updatedAt: match.updatedAt,
         deletedAt: match.deletedAt

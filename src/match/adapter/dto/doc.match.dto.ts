@@ -1,11 +1,13 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsBoolean,
   IsDate,
   IsEnum,
   IsInt,
   IsOptional,
   IsString,
+  IsUUID,
   ValidateNested,
 } from 'class-validator';
 import { MatchType, MatchState, MatchScores } from 'src/match/domain';
@@ -68,4 +70,17 @@ export class MatchDocOutputDTO {
   @ValidateNested({ each: true })
   @Type(() => Poule)
   poule?: Poule;
+
+  @ApiProperty({ description: 'Si il y a prolongation ou tirs aux buts', type: Boolean })
+    // @ValidateNested()
+    // @Type(() => Team)
+  @IsOptional()
+    @IsBoolean()
+    isProlongation: boolean;
+  
+    @ApiProperty({ description: 'Id de team qui est qualifiée', type: String })
+    @IsString()
+    @IsOptional()
+    @IsUUID()
+    teamQualify: string;
 }

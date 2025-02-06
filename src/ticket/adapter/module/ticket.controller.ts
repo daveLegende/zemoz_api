@@ -21,7 +21,7 @@ import {
 import { IDParamDTO } from 'adapter/dto';
 import { RegisterAccoutDTO, DocUserOutputDTO } from 'user/adapter/dto';
 import { TicketFactory } from '../ticket.factory';
-import { ITicketController, ITicketService } from 'src/Ticket/app/module';
+import { ITicketController, ITicketService } from 'src/ticket/app/module';
 import { Ticket } from 'src/ticket/domain';
 import { TicketAccoutDTO, UpdateTicketDTO } from '../dto';
 import { DocTicketOutputDTO } from '../dto/doc.ticket.dto';

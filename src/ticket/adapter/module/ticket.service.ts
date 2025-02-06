@@ -6,7 +6,7 @@ import {
     Logger,
     NotFoundException,
   } from '@nestjs/common';
-import { ITicketService } from 'src/Ticket/app/module';
+import { ITicketService } from 'src/ticket/app/module';
 import { ITicketRepository, Ticket } from 'src/ticket/domain';
 import { TicketAccoutDTO, UpdateTicketDTO } from '../dto';
 import { TicketFactory } from '../ticket.factory';

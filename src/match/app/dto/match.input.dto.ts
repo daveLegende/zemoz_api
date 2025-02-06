@@ -24,6 +24,10 @@ export interface ICreateMatchDTO {
   
   poule?: string;
 
+  isProlongation?: boolean;
+
+  teamQualify?: string;
+
 }
 export interface IUpdateMatchDTO extends Partial<ICreateMatchDTO> {
   id: string;

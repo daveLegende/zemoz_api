@@ -71,4 +71,10 @@ export class MatchEntity extends ATimestamp implements Match {
 
     @OneToMany(() => BetEntity, (bet) => bet.match)
     bets?: BetEntity[];
+
+    @Column({ nullable: true, default: false })
+    isProlongation?: boolean;
+
+    @Column({ nullable: true })
+    teamQualify?: string;
 }

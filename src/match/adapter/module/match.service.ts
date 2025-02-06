@@ -342,6 +342,17 @@ import { MatchGateway } from './match.gateway';
             }
           }
 
+          // Gestion de la prolongation et qualification en PHASE FINALE
+          if (match.type === MatchType.HUITIEME || match.type === MatchType.QUART || match.type === MatchType.DEMI || match.type === MatchType.FINALE) {
+            if (match.scores.home === match.scores.away) {
+                match.isProlongation = true;
+                match.teamQualify = null; // Pas encore de qualifié
+            } else {
+                match.isProlongation = false;
+                match.teamQualify = match.scores.home > match.scores.away ? match.home.id : match.away.id;
+            }
+          }
+
           // Mise à jour des équipes dans la base de données
           await this.teamRepository.teams.update(home);
           await this.teamRepository.teams.update(away);  // Correction de `home` à `away`

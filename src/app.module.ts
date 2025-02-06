@@ -34,6 +34,7 @@ import { TransactionModule } from './transactions/adapter/module';
 import { PasswordModule } from './password/password.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ForgotPassModule } from './forgotpass/adapter/module';
+import { TournoiModule } from './tournoi/adapter/module';
 // import { TasksModule } from './tasks/task.module';
 
 @Module({
@@ -59,6 +60,7 @@ import { ForgotPassModule } from './forgotpass/adapter/module';
     TransactionModule,
     PasswordModule,
     ForgotPassModule,
+    TournoiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
