@@ -2,10 +2,7 @@
 import { OnApplicationBootstrap, Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { IEvent } from 'app/abstract/generic.event';
-import { ApiKeyManager } from 'config/api-key';
 import { AxiosRest } from 'framework/rest.adapter';
-import { AppEnum } from 'project/domain/project.enum';
-import { IApiKey } from 'project/domain/project.interface';
 import { Admin } from 'src/admin/domain';
 import { ICreateAdminDTO } from 'src/admin/app/dto';
 
@@ -29,14 +26,14 @@ class GenericAuthAPI {
     'x-api-key': undefined,
   };
 
-  constructor(path?: string) {
-    const apis = <IApiKey>ApiKeyManager.getKeys(AppEnum.CORE);
-    this.axiosAdapter = new AxiosRest(axios);
-    if (apis?.key && apis?.api) {
-      this._apiUrl = path ? `${apis.api}/${path}` : apis.api;
-      this.API_HEADERS['x-api-key'] = apis.key;
-    }
-  }
+  // constructor(path?: string) {
+  //   const apis = <IApiKey>ApiKeyManager.getKeys(AppEnum.CORE);
+  //   this.axiosAdapter = new AxiosRest(axios);
+  //   if (apis?.key && apis?.api) {
+  //     this._apiUrl = path ? `${apis.api}/${path}` : apis.api;
+  //     this.API_HEADERS['x-api-key'] = apis.key;
+  //   }
+  // }
 
   async signin(data: ICreateAdminDTO) {
     return this.axiosAdapter.post(`${this._apiUrl}/signin`, data, {
@@ -52,12 +49,6 @@ class GenericAuthAPI {
 
   async tokenLogin(token: string, permission?: string) {
     return this._admin; // ! remove this
-    const headers = {
-      ...this.API_HEADERS,
-      'x-permission': permission,
-      Authorization: `Bearer ${token}`,
-    };
-    return this.axiosAdapter.post(`${this._apiUrl}/token.signin`, { headers });
   }
 }
 

@@ -9,12 +9,9 @@ import * as winston from 'winston';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { HttpExceptionFilter } from 'adapter/exception/http-exception.filter';
-import { ProjectApiModule } from 'project/framework/API';
-import { ApiKeySeedModule } from 'project/framework/seeds/seeds.module';
 import { UserModule } from './user/adapter/module/user';
 import { AuthModule } from './user/adapter/module/auth';
 import { SeedsModule } from 'framework/seed/seeds.module';
-import { TodoModule } from 'todo/todo.module';
 import { PlayerModule } from './player/adapter/module';
 import { TeamModule } from './team/adapter/module';
 import { PouleModule } from './poule/adapter/module';
@@ -43,7 +40,6 @@ import { TournoiModule } from './tournoi/adapter/module';
     AuthModule,
     AdminModule,
     AdminAuthModule,
-    TodoModule, 
     PlayerModule, 
     TeamModule,
     PouleModule,
@@ -118,8 +114,6 @@ export class IAppModule {}
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
     }),
     ScheduleModule.forRoot(),
-    ProjectApiModule,
-    ApiKeySeedModule,
     SeedsModule,
     IAppModule,
   ],
