@@ -18,18 +18,23 @@ const socket_io_1 = require("socket.io");
 const dto_1 = require("../dto");
 const module_1 = require("../../app/module");
 const module_2 = require("../../../coupon/app/module");
+const user_1 = require("../../../user/app/module/user");
+const module_3 = require("../../../paris/app/module");
+const typeorm_1 = require("typeorm");
+const domain_1 = require("../../domain");
 let MatchGateway = class MatchGateway {
-    constructor(matchService, couponService) {
+    constructor(matchService, couponService, parisService, entityManager, userService) {
         this.matchService = matchService;
         this.couponService = couponService;
+        this.parisService = parisService;
+        this.entityManager = entityManager;
+        this.userService = userService;
     }
     async handleScoreUpdate(updateScoreDto) {
         try {
             const updatedMatch = await this.matchService.updateScore(updateScoreDto);
             console.log('Match mis à jour:', updatedMatch);
             this.server.emit('scoreUpdated', updatedMatch);
-            const couponStatus = await this.couponService.validatePendingCoupons();
-            this.server.emit('couponStatusCheck', couponStatus);
         }
         catch (error) {
             console.error('Erreur lors de la mise à jour du score:', error.message);
@@ -39,34 +44,51 @@ let MatchGateway = class MatchGateway {
     async handleStateUpdate(updateStateDto) {
         const updatedMatch = await this.matchService.updateState(updateStateDto);
         this.server.emit('stateUpdated', updatedMatch);
-        const couponStatus = await this.couponService.validatePendingCoupons();
-        this.server.emit('couponStatusCheck', couponStatus);
+        this.handleCustomState(updatedMatch.id, 'state');
     }
     async handleListenForUpdates(client) {
-        this.server.on('scoreUpdated', (updatedMatch) => {
-            this.handleCustomState(updatedMatch, 'score');
-        });
         this.server.on('stateUpdated', (updatedMatch) => {
             this.handleCustomState(updatedMatch, 'state');
         });
         client.emit('listeningStarted', { success: true });
     }
-    async handleCustomState(matchData, triggerType) {
+    async handleCustomState(matchId, triggerType) {
         try {
-            const customState = {
-                matchId: matchData.id,
-                trigger: triggerType,
-                timestamp: new Date(),
-                status: 'custom_state_triggered',
-                data: matchData
-            };
-            this.server.emit('customStateUpdated', customState);
-            console.log(`Nouvel état personnalisé émis pour le match ${matchData.id}`);
+            const pendingBets = await this.parisService.getPendingParisForMatch(matchId);
+            const match = await this.matchService.fetchOne(matchId);
+            const { home: homeScore, away: awayScore } = match.scores;
+            const matchResult = homeScore > awayScore ? 'V1' :
+                homeScore < awayScore ? 'V2' : 'X';
+            if (match.etat === domain_1.MatchState.TERMINER) {
+                await this.entityManager.transaction(async (transactionalEntityManager) => {
+                    for (const bet of pendingBets) {
+                        const isWinningBet = bet.type === matchResult;
+                        bet.isWon = isWinningBet;
+                        bet.state = isWinningBet ? 'Won' : 'Lost';
+                        if (isWinningBet) {
+                            const user = await this.userService.fetchOne(bet.user.id);
+                            user.solde += bet.potentialGain;
+                            await transactionalEntityManager.save(user);
+                            bet.isPaid = true;
+                        }
+                        await transactionalEntityManager.save(bet);
+                    }
+                });
+                this.server.emit('customStateUpdated', {
+                    matchId: matchId,
+                    trigger: triggerType,
+                    timestamp: new Date(),
+                    status: 'custom_state_triggered',
+                    processedBets: pendingBets.length,
+                    data: matchId
+                });
+                console.log(`Pari traités pour le match ${matchId}`);
+            }
         }
         catch (error) {
-            console.error('Erreur dans handleCustomState:', error.message);
+            console.error('Erreur dans handleCustomState:', error);
             this.server.emit('error', {
-                message: 'Erreur lors du traitement de l\'état personnalisé',
+                message: 'Erreur lors du traitement des paris',
                 details: error.message
             });
         }
@@ -99,7 +121,10 @@ __decorate([
 MatchGateway = __decorate([
     (0, websockets_1.WebSocketGateway)(81, { transports: ['websocket'] }),
     __metadata("design:paramtypes", [module_1.IMatchService,
-        module_2.ICouponService])
+        module_2.ICouponService,
+        module_3.IParisService,
+        typeorm_1.EntityManager,
+        user_1.IUserService])
 ], MatchGateway);
 exports.MatchGateway = MatchGateway;
 //# sourceMappingURL=match.gateway.js.map

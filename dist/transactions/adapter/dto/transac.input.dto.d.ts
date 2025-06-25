@@ -1,9 +1,11 @@
 import { TransactionType } from "src/transactions/domain/";
 export declare class TransactionAccountDto {
     amount: number;
+    frais: number;
     type: TransactionType;
     phone: string;
     admin?: string;
+    user?: string;
 }
 declare const UpdateTransactionDTO_base: import("@nestjs/common").Type<Partial<TransactionAccountDto>>;
 export declare class UpdateTransactionDTO extends UpdateTransactionDTO_base {

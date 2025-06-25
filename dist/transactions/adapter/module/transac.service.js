@@ -77,9 +77,11 @@ let TransactionService = class TransactionService {
             const verifyPass = await hash_factory_1.HashFactory.isRightPwd(pass.pass, pwd[0].pass);
             if (!verifyPass)
                 throw new common_1.BadRequestException("Mot de pass incorrecte");
+            const pourcentage = amount * (2 / 100);
             if (type === domain_1.TransactionType.DEPOT) {
-                userE.solde += amount;
-                const transac = await this.transactionRepository.transactions.create(await transac_factory_1.TransactionFactory.create(data, adminE));
+                userE.solde += amount - pourcentage;
+                data.frais = pourcentage;
+                const transac = await this.transactionRepository.transactions.create(await transac_factory_1.TransactionFactory.create(data, adminE, userE));
                 await this.userRepository.users.update(userE);
                 return transac;
             }
@@ -87,7 +89,7 @@ let TransactionService = class TransactionService {
                 if (userE.solde < amount)
                     throw new common_1.BadRequestException("Solde insuffisant");
                 userE.solde -= amount;
-                const transac = await this.transactionRepository.transactions.create(await transac_factory_1.TransactionFactory.create(data, adminE));
+                const transac = await this.transactionRepository.transactions.create(await transac_factory_1.TransactionFactory.create(data, adminE, userE));
                 await this.userRepository.users.update(userE);
                 return transac;
             }

@@ -1,5 +1,5 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
-import { IsArray, IsDate, IsEnum, IsInt, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsArray, IsDate, IsEnum, IsInt, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 import { TransactionType } from "src/transactions/domain/";
 
 export class TransactionAccountDto {
@@ -10,8 +10,17 @@ export class TransactionAccountDto {
         description: 'montant du ticket',
         required: true,
     })
-    @IsInt()
+    @IsNumber()
     amount: number;
+
+    @ApiProperty({
+        type: Number,
+        name: 'frais',
+        description: 'Frais de pourcentage',
+        required: true,
+    })
+    @IsNumber()
+    frais: number;
 
     @ApiProperty({ description: 'DEPOT ou RETRAIT', enum: TransactionType })
     @IsEnum(TransactionType)
@@ -26,6 +35,12 @@ export class TransactionAccountDto {
     @IsOptional()
     @IsString()
     admin?: string;
+
+    @ApiProperty({ description: 'Id de l\'user', type: String })
+    @IsUUID()
+    @IsOptional()
+    @IsString()
+    user?: string;
 }
 
 export class UpdateTransactionDTO extends PartialType(TransactionAccountDto) {

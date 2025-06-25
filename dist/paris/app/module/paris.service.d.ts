@@ -8,4 +8,6 @@ export declare abstract class IParisService {
     abstract setState(id: string): Promise<boolean>;
     abstract search(data: Partial<Paris>): Promise<Paris>;
     abstract remove(id: string): Promise<boolean>;
+    abstract getPendingParisForMatch(matchId: string): Promise<Paris[]>;
+    abstract updateParisStatus(parisId: string, status: string, isWon: boolean): Promise<boolean>;
 }

@@ -78,10 +78,13 @@ import { Repository } from 'typeorm';
 
         if (!verifyPass) throw new BadRequestException("Mot de pass incorrecte");
 
+        const pourcentage = amount * (2/100);
+
         if (type === TransactionType.DEPOT) {
-          userE.solde += amount;
+          userE.solde += amount - pourcentage;
+          data.frais = pourcentage;
           const transac = await this.transactionRepository.transactions.create(
-            await TransactionFactory.create(data, adminE),
+            await TransactionFactory.create(data, adminE, userE),
           );
           await this.userRepository.users.update(userE);
           return transac;
@@ -89,7 +92,7 @@ import { Repository } from 'typeorm';
           if (userE.solde < amount) throw new BadRequestException("Solde insuffisant");
           userE.solde -= amount;
           const transac = await this.transactionRepository.transactions.create(
-            await TransactionFactory.create(data, adminE),
+            await TransactionFactory.create(data, adminE, userE),
           );
           await this.userRepository.users.update(userE);
           return transac;

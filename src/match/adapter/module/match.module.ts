@@ -16,6 +16,9 @@ import { UserRepositoryModule } from 'user/framework/database/user.repository.mo
 import { CouponModule } from 'src/coupon/adapter/module';
 import { CouponRepositoryModule } from 'src/coupon/framework/coupon.module.repository';
 import { ParisRepositoryModule } from 'src/paris/framework/paris.module.repository';
+import { ParisModule } from 'src/paris/adapter/module';
+import { UserModule } from 'user/adapter/module/user';
+import { EntityManager } from 'typeorm';
 
 
 @Module({
@@ -31,6 +34,11 @@ import { ParisRepositoryModule } from 'src/paris/framework/paris.module.reposito
     AdminRepositoryModule, 
     AdminAuthApiModule,
     CouponRepositoryModule,
+    ParisRepositoryModule,
+    UserRepositoryModule,
+    ParisModule,
+    UserModule,
+    EntityManager,
     ParisRepositoryModule,
     CouponModule,
   ],

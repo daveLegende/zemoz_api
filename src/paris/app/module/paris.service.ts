@@ -17,7 +17,7 @@ export abstract class IParisService {
 
   abstract remove(id: string): Promise<boolean>;
 
-  // abstract getPendingParisForMatch(matchId: string): Promise<Paris[]>;
+  abstract getPendingParisForMatch(matchId: string): Promise<Paris[]>;
 
-  // abstract updateParisStatus(parisId: string, status: string, isWon: boolean): Promise<void>;
+  abstract updateParisStatus(parisId: string, status: string, isWon: boolean): Promise<boolean>;
 }

@@ -30,20 +30,29 @@ __decorate([
         description: 'montant du ticket',
         required: true,
     }),
-    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], DocTransactionOutputDto.prototype, "amount", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        type: Number,
+        name: 'frais',
+        description: 'Frais de pourcentage',
+        required: true,
+    }),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], DocTransactionOutputDto.prototype, "frais", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: 'DEPOT ou RETRAIT', enum: domain_1.TransactionType }),
     (0, class_validator_1.IsEnum)(domain_1.TransactionType),
     __metadata("design:type", String)
 ], DocTransactionOutputDto.prototype, "type", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'id du user', type: String }),
-    (0, class_validator_1.IsUUID)(),
+    (0, swagger_1.ApiProperty)({ description: 'phone du user', type: String }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], DocTransactionOutputDto.prototype, "user", void 0);
+], DocTransactionOutputDto.prototype, "phone", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: 'Id de l\'admin', type: String }),
     (0, class_validator_1.IsUUID)(),
@@ -51,5 +60,12 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], DocTransactionOutputDto.prototype, "admin", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Id de l\'user', type: String }),
+    (0, class_validator_1.IsUUID)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], DocTransactionOutputDto.prototype, "user", void 0);
 exports.DocTransactionOutputDto = DocTransactionOutputDto;
 //# sourceMappingURL=doc.transac.dto.js.map

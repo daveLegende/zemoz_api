@@ -17,4 +17,6 @@ export declare class ParisService implements IParisService {
     edit(data: UpdateParisDTO): Promise<Paris>;
     setState(id: string): Promise<boolean>;
     remove(id: string): Promise<boolean>;
+    getPendingParisForMatch(id: string): Promise<Paris[]>;
+    updateParisStatus(id: string): Promise<boolean>;
 }

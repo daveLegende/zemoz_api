@@ -3,12 +3,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TransactionFactory = void 0;
 const domain_1 = require("../domain");
 class TransactionFactory {
-    static async create(data, admin) {
+    static async create(data, admin, user) {
         const transaction = new domain_1.Transaction();
         transaction.phone = data.phone;
         transaction.admin = admin;
         transaction.amount = data.amount;
         transaction.type = data.type;
+        transaction.user = user;
+        transaction.frais = data.frais;
         return transaction;
     }
     static update(transaction, data) {
@@ -17,6 +19,8 @@ class TransactionFactory {
         transaction.amount = (_b = data.amount) !== null && _b !== void 0 ? _b : transaction.amount;
         transaction.phone = transaction.phone;
         transaction.admin = transaction.admin;
+        transaction.frais = transaction.frais;
+        transaction.user = transaction.user;
         return transaction;
     }
     static getTransaction(transaction) {
@@ -27,6 +31,8 @@ class TransactionFactory {
                 amount: transaction.amount,
                 phone: transaction.phone,
                 admin: transaction.admin,
+                user: transaction.user,
+                frais: transaction.frais,
                 createdAt: transaction.createdAt,
                 updatedAt: transaction.updatedAt,
                 deletedAt: transaction.deletedAt

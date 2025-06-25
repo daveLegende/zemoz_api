@@ -25,6 +25,9 @@ const user_repository_module_1 = require("../../../user/framework/database/user.
 const module_2 = require("../../../coupon/adapter/module");
 const coupon_module_repository_1 = require("../../../coupon/framework/coupon.module.repository");
 const paris_module_repository_1 = require("../../../paris/framework/paris.module.repository");
+const module_3 = require("../../../paris/adapter/module");
+const user_1 = require("../../../user/adapter/module/user");
+const typeorm_1 = require("typeorm");
 let MatchModule = class MatchModule {
 };
 MatchModule = __decorate([
@@ -41,6 +44,11 @@ MatchModule = __decorate([
             admin_repository_module_1.AdminRepositoryModule,
             API_1.AdminAuthApiModule,
             coupon_module_repository_1.CouponRepositoryModule,
+            paris_module_repository_1.ParisRepositoryModule,
+            user_repository_module_1.UserRepositoryModule,
+            module_3.ParisModule,
+            user_1.UserModule,
+            typeorm_1.EntityManager,
             paris_module_repository_1.ParisRepositoryModule,
             module_2.CouponModule,
         ],

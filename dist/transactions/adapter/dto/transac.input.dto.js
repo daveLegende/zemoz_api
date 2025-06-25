@@ -22,9 +22,19 @@ __decorate([
         description: 'montant du ticket',
         required: true,
     }),
-    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], TransactionAccountDto.prototype, "amount", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        type: Number,
+        name: 'frais',
+        description: 'Frais de pourcentage',
+        required: true,
+    }),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], TransactionAccountDto.prototype, "frais", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: 'DEPOT ou RETRAIT', enum: domain_1.TransactionType }),
     (0, class_validator_1.IsEnum)(domain_1.TransactionType),
@@ -42,6 +52,13 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], TransactionAccountDto.prototype, "admin", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Id de l\'user', type: String }),
+    (0, class_validator_1.IsUUID)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], TransactionAccountDto.prototype, "user", void 0);
 exports.TransactionAccountDto = TransactionAccountDto;
 class UpdateTransactionDTO extends (0, swagger_1.PartialType)(TransactionAccountDto) {
 }

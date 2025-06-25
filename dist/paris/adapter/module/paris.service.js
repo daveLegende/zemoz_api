@@ -77,6 +77,8 @@ let ParisService = class ParisService {
                 paris.amount = amount;
                 paris.user = userExisted;
                 paris.potentialGain = amount * currentOdd;
+                userExisted.solde -= amount;
+                await this.userRepository.users.update(userExisted);
                 return await this.parisRepository.paris.create(await paris_factory_1.ParisFactory.create(data, matchExisted, userExisted));
             }
         }
@@ -119,6 +121,48 @@ let ParisService = class ParisService {
         catch (error) {
             this.logger.error(error.message, 'ERROR::betservice.remove');
             return false;
+        }
+    }
+    async getPendingParisForMatch(id) {
+        try {
+            const match = await this.matchRepository.matchs.findOneByID(id);
+            if (!match)
+                throw new common_1.NotFoundException("Aucun match trouvé avec cet ID");
+            const paris = await this.parisRepository.paris.find({
+                where: { match: { id: id } },
+                relations: { match: true, user: true, }
+            });
+            if (paris.length > 0) {
+                return paris;
+            }
+            else {
+                return [];
+            }
+        }
+        catch (error) {
+            this.logger.error(error.message, 'ERROR::betservice.remove');
+            throw error;
+        }
+    }
+    async updateParisStatus(id) {
+        try {
+            const match = await this.matchRepository.matchs.findOneByID(id);
+            if (!match)
+                throw new common_1.NotFoundException("Aucun match trouvé avec cet ID");
+            const paris = await this.parisRepository.paris.find({
+                where: { match: { id: id } },
+                relations: { match: true, user: true, }
+            });
+            if (paris.length > 0) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch (error) {
+            this.logger.error(error.message, 'ERROR::betservice.remove');
+            throw error;
         }
     }
 };

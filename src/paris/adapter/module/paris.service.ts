@@ -11,6 +11,7 @@ import { IParisRepository } from 'src/paris/domain/data.abstract';
 import { ParisAccountDto, UpdateParisDTO } from '../dto';
 import { IUserRepository } from 'user/domain';
 import { ParisFactory } from '../paris.factory';
+import { UserFactory } from 'user/adapter/user.factory';
 
 @Injectable()
 export class ParisService implements IParisService {
@@ -81,6 +82,10 @@ export class ParisService implements IParisService {
         paris.user = userExisted;
         paris.potentialGain = amount * currentOdd;
 
+        userExisted.solde -= amount;
+
+        await this.userRepository.users.update(userExisted);
+
         // const existed = await this.parisRepository.paris.findOne({
         //   where: {
         //     user: userExisted,
@@ -140,25 +145,47 @@ export class ParisService implements IParisService {
     }
   }
 
-  // async getPendingParisForMatch(id: string): Promise<Paris[]> {
-  //   try {
+  async getPendingParisForMatch(id: string): Promise<Paris[]> {
+    try {
 
-  //     const match = await this.matchRepository.matchs.findOneByID(id);
+      const match = await this.matchRepository.matchs.findOneByID(id);
 
-  //     if(!match) return new throw NotFoundException("");
-      
+      if(!match) throw new NotFoundException("Aucun match trouvé avec cet ID");
 
-  //     const paris = await this.parisRepository.paris.find({
-  //       where: { match: id },
-  //       relations: { match: true , user: true,}
-  //     });
-  //     if (paris) {
-  //       return await this.parisRepository.paris.remove(paris).then(() => true);
-  //     }
-  //     return false;
-  //   } catch (error) {
-  //     this.logger.error(error.message, 'ERROR::betservice.remove');
-  //     return false;
-  //   }
-  // }
+      const paris = await this.parisRepository.paris.find({
+        where: { match: {id: id} },
+        relations: { match: true , user: true,}
+      });
+      if (paris.length > 0) {
+        return paris;
+      } else {
+        return [];
+      }
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::betservice.remove');
+      throw error;
+    }
+  }
+
+    async updateParisStatus(id: string): Promise<boolean> {
+    try {
+
+      const match = await this.matchRepository.matchs.findOneByID(id);
+
+      if(!match) throw new NotFoundException("Aucun match trouvé avec cet ID");
+
+      const paris = await this.parisRepository.paris.find({
+        where: { match: {id: id} },
+        relations: { match: true , user: true,}
+      });
+      if (paris.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::betservice.remove');
+      throw error;
+    }
+  }
 }

@@ -2,7 +2,9 @@ import { TransactionType } from "src/transactions/domain";
 export declare class DocTransactionOutputDto {
     id: string;
     amount: number;
+    frais: number;
     type: TransactionType;
-    user: string;
+    phone: string;
     admin?: string;
+    user?: string;
 }

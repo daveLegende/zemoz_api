@@ -26,7 +26,7 @@ lib-cov
 coverage/
 
 # Build output
-# dist/
+dist/
 out/
 
 # Dependency directories
