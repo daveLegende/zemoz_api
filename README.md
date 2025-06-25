@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+# zemoz_api
+app of tournament for zemoz corpporation
+=======
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
@@ -164,3 +168,4 @@ $ yarn compodoc
 
 Nest is [MIT licensed](LICENSE).
 
+>>>>>>> 03ed888184a5ce48c6131081c0ab172117d9ba87

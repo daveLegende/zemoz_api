@@ -14,6 +14,7 @@ import { MatchType, MatchState, MatchScores } from 'src/match/domain';
 import { MatchEvent } from 'src/matchEvents/domain';
 import { Poule } from 'src/poule/domain';
 import { Team } from 'src/team/domain';
+import { OddsDTO } from './odds.dto';
 
 export class MatchDocOutputDTO {
   @ApiProperty({ description: 'Identifiant du match', example: '123e4567-e89b-12d3-a456-426614174000' })
@@ -83,4 +84,10 @@ export class MatchDocOutputDTO {
     @IsOptional()
     @IsUUID()
     teamQualify: string;
+
+  @ApiProperty({ description: 'les cotes du match', type: OddsDTO })
+  @ValidateNested()  // Valide l'objet imbriqué
+  @Type(() => OddsDTO)  // Nécessaire pour la transformation class-transformer
+  @IsOptional()
+  odds?: OddsDTO;  // Plus optionnel
 }

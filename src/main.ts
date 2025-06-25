@@ -32,7 +32,7 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   app.setGlobalPrefix('api/v1');
   const config = new DocumentBuilder()
-    .setTitle('INFINITUS STARTER API')
+    .setTitle('ZEMOZ STARTER API')
     .setDescription('The basic nestjs project of infinitus')
     .addTag('API STARTER')
     .addBearerAuth()
@@ -43,7 +43,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   const customOptions: SwaggerCustomOptions = {
     swaggerOptions: { persistAuthorization: true },
-    customSiteTitle: 'Tanguy API',
+    customSiteTitle: 'Zemoz API',
   };
   SwaggerModule.setup('doc', app, document, customOptions);
   const configService = app.get(ConfigService);

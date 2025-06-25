@@ -29,13 +29,15 @@ import { DocUserOutputDTO } from 'user/adapter/dto';
 import { Coupon } from 'src/coupon/domain';
 import { ICouponRepository } from 'src/coupon/domain/data.abstract';
 import { CouponFactory } from 'src/coupon/adapter/coupon.factory';
+import { Paris } from 'src/paris/domain';
+import { IParisRepository } from 'src/paris/domain/data.abstract';
 
 @Injectable()
 export class UserService implements IUserService {
   private readonly logger = new Logger();
   constructor(
     private userRepository: IUserRepository,
-    private fgpRepository: IForgotPassRepository,
+    private parisRepository: IParisRepository,
     private ticketRepository: ITicketRepository,
     private couponRepository: ICouponRepository,
   ) {}
@@ -308,6 +310,31 @@ export class UserService implements IUserService {
       });
 
       return coupons;
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
+      return error;
+    }
+  }
+
+  async getUserParis(id: string): Promise<Paris[]> {
+    try {
+      const user = await this.userRepository.users.findOneByID(id);
+
+      if (!user) {
+        throw new NotFoundException("Utilisateur non trouvé");
+      }
+      
+      const paris = await this.parisRepository.paris.find({
+        where: { 
+          user: { id: user.id } as User,
+          // isDeleted: false,
+       },
+        relations: { 
+          user: true,
+        }
+      });
+
+      return paris;
     } catch (error) {
       this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
       return error;

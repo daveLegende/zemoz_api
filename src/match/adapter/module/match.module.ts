@@ -15,6 +15,7 @@ import { AuthApiModule } from 'user/framework/API';
 import { UserRepositoryModule } from 'user/framework/database/user.repository.module';
 import { CouponModule } from 'src/coupon/adapter/module';
 import { CouponRepositoryModule } from 'src/coupon/framework/coupon.module.repository';
+import { ParisRepositoryModule } from 'src/paris/framework/paris.module.repository';
 
 
 @Module({
@@ -30,6 +31,7 @@ import { CouponRepositoryModule } from 'src/coupon/framework/coupon.module.repos
     AdminRepositoryModule, 
     AdminAuthApiModule,
     CouponRepositoryModule,
+    ParisRepositoryModule,
     CouponModule,
   ],
   controllers: [MatchController],

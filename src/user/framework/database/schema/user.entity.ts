@@ -8,6 +8,7 @@ import { TicketEntity } from 'src/ticket/framework/database/schema/ticket.entity
 import { Coupon } from 'src/coupon/domain';
 import { CouponEntity } from 'src/coupon/framework/schema/coupon.entity';
 import { TransactionEntity } from 'src/transactions/framework/database/schema/transac.entity';
+import { ParisEntity } from 'src/paris/framework/schema/paris.entity';
 
 @Entity('user')
 @Index(['email'], { unique: true, where: `deleted_at IS NULL` })
@@ -57,4 +58,7 @@ export class UserEntity extends ATimestamp implements User {
 
   @OneToMany(() => CouponEntity, (coupon) => coupon.user, { nullable: true,  onDelete: 'CASCADE' })
   bets?: CouponEntity[];
+
+  @OneToMany(() => ParisEntity, (paris) => paris.user, { nullable: true,  onDelete: 'CASCADE' })
+  paris?: ParisEntity[];
 }

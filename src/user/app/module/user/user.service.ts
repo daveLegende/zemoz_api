@@ -1,4 +1,5 @@
 import { Coupon } from 'src/coupon/domain';
+import { Paris } from 'src/paris/domain';
 import { Ticket } from 'src/ticket/domain';
 import { IChangePasswordDTO, ICreateUserDTO, IDeleteUserBetOrTicketDTO, IReinitialisePassDTO, IUpdateUserDTO } from 'user/app/dto';
 import { User } from 'user/domain';
@@ -31,6 +32,8 @@ export abstract class IUserService {
   abstract getUserTickets(id: string): Promise<Ticket[]>;
 
   abstract getUserBets(id: string): Promise<Coupon[]>;
+
+  abstract getUserParis(id: string): Promise<Paris[]>;
 
   abstract deleteUserBet(data: IDeleteUserBetOrTicketDTO): Promise<boolean>;
 

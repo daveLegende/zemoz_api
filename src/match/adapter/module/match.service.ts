@@ -88,7 +88,7 @@ import { MatchGateway } from './match.gateway';
 
         console.log('Données reçues :', data); // `data` étant l'objet JSON reçu par l'API
 
-        const { away, home, arbitres, type, poule } = data;
+        const { away, home, arbitres, type, odds, poule } = data;
         // const existed = await this.matchRepository.matchs.findOne({ where: {
         //   home: home,
         //   away: away,

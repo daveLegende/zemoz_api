@@ -13,6 +13,7 @@ import {
 } from 'class-validator';
 import { MatchScores, MatchState, MatchType } from 'src/match/domain';
 import { MatchEvent } from 'src/matchEvents/domain';
+import { OddsDTO } from './odds.dto';
 
 export class MatchAccoutDTO {
   // @ApiProperty({ description: 'Identifiant du match', example: '123e4567-e89b-12d3-a456-426614174000' })
@@ -83,13 +84,19 @@ export class MatchAccoutDTO {
   // @ValidateNested()
   // @Type(() => Team)
   @IsBoolean()
-  isProlongation: boolean;
+  isProlongation?: boolean;
 
   @ApiProperty({ description: 'Id de team qui est qualifiée', type: String }) 
   @IsOptional()
   @IsString()
   @IsUUID()
-  teamQualify: string;
+  teamQualify?: string;
+
+  @ApiProperty({ description: 'les cotes du match', type: OddsDTO })
+  @ValidateNested()  // Valide l'objet imbriqué
+  @Type(() => OddsDTO)  // Nécessaire pour la transformation class-transformer
+  @IsOptional()
+  odds?: OddsDTO;  // Plus optionnel
 }
 
 export class UpdateMatchDTO extends PartialType(MatchAccoutDTO) {

@@ -8,6 +8,8 @@ import { MatchEventEntity } from 'src/matchEvents/framework/database/schema/matc
 import { PrononsticEntity } from 'src/prononstic/framework/database/schema/prono.entity';
 import { BetEntity } from 'src/bet/framework/schema/bet.entity';
 import { TicketEntity } from 'src/ticket/framework/database/schema/ticket.entity';
+import { OddsDTO } from 'src/match/adapter/dto/odds.dto';
+import { ParisEntity } from 'src/paris/framework/schema/paris.entity';
 
 @Entity('matchs')
 // @Index(['email'], { unique: true, where: `deleted_at IS NULL` })
@@ -72,9 +74,24 @@ export class MatchEntity extends ATimestamp implements Match {
     @OneToMany(() => BetEntity, (bet) => bet.match)
     bets?: BetEntity[];
 
+    @OneToMany(() => ParisEntity, (paris) => paris.match)
+    paris?: ParisEntity[];
+
     @Column({ nullable: true, default: false })
     isProlongation?: boolean;
 
     @Column({ nullable: true })
     teamQualify?: string;
+
+    // @Column({ nullable: true })
+    // odds?: OddsDTO;
+    @Column('jsonb', { 
+        nullable: true,
+        default: { V1: 1.0, X: 1.0, V2: 1.0 } 
+    })
+    odds: {
+        V1: number;
+        X: number;
+        V2: number;
+    };
 }

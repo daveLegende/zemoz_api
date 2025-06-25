@@ -48,6 +48,7 @@ import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
 import { Ticket } from 'src/ticket/domain';
 import { AuthGuard } from '@nestjs/passport';
 import { Coupon } from 'src/coupon/domain';
+import { Paris } from 'src/paris/domain';
 
 @ApiTags('Users management')
 // @ApiBearerAuth()
@@ -260,6 +261,12 @@ export class UserController implements IUserController {
   // @ApiResponse({ type: DocUserOutputDTO })
   async getUserBets(@Param() { id }: IDParamDTO): Promise<Coupon[]> {
     return await this.userService.getUserBets(id);
+  }
+
+  @Get('paris/:id')
+  // @ApiResponse({ type: DocUserOutputDTO })
+  async getUserParis(@Param() { id }: IDParamDTO): Promise<Paris[]> {
+    return await this.userService.getUserParis(id);
   }
 
   @Post('bet/delete')
