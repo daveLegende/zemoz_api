@@ -47,7 +47,7 @@ async function bootstrap() {
   };
   SwaggerModule.setup('doc', app, document, customOptions);
   const configService = app.get(ConfigService);
-  const PORT = configService.get<number>('APP_PORT');
+  const PORT = process.env.PORT || configService.get<number>('APP_PORT')  || 3333;
   await app.listen(PORT, () => {
     const logger = new Logger('STARTER::API');
     logger.log(

@@ -37,7 +37,7 @@ async function bootstrap() {
     };
     swagger_1.SwaggerModule.setup('doc', app, document, customOptions);
     const configService = app.get(config_1.ConfigService);
-    const PORT = configService.get('APP_PORT');
+    const PORT = process.env.PORT || configService.get('APP_PORT') || 3333;
     await app.listen(PORT, () => {
         const logger = new common_1.Logger('STARTER::API');
         logger.log(`API successfully started on port ${PORT} at ${new Date().toISOString()}`);
