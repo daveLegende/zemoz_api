@@ -1,0 +1,1 @@
+//# sourceMappingURL=event.adapter.js.map

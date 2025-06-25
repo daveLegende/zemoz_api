@@ -1,0 +1,34 @@
+import { ChangePassAccountDTO, DeleteUserBetDTO, DeleteUserTicketDTO, RegisterAccoutDTO, ReinitialisePassAccountDTO, UpdateUserDTO } from 'user/adapter/dto/user.input.dto';
+import { IUserService } from 'user/app/module/user';
+import { User } from 'user/domain';
+import { IUserRepository } from 'user/domain/data.abstract';
+import { ITicketRepository, Ticket } from 'src/ticket/domain';
+import { Coupon } from 'src/coupon/domain';
+import { ICouponRepository } from 'src/coupon/domain/data.abstract';
+import { Paris } from 'src/paris/domain';
+import { IParisRepository } from 'src/paris/domain/data.abstract';
+export declare class UserService implements IUserService {
+    private userRepository;
+    private parisRepository;
+    private ticketRepository;
+    private couponRepository;
+    private readonly logger;
+    constructor(userRepository: IUserRepository, parisRepository: IParisRepository, ticketRepository: ITicketRepository, couponRepository: ICouponRepository);
+    fetchAll(): Promise<User[]>;
+    fetchOne(id: string): Promise<User>;
+    search(data: Partial<User>): Promise<User>;
+    add(data: RegisterAccoutDTO): Promise<User>;
+    edit(data: UpdateUserDTO): Promise<User>;
+    setState(id: string): Promise<boolean>;
+    remove(id: string): Promise<boolean>;
+    fetchByEmail(email: string): Promise<User>;
+    fetchByPhone(phone: string): Promise<User>;
+    reinitialisePass(data: ReinitialisePassAccountDTO): Promise<User>;
+    changePass(data: ChangePassAccountDTO): Promise<User>;
+    getUserTickets(id: string): Promise<Ticket[]>;
+    deleteUserTicket(data: DeleteUserTicketDTO): Promise<boolean>;
+    getUserBets(id: string): Promise<Coupon[]>;
+    getUserParis(id: string): Promise<Paris[]>;
+    deleteUserBet(data: DeleteUserBetDTO): Promise<boolean>;
+    getCurrentUser(id: string): Promise<User>;
+}
