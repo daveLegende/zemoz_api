@@ -4,6 +4,8 @@ import { UpdateMatchScoreEventDto, UpdateStateDto } from '../dto';
 import { IMatchService } from 'src/match/app/module';
 import { Logger } from '@nestjs/common';
 import { ICouponService } from 'src/coupon/app/module';
+import { IUserService } from 'user/app/module/user';
+import { IParisService } from 'src/paris/app/module';
 
 // @WebSocketGateway(81, { transports: ['websocket'] })
 // export class MatchGateway {
@@ -73,6 +75,8 @@ export class MatchGateway {
   constructor(
     private readonly matchService: IMatchService,
     private readonly couponService: ICouponService,
+    // private readonly parisService: IParisService,
+    // private readonly serService: IUserService,
   ) {}
 
   @SubscribeMessage('updateScore')
@@ -101,5 +105,59 @@ export class MatchGateway {
 
     const couponStatus = await this.couponService.validatePendingCoupons();
     this.server.emit('couponStatusCheck', couponStatus);
+  }
+
+  @SubscribeMessage('listenForUpdates')
+  async handleListenForUpdates(client: any) {
+    // Écoute l'événement scoreUpdated
+    this.server.on('scoreUpdated', (updatedMatch) => {
+      this.handleCustomState(updatedMatch, 'score');
+    });
+
+    // Écoute l'événement stateUpdated
+    this.server.on('stateUpdated', (updatedMatch) => {
+      this.handleCustomState(updatedMatch, 'state');
+    });
+
+    // Accusé de réception
+    client.emit('listeningStarted', { success: true });
+  }
+
+  private async handleCustomState(matchData: any, triggerType: string) {
+    try {
+      // 1. Récupérer tous les paris en pending pour ce match
+      // const pendingBet = await this.parisService.paris.find();
+      // 2. Déterminer le résultat du match
+
+      // 3. Traiter chaque pari
+
+        // Mettre à jour le statut du pari
+
+        // Si le pari est gagnant, mettre à jour le portefeuille
+
+      // Émettre un événement global
+
+      // Créer votre nouvel état personnalisé ici
+      const customState = {
+        matchId: matchData.id,
+        trigger: triggerType,
+        timestamp: new Date(),
+        status: 'custom_state_triggered',
+        data: matchData
+      };
+
+      // Émettre le nouvel état
+      this.server.emit('customStateUpdated', customState);
+      
+      // Log pour le débogage
+      console.log(`Nouvel état personnalisé émis pour le match ${matchData.id}`);
+
+    } catch (error) {
+      console.error('Erreur dans handleCustomState:', error.message);
+      this.server.emit('error', { 
+        message: 'Erreur lors du traitement de l\'état personnalisé',
+        details: error.message
+      });
+    }
   }
 }

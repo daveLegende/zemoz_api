@@ -3,6 +3,7 @@
 
 import { IIDParamDTO } from 'app/dto';
 import { Coupon } from 'src/coupon/domain';
+import { Paris } from 'src/paris/domain';
 import { Ticket } from 'src/ticket/domain';
 import { DeleteUserBetDTO, DeleteUserTicketDTO, DocUserOutputDTO } from 'user/adapter/dto';
 import { IChangePasswordDTO, ICreateUserDTO, IReinitialisePassDTO, IUpdateUserDTO } from 'user/app/dto/user.input.dto';
@@ -32,6 +33,8 @@ export abstract class IUserController {
   abstract getUserTickets(param: IIDParamDTO): Promise<Ticket[]>;
 
   abstract getUserBets(param: IIDParamDTO): Promise<Coupon[]>;
+
+  abstract getUserParis(param: IIDParamDTO): Promise<Paris[]>;
 
   abstract deleteUserBet(data: DeleteUserBetDTO, file?: any): Promise<boolean>;
 

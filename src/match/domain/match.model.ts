@@ -7,6 +7,7 @@ import { Arbitre } from 'src/arbitre/domain';
 import { MatchEvent } from 'src/matchEvents/domain';
 import { Bet } from 'src/bet/domain';
 import { Ticket } from 'src/ticket/domain';
+import { Paris } from 'src/paris/domain';
 
 export class Match extends ITimestamp {
   id: string;
@@ -22,8 +23,15 @@ export class Match extends ITimestamp {
   events?: MatchEvent[];
   poule?: Poule;
   bets?: Bet[];
+  paris?: Paris[];
   isProlongation?: boolean;
   teamQualify?: string;
+
+  odds?: {
+    V1: number;  // Cote pour la victoire à domicile
+    X: number;   // Cote pour le match nul
+    V2: number;  // Cote pour la victoire à l'extérieur
+  }
 
   // getArbitreIds(): string[] {
   //   return this.arbitres.map(arbitre => arbitre.id);

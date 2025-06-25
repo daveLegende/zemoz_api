@@ -13,6 +13,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { UserGuard } from 'user/adapter/guard/auth.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CouponRepositoryModule } from 'src/coupon/framework/coupon.module.repository';
+import { ParisRepositoryModule } from 'src/paris/framework/paris.module.repository';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { CouponRepositoryModule } from 'src/coupon/framework/coupon.module.repos
     AdminAuthApiModule,
     TicketRepositoryModule,
     CouponRepositoryModule,
+    ParisRepositoryModule,
   ],
   controllers: [UserController],
   providers: [{ provide: IUserService, useClass: UserService }],

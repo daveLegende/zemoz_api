@@ -27,6 +27,13 @@ export interface ICreateMatchDTO {
   isProlongation?: boolean;
 
   teamQualify?: string;
+  
+  // Ajoutez les cotes (optionnelles si vous voulez les rendre obligatoires plus tard)
+  odds?: {
+    V1: number;  // Cote pour la victoire à domicile (ex: 1.80)
+    X: number;   // Cote pour le match nul (ex: 3.50)
+    V2: number;  // Cote pour la victoire à l'extérieur (ex: 4.20)
+  };
 
 }
 export interface IUpdateMatchDTO extends Partial<ICreateMatchDTO> {

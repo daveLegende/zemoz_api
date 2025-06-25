@@ -3,7 +3,7 @@ import { ICreateMatchDTO, IUpdateMatchDTO } from "../app/dto";
 import { Match, MatchScores } from "../domain";
 import { Arbitre } from "src/arbitre/domain";
 import { Poule } from "src/poule/domain";
-import {  UpdateMatchScoreEventDto, UpdateStateDto } from "./dto";
+import {  UpdateMatchScoreEventDto, UpdateOddsStateDto, UpdateStateDto } from "./dto";
 
 export abstract class MatchFactory {
   static async create(data: ICreateMatchDTO, referees: Arbitre[], home: Team, away: Team, poule: Poule): Promise<Match> {
@@ -25,6 +25,15 @@ export abstract class MatchFactory {
     match.events = data.events;
     match.poule = poule;
 
+    // Ajoutez les odds si ils existent dans le DTO
+    if (data.odds) {
+      match.odds = {
+        V1: data.odds.V1,
+        X: data.odds.X,
+        V2: data.odds.V2,
+      };
+    }
+
     console.log(match.away);
     
     return match;
@@ -45,6 +54,7 @@ export abstract class MatchFactory {
     match.events = data.events ?? match.events;
     match.scores = /*data.scores ??*/ match.scores;
     match.poule = /*data.poule ??*/ match.poule;
+    match.odds = data.odds ?? match.odds;
 
     return match;
   }
@@ -62,6 +72,13 @@ export abstract class MatchFactory {
     // match.scores.home = data.homeScore ?? match.scores.home;
     // match.scores.away = data.awayScore ?? match.scores.away;
     // match.poule = data.poule ?? match.poule;
+
+    return match;
+  }
+
+
+  static updateOdds(match: Match, data: UpdateOddsStateDto): Match {
+    match.odds = data.odds ?? match.odds;
 
     return match;
   }
@@ -85,6 +102,7 @@ export abstract class MatchFactory {
         poule: match.poule,
         isProlongation: match.isProlongation,
         teamQualify: match.teamQualify,
+        odds: match.odds,
         createdAt: match.createdAt,
         updatedAt: match.updatedAt,
         deletedAt: match.deletedAt
