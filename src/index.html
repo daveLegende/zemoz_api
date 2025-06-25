@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Web avec Socket.IO</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <h1>Mises à jour des matchs</h1>
+    <div>
+        <h2>Mise à jour du score :</h2>
+        <p id="scoreUpdate">Aucune mise à jour</p>
+    </div>
+    <div>
+        <h2>État mis à jour :</h2>
+        <p id="stateUpdate">Aucun état mis à jour</p>
+    </div>
+    <div>
+        <h2>Statut des coupons :</h2>
+        <p id="couponStatus">Aucun statut de coupon</p>
+    </div>
+
+    <script>
+        const socket = io('http://localhost:81'); // Changez l'URL si nécessaire
+
+        socket.on('connect', () => {
+            console.log('Connecté au serveur');
+        });
+
+        socket.on('scoreUpdated', (data) => {
+            document.getElementById('scoreUpdate').innerText = JSON.stringify(data);
+        });
+
+        socket.on('stateUpdated', (data) => {
+            document.getElementById('stateUpdate').innerText = JSON.stringify(data);
+        });
+
+        socket.on('couponStatusCheck', (data) => {
+            document.getElementById('couponStatus').innerText = JSON.stringify(data);
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Déconnecté du serveur');
+        });
+    </script>
+</body>
+</html>

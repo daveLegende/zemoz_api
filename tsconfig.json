@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "domain": ["./src/_shared/domain"],
+      "domain/*": ["./src/_shared/domain/*"],
+      "app": ["./src/_shared/app"],
+      "app/*": ["./src/_shared/app/*"],
+      "adapter": ["./src/_shared/adapter"],
+      "adapter/*": ["./src/_shared/adapter/*"],
+      "framework": ["./src/_shared/framework"],
+      "framework/*": ["./src/_shared/framework/*"],
+      "todo/*": ["./src/todo/*"],
+      "project/*": ["./src/project/*"],
+      "product/*": ["./src/product/*"],
+      "user/*": ["./src/user/*"],
+      "config/*": ["src/_shared/config/*"]
+    }
+  }
+}

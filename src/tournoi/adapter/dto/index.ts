@@ -1,0 +1,1 @@
+export * from './tournoi.input.dto';
