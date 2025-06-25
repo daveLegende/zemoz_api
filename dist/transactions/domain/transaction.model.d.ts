@@ -6,7 +6,7 @@ export declare class Transaction extends ITimestamp {
     id: string;
     type: TransactionType;
     amount: number;
-    frais: number;
+    frais?: number;
     phone: string;
     admin?: Admin;
     user?: User;

@@ -4,6 +4,7 @@ import { SexEnum } from 'user/domain';
 import { PrononsticEntity } from 'src/prononstic/framework/database/schema/prono.entity';
 import { TicketEntity } from 'src/ticket/framework/database/schema/ticket.entity';
 import { CouponEntity } from 'src/coupon/framework/schema/coupon.entity';
+import { TransactionEntity } from 'src/transactions/framework/database/schema/transac.entity';
 import { ParisEntity } from 'src/paris/framework/schema/paris.entity';
 export declare class UserEntity extends ATimestamp implements User {
     id: string;
@@ -22,4 +23,5 @@ export declare class UserEntity extends ATimestamp implements User {
     tickets: TicketEntity[];
     bets?: CouponEntity[];
     paris?: ParisEntity[];
+    transactions?: TransactionEntity[];
 }

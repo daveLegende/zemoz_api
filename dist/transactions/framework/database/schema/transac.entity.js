@@ -13,6 +13,7 @@ exports.TransactionEntity = void 0;
 const admin_entity_1 = require("../../../../admin/framework/database/schema/admin.entity");
 const domain_1 = require("../../../domain");
 const typeorm_1 = require("typeorm");
+const user_entity_1 = require("../../../../user/framework/database/schema/user.entity");
 let TransactionEntity = class TransactionEntity extends domain_1.Transaction {
 };
 __decorate([
@@ -24,6 +25,10 @@ __decorate([
     __metadata("design:type", Number)
 ], TransactionEntity.prototype, "amount", void 0);
 __decorate([
+    (0, typeorm_1.Column)('float'),
+    __metadata("design:type", Number)
+], TransactionEntity.prototype, "frais", void 0);
+__decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], TransactionEntity.prototype, "phone", void 0);
@@ -31,6 +36,10 @@ __decorate([
     (0, typeorm_1.ManyToOne)(() => admin_entity_1.AdminEntity, (admin) => admin.transactions, { nullable: true }),
     __metadata("design:type", admin_entity_1.AdminEntity)
 ], TransactionEntity.prototype, "admin", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.UserEntity, (user) => user.transactions, { nullable: true }),
+    __metadata("design:type", user_entity_1.UserEntity)
+], TransactionEntity.prototype, "user", void 0);
 TransactionEntity = __decorate([
     (0, typeorm_1.Entity)('transactions')
 ], TransactionEntity);

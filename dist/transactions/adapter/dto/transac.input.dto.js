@@ -30,9 +30,9 @@ __decorate([
         type: Number,
         name: 'frais',
         description: 'Frais de pourcentage',
-        required: true,
     }),
     (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Number)
 ], TransactionAccountDto.prototype, "frais", void 0);
 __decorate([

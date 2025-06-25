@@ -61,4 +61,7 @@ export class UserEntity extends ATimestamp implements User {
 
   @OneToMany(() => ParisEntity, (paris) => paris.user, { nullable: true,  onDelete: 'CASCADE' })
   paris?: ParisEntity[];
+
+  @OneToMany(() => TransactionEntity, (transaction) => transaction.user, { nullable: true,  onDelete: 'CASCADE' })
+  transactions?: TransactionEntity[];
 }

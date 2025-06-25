@@ -11,9 +11,15 @@ export class TransactionEntity extends Transaction {
     @Column('decimal')
     amount: number;
 
+    @Column('float')
+    frais?: number;
+
     @Column()
     phone: string;
 
     @ManyToOne(() => AdminEntity, (admin) => admin.transactions, { nullable: true })
     admin?: AdminEntity;
+
+    @ManyToOne(() => UserEntity, (user) => user.transactions, { nullable: true })
+    user?: UserEntity;
 }

@@ -17,6 +17,7 @@ const domain_1 = require("../../../domain");
 const prono_entity_1 = require("../../../../prononstic/framework/database/schema/prono.entity");
 const ticket_entity_1 = require("../../../../ticket/framework/database/schema/ticket.entity");
 const coupon_entity_1 = require("../../../../coupon/framework/schema/coupon.entity");
+const transac_entity_1 = require("../../../../transactions/framework/database/schema/transac.entity");
 const paris_entity_1 = require("../../../../paris/framework/schema/paris.entity");
 let UserEntity = class UserEntity extends timestamp_abstract_1.ATimestamp {
 };
@@ -85,6 +86,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => paris_entity_1.ParisEntity, (paris) => paris.user, { nullable: true, onDelete: 'CASCADE' }),
     __metadata("design:type", Array)
 ], UserEntity.prototype, "paris", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => transac_entity_1.TransactionEntity, (transaction) => transaction.user, { nullable: true, onDelete: 'CASCADE' }),
+    __metadata("design:type", Array)
+], UserEntity.prototype, "transactions", void 0);
 UserEntity = __decorate([
     (0, typeorm_1.Entity)('user'),
     (0, typeorm_1.Index)(['email'], { unique: true, where: `deleted_at IS NULL` })

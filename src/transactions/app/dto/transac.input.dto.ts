@@ -8,7 +8,7 @@ export interface ICreateTransactionDTO {
 
   amount: number;
 
-  frais: number;
+  frais?: number;
 
   phone: string;
 

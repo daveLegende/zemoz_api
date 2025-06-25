@@ -23,9 +23,9 @@ export class DocTransactionOutputDto {
         type: Number,
         name: 'frais',
         description: 'Frais de pourcentage',
-        required: true,
     })
     @IsNumber()
+    @IsOptional()
     frais: number;
 
     @ApiProperty({ description: 'DEPOT ou RETRAIT', enum: TransactionType })
