@@ -9,6 +9,7 @@ import { TwilioService } from 'src/twilio/twilio.service';
 import { OtpFactory } from 'src/otp/adapter/otp.factory';
 import { OtpAccountDto, SendOtpDTo, VerifyOtpDTo } from 'src/otp/adapter/dto';
 import { IUserRepository, User } from 'user/domain';
+import { UserRegisterDTO } from 'user/adapter/dto';
 
 @Injectable()
 export class AuthService {
@@ -41,7 +42,7 @@ export class AuthService {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
         console.log(`Invalid password for phone: ${phone}`);
-        throw new UnauthorizedException('Invalid credentials');
+        throw new BadRequestException('Invalid credentials');
     }
 
     return user;
@@ -163,4 +164,77 @@ export class AuthService {
       
     }
   }
+
+  // async register(data: VerifyOtpDTo): Promise<boolean> {
+  //   try {
+  //     const { code, phone } = data;
+  //     const otp = await this.otpRepository.otps.findOne({ where: { phone: phone, code: code } });
+
+  //     if (!code) {
+  //       throw new BadRequestException('Code incorrecte');
+  //     }
+
+  //     // Vérifier si l'OTP a expiré
+  //     if (otp.expiresAt < new Date() || otp.isVerified) {
+  //       throw new BadRequestException('OTP expiré');
+  //     }
+
+  //     // Mettre à jour le statut de vérification
+  //     otp.isVerified = true;
+  //     await this.otpRepository.otps.update(otp);
+
+  //     return true;
+  //   } catch (error) {
+      
+  //   }
+  // }
+
+  // async register(data: UserRegisterDTO): Promise<boolean> {
+  //   try {
+  //     const { lastname, firstname, email, phone, password, confirmPass } = data;
+
+  //     // Vérification des champs vides
+  //     const requiredFields = [
+  //       { name: 'lastname', value: lastname },
+  //       { name: 'firstname', value: firstname },
+  //       { name: 'email', value: email },
+  //       { name: 'phone', value: phone },
+  //       { name: 'password', value: password },
+  //       { name: 'confirmPass', value: confirmPass },
+  //     ];
+
+  //     const emptyFields = requiredFields
+  //       .filter(field => !field.value || field.value.trim() === '')
+  //       .map(field => field.name);
+
+  //     if (emptyFields.length > 0) {
+  //       throw new BadRequestException(
+  //         `Les champs suivants sont obligatoires: ${emptyFields.join(', ')}`,
+  //       );
+  //     }
+
+  //     // Vérification supplémentaire que les mots de passe correspondent
+  //     if (password !== confirmPass) {
+  //       throw new BadRequestException('Les mots de passe ne correspondent pas');
+  //     }
+  //     const user = await this.userRepository.users.findOneBy({ phone: phone });
+
+  //     if (user) {
+  //       throw new ConflictException('Cet utilisateur existe déja');
+  //     }
+
+  //     const newUser = new User();
+
+  //     newUser.firstname = firstname;
+  //     newUser.lastname = lastname;
+  //     newUser.email = email;
+  //     newUser.phone = phone;
+  //     newUser.firstname = firstname;
+  //     newUser.firstname = firstname;
+
+  //     return true;
+  //   } catch (error) {
+      
+  //   }
+  // }
 }

@@ -15,14 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
-const platform_express_1 = require("@nestjs/platform-express");
-const multer_1 = require("multer");
 const dto_1 = require("../../../../_shared/adapter/dto");
 const domain_1 = require("../../../domain");
 const user_1 = require("../../../app/module/user");
 const user_model_1 = require("../../../domain/user.model");
 const decorator_1 = require("../../../../_shared/adapter/decorator");
-const base_config_1 = require("../../../../_shared/config/base.config");
 const decorator_2 = require("../../decorator");
 const dto_2 = require("../../dto");
 const user_factory_1 = require("../../user.factory");
@@ -52,14 +49,12 @@ let UserController = class UserController {
     async show({ id }) {
         return user_factory_1.UserFactory.getUser(await this.userService.fetchOne(id));
     }
-    async create(data, file) {
-        data.avatar = file === null || file === void 0 ? void 0 : file.filename;
+    async create(data) {
         const user = await this.userService.add(data);
         if (user)
             return user_factory_1.UserFactory.getUser(user);
     }
-    async update(data, file) {
-        data.avatar = file === null || file === void 0 ? void 0 : file.filename;
+    async update(data) {
         return user_factory_1.UserFactory.getUser(await this.userService.edit(data));
     }
     async setState({ id }) {
@@ -171,44 +166,30 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "show", null);
 __decorate([
-    (0, common_1.Post)(),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('avatar', {
-        storage: (0, multer_1.diskStorage)({
-            destination: base_config_1.BaseConfig.setFilePath,
-            filename: base_config_1.BaseConfig.editFileName,
-        }),
-        fileFilter: base_config_1.BaseConfig.imageFileFilter,
-    })),
-    (0, swagger_1.ApiConsumes)('multipart/form-data', 'application/json'),
+    (0, common_1.Post)("register"),
+    (0, common_1.UseInterceptors)(),
+    (0, swagger_1.ApiConsumes)('application/json'),
     (0, swagger_1.ApiOperation)({
         summary: 'Create account user',
     }),
-    (0, swagger_1.ApiBody)({ type: dto_2.RegisterAccoutDTO }),
+    (0, swagger_1.ApiBody)({ type: dto_2.UserRegisterDTO }),
     (0, swagger_1.ApiResponse)({ type: dto_2.DocUserOutputDTO }),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [dto_2.RegisterAccoutDTO, Object]),
+    __metadata("design:paramtypes", [dto_2.UserRegisterDTO]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "create", null);
 __decorate([
-    (0, common_1.Patch)(),
+    (0, common_1.Patch)("update"),
     (0, decorator_1.HasPermission)(domain_1.AccessEnum.CAN_UPDATE_USER),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('avatar', {
-        storage: (0, multer_1.diskStorage)({
-            destination: base_config_1.BaseConfig.setFilePath,
-            filename: base_config_1.BaseConfig.editFileName,
-        }),
-        fileFilter: base_config_1.BaseConfig.fileFilter,
-    })),
-    (0, swagger_1.ApiConsumes)('multipart/form-data', 'application/json'),
+    (0, common_1.UseInterceptors)(),
+    (0, swagger_1.ApiConsumes)('application/json'),
     (0, swagger_1.ApiOperation)({ summary: 'Update user account' }),
     (0, swagger_1.ApiBody)({ type: dto_2.UpdateUserDTO }),
     (0, swagger_1.ApiResponse)({ type: dto_2.DocUserOutputDTO }),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [dto_2.UpdateUserDTO, Object]),
+    __metadata("design:paramtypes", [dto_2.UpdateUserDTO]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "update", null);
 __decorate([

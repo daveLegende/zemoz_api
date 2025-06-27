@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DeleteUserTicketDTO = exports.DeleteUserBetDTO = exports.ChangePassAccountDTO = exports.ReinitialisePassAccountDTO = exports.UserQueryDTO = exports.UpdateUserDTO = exports.ResetPasswordDTO = exports.ForgotPasswordDTO = exports.SigninAccoutDTO = exports.RegisterAccoutDTO = exports.UserAccoutDTO = void 0;
+exports.DeleteUserTicketDTO = exports.DeleteUserBetDTO = exports.ChangePassAccountDTO = exports.ReinitialisePassAccountDTO = exports.UserQueryDTO = exports.UpdateUserDTO = exports.ResetPasswordDTO = exports.ForgotPasswordDTO = exports.SigninAccoutDTO = exports.RegisterAccoutDTO = exports.UserLoginDTO = exports.UserRegisterDTO = exports.UserAccoutDTO = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 const user_enum_1 = require("../../domain/user.enum");
@@ -74,6 +74,92 @@ __decorate([
     __metadata("design:type", String)
 ], UserAccoutDTO.prototype, "avatar", void 0);
 exports.UserAccoutDTO = UserAccoutDTO;
+class UserRegisterDTO extends UserAccoutDTO {
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        type: String,
+        name: 'firstname',
+        description: 'The familly name of the account',
+    }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UserRegisterDTO.prototype, "firstname", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        type: String,
+        name: 'lastname',
+        description: 'The lastname or given name of the account',
+    }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UserRegisterDTO.prototype, "lastname", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: String, enum: user_enum_1.SexEnum, name: 'sex', required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(user_enum_1.SexEnum),
+    __metadata("design:type", String)
+], UserRegisterDTO.prototype, "sex", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        type: String,
+        name: 'email',
+        description: 'The email address on which share some information with the user by notification',
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEmail)(),
+    __metadata("design:type", String)
+], UserRegisterDTO.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        type: String,
+        name: 'phone',
+        description: 'The phone number on which contact the account user or send an OTP information',
+    }),
+    (0, class_validator_1.IsPhoneNumber)(),
+    __metadata("design:type", String)
+], UserRegisterDTO.prototype, "phone", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        type: String,
+        name: 'password',
+        description: 'Password length > 8',
+    }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UserRegisterDTO.prototype, "password", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        type: String,
+        name: 'confirmPass',
+        description: 'Confirmation de password',
+    }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UserRegisterDTO.prototype, "confirmPass", void 0);
+exports.UserRegisterDTO = UserRegisterDTO;
+class UserLoginDTO {
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        type: String,
+        name: 'phone',
+        description: 'The phone number on which contact the account user or send an OTP information',
+    }),
+    (0, class_validator_1.IsPhoneNumber)(),
+    __metadata("design:type", String)
+], UserLoginDTO.prototype, "phone", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        type: String,
+        name: 'password',
+        description: 'Password length > 8',
+    }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UserLoginDTO.prototype, "password", void 0);
+exports.UserLoginDTO = UserLoginDTO;
 class RegisterAccoutDTO extends UserAccoutDTO {
 }
 __decorate([

@@ -1,4 +1,4 @@
-import { ChangePassAccountDTO, DeleteUserBetDTO, DeleteUserTicketDTO, RegisterAccoutDTO, ReinitialisePassAccountDTO, UpdateUserDTO } from 'user/adapter/dto/user.input.dto';
+import { ChangePassAccountDTO, DeleteUserBetDTO, DeleteUserTicketDTO, ReinitialisePassAccountDTO, UpdateUserDTO, UserRegisterDTO } from 'user/adapter/dto/user.input.dto';
 import { IUserService } from 'user/app/module/user';
 import { User } from 'user/domain';
 import { IUserRepository } from 'user/domain/data.abstract';
@@ -17,7 +17,7 @@ export declare class UserService implements IUserService {
     fetchAll(): Promise<User[]>;
     fetchOne(id: string): Promise<User>;
     search(data: Partial<User>): Promise<User>;
-    add(data: RegisterAccoutDTO): Promise<User>;
+    add(data: UserRegisterDTO): Promise<User>;
     edit(data: UpdateUserDTO): Promise<User>;
     setState(id: string): Promise<boolean>;
     remove(id: string): Promise<boolean>;

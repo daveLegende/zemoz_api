@@ -15,6 +15,7 @@ import {
   ReinitialisePassAccountDTO,
   UpdateUserDTO,
   UserAccoutDTO,
+  UserRegisterDTO,
 } from 'user/adapter/dto/user.input.dto';
 import { IUserService } from 'user/app/module/user';
 import { User } from 'user/domain';
@@ -68,10 +69,15 @@ export class UserService implements IUserService {
     return await this.userRepository.users.findOneBy({ ...data });
   }
 
-  async add(data: RegisterAccoutDTO): Promise<User> {
+  async add(data: UserRegisterDTO): Promise<User> {
     try {
-      const { email } = data;
-      const existed = await this.userRepository.users.findOneBy({ email });
+      const { phone, email, password, confirmPass } = data;
+
+      // Vérification supplémentaire que les mots de passe correspondent
+      if (password !== confirmPass) {
+        throw new BadRequestException('Les mots de passe ne correspondent pas');
+      }
+      const existed = await this.userRepository.users.findOneBy({ phone });
       if (existed)
         throw new ConflictException('User account email allready exist');
       return await this.userRepository.users.create(

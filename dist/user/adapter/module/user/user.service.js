@@ -53,8 +53,11 @@ let UserService = class UserService {
     }
     async add(data) {
         try {
-            const { email } = data;
-            const existed = await this.userRepository.users.findOneBy({ email });
+            const { phone, email, password, confirmPass } = data;
+            if (password !== confirmPass) {
+                throw new common_1.BadRequestException('Les mots de passe ne correspondent pas');
+            }
+            const existed = await this.userRepository.users.findOneBy({ phone });
             if (existed)
                 throw new common_1.ConflictException('User account email allready exist');
             return await this.userRepository.users.create(await user_factory_1.UserFactory.create(data));

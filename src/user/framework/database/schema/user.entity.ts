@@ -34,8 +34,8 @@ export class UserEntity extends ATimestamp implements User {
   @Column({ nullable: true, enum: SexEnum })
   sex: SexEnum;
 
-  @Column()
-  country: string;
+  @Column({ nullable: true })
+  country?: string;
 
   @Column({ default: true })
   isActivated: boolean;

@@ -79,6 +79,89 @@ export class UserAccoutDTO {
   // solde?: number;
 }
 
+
+export class UserRegisterDTO extends UserAccoutDTO {
+  @ApiProperty({
+    type: String,
+    name: 'firstname',
+    description: 'The familly name of the account',
+  })
+  @IsString()
+  firstname: string;
+
+  @ApiProperty({
+    type: String,
+    name: 'lastname',
+    description: 'The lastname or given name of the account',
+  })
+  @IsString()
+  lastname: string;
+
+  @ApiProperty({ type: String, enum: SexEnum, name: 'sex', required: false })
+  @IsOptional()
+  @IsEnum(SexEnum)
+  sex?: SexEnum;
+
+  @ApiProperty({
+    type: String,
+    name: 'email',
+    description:
+      'The email address on which share some information with the user by notification',
+    required: false,
+  })
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @ApiProperty({
+    type: String,
+    name: 'phone',
+    description:
+      'The phone number on which contact the account user or send an OTP information',
+  })
+  @IsPhoneNumber()
+  phone: string;
+
+  @ApiProperty({
+    type: String,
+    name: 'password',
+    description:
+      'Password length > 8',
+  })
+  @IsString()
+  password: string;
+
+  @ApiProperty({
+    type: String,
+    name: 'confirmPass',
+    description:
+      'Confirmation de password',
+  })
+  @IsString()
+  confirmPass: string;
+}
+
+
+export class UserLoginDTO {
+  @ApiProperty({
+    type: String,
+    name: 'phone',
+    description:
+      'The phone number on which contact the account user or send an OTP information',
+  })
+  @IsPhoneNumber()
+  phone: string;
+
+  @ApiProperty({
+    type: String,
+    name: 'password',
+    description:
+      'Password length > 8',
+  })
+  @IsString()
+  password: string;
+}
+
 export class RegisterAccoutDTO extends UserAccoutDTO {
   @ApiProperty({
     type: String,

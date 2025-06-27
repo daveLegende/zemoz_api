@@ -7,7 +7,7 @@ export declare class User extends ITimestamp {
     id: string;
     firstname: string;
     lastname: string;
-    country: string;
+    country?: string;
     sex: SexEnum;
     email?: string;
     phone: string;

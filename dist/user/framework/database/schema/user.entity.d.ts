@@ -14,7 +14,7 @@ export declare class UserEntity extends ATimestamp implements User {
     phone: string;
     solde: number;
     sex: SexEnum;
-    country: string;
+    country?: string;
     isActivated: boolean;
     password: string;
     askForReset: boolean;

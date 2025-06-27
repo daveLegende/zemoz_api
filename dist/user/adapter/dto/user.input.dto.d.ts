@@ -9,6 +9,19 @@ export declare class UserAccoutDTO {
     country: string;
     avatar?: string;
 }
+export declare class UserRegisterDTO extends UserAccoutDTO {
+    firstname: string;
+    lastname: string;
+    sex?: SexEnum;
+    email?: string;
+    phone: string;
+    password: string;
+    confirmPass: string;
+}
+export declare class UserLoginDTO {
+    phone: string;
+    password: string;
+}
 export declare class RegisterAccoutDTO extends UserAccoutDTO {
     password: string;
 }

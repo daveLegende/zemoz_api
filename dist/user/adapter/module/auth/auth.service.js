@@ -38,7 +38,7 @@ let AuthService = class AuthService {
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             console.log(`Invalid password for phone: ${phone}`);
-            throw new common_1.UnauthorizedException('Invalid credentials');
+            throw new common_1.BadRequestException('Invalid credentials');
         }
         return user;
     }
