@@ -121,7 +121,7 @@ let MatchService = class MatchService {
     }
     addFullImageUrls(match) {
         const baseUrl = process.env.BASE_URL || 'http://localhost:3333';
-        const uploadPath = process.env.UPLOAD_PATH || '/api/v1/files';
+        const uploadPath = process.env.UPLOAD_PATH || 'api/v1/files';
         if (match.arbitres && match.arbitres.length > 0) {
             match.arbitres = match.arbitres.map(arbitre => (Object.assign(Object.assign({}, arbitre), { avatar: arbitre.avatar ? `${baseUrl}/${uploadPath}/${arbitre.avatar}` : null })));
         }
