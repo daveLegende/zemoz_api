@@ -21,6 +21,7 @@ export declare class MatchService implements IMatchService {
     fetchOne(id: string): Promise<Match>;
     search(data: Partial<Match>): Promise<Match>;
     add(data: MatchAccoutDTO): Promise<Match>;
+    private addFullImageUrls;
     edit(data: UpdateMatchDTO): Promise<Match>;
     setState(id: string): Promise<boolean>;
     remove(id: string): Promise<boolean>;

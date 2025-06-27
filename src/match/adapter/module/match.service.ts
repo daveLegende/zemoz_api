@@ -37,7 +37,7 @@ import { MatchGateway } from './match.gateway';
   
     async fetchAll(): Promise<Match[]> {
       try {
-        return await this.matchRepository.matchs.find({ 
+        const matches = await this.matchRepository.matchs.find({ 
           relations: { 
             home: true, 
             away: true, 
@@ -46,6 +46,8 @@ import { MatchGateway } from './match.gateway';
           bets: { match: {home: true, away: true} } 
         } 
         });
+        // Ajouter les URLs complets pour les images
+        return matches.map(match => this.addFullImageUrls(match));
       } catch (error) {
         this.logger.error(error.message, 'ERROR::MatchService.fetchAll');
         throw error;
@@ -70,7 +72,7 @@ import { MatchGateway } from './match.gateway';
           // const exterieure = await this.teamRepository.teams.findOneByID(match.away.id);
 
         
-          return match;
+          return this.addFullImageUrls(match);
         }
         throw new NotFoundException('Match not found');
       } catch (error) {
@@ -138,6 +140,38 @@ import { MatchGateway } from './match.gateway';
         this.logger.error(error.message, 'ERROR::MatchService.add');
         throw error;
       }
+    }
+
+    // Méthode utilitaire pour ajouter les URLs complets
+    private addFullImageUrls(match: Match): Match {
+      const baseUrl = process.env.BASE_URL || 'http://localhost:3333';
+      const uploadPath = process.env.UPLOAD_PATH || '/api/v1/files';
+
+      // Traitement des arbitres
+      if (match.arbitres && match.arbitres.length > 0) {
+        match.arbitres = match.arbitres.map(arbitre => ({
+          ...arbitre,
+          avatar: arbitre.avatar ? `${baseUrl}/${uploadPath}/${arbitre.avatar}` : null
+        }));
+      }
+
+      // Traitement de l'équipe à domicile
+      if (match.home && match.home.logo) {
+        match.home = {
+          ...match.home,
+          logo: `${baseUrl}/${uploadPath}/${match.home.logo}`
+        };
+      }
+
+      // Traitement de l'équipe à l'extérieur
+      if (match.away && match.away.logo) {
+        match.away = {
+          ...match.away,
+          logo: `${baseUrl}/${uploadPath}/${match.away.logo}`
+        };
+      }
+
+      return match;
     }
   
     async edit(data: UpdateMatchDTO): Promise<Match> {

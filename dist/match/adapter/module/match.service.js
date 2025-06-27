@@ -35,7 +35,7 @@ let MatchService = class MatchService {
     }
     async fetchAll() {
         try {
-            return await this.matchRepository.matchs.find({
+            const matches = await this.matchRepository.matchs.find({
                 relations: {
                     home: true,
                     away: true,
@@ -44,6 +44,7 @@ let MatchService = class MatchService {
                     bets: { match: { home: true, away: true } }
                 }
             });
+            return matches.map(match => this.addFullImageUrls(match));
         }
         catch (error) {
             this.logger.error(error.message, 'ERROR::MatchService.fetchAll');
@@ -63,7 +64,7 @@ let MatchService = class MatchService {
                 }
             });
             if (match) {
-                return match;
+                return this.addFullImageUrls(match);
             }
             throw new common_1.NotFoundException('Match not found');
         }
@@ -117,6 +118,20 @@ let MatchService = class MatchService {
             this.logger.error(error.message, 'ERROR::MatchService.add');
             throw error;
         }
+    }
+    addFullImageUrls(match) {
+        const baseUrl = process.env.BASE_URL || 'http://localhost:3333';
+        const uploadPath = process.env.UPLOAD_PATH || '/api/v1/files';
+        if (match.arbitres && match.arbitres.length > 0) {
+            match.arbitres = match.arbitres.map(arbitre => (Object.assign(Object.assign({}, arbitre), { avatar: arbitre.avatar ? `${baseUrl}/${uploadPath}/${arbitre.avatar}` : null })));
+        }
+        if (match.home && match.home.logo) {
+            match.home = Object.assign(Object.assign({}, match.home), { logo: `${baseUrl}/${uploadPath}/${match.home.logo}` });
+        }
+        if (match.away && match.away.logo) {
+            match.away = Object.assign(Object.assign({}, match.away), { logo: `${baseUrl}/${uploadPath}/${match.away.logo}` });
+        }
+        return match;
     }
     async edit(data) {
         try {

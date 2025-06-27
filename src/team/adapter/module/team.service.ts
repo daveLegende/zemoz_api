@@ -62,7 +62,6 @@ import { IPlayerRepository } from 'src/player/domain';
 
         console.log(team);
         
-        
         // Une fois l'équipe enregistrée, enregistrer les joueurs
         if (joueurs && joueurs.length > 0) {
           for (let joueur of joueurs) {
