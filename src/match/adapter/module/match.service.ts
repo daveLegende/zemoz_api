@@ -144,7 +144,7 @@ import { MatchGateway } from './match.gateway';
 
     // Méthode utilitaire pour ajouter les URLs complets
     private addFullImageUrls(match: Match): Match {
-      const baseUrl = process.env.BASE_URL || 'http://localhost:3333';
+      const baseUrl = process.env.BASE_URL || 'https://zemoz-latest-api.onrender.com';
       const uploadPath = process.env.UPLOAD_PATH || 'api/v1/files';
 
       // Traitement des arbitres

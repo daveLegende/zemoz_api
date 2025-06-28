@@ -117,14 +117,14 @@ import { IPlayerRepository } from 'src/player/domain';
   
     async remove(id: string): Promise<boolean> {
       try {
-        const Team = await this.teamRepository.teams.findOne(
+        const team = await this.teamRepository.teams.findOne(
           {
             where: { id: id },
             relations: { poule: true, joueurs: true }
           }
         );
-        if (Team) {
-          return await this.teamRepository.teams.remove(Team).then(() => true);
+        if (team) {
+          return await this.teamRepository.teams.remove(team).then(() => true);
         }
         return false;
       } catch (error) {
