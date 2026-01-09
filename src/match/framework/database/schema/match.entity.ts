@@ -69,7 +69,7 @@ export class MatchEntity extends ATimestamp implements Match {
     arbitres: ArbitreEntity[]
 
     @OneToMany(() => PrononsticEntity, pronostic => pronostic.match)
-    pronostics: PrononsticEntity[];
+    pronostics?: PrononsticEntity[];
 
     @OneToMany(() => BetEntity, (bet) => bet.match)
     bets?: BetEntity[];
@@ -83,15 +83,18 @@ export class MatchEntity extends ATimestamp implements Match {
     @Column({ nullable: true })
     teamQualify?: string;
 
+    @Column({ default: false })
+    isHalfTime: boolean;
+
     // @Column({ nullable: true })
     // odds?: OddsDTO;
-    @Column('jsonb', { 
-        nullable: true,
-        default: { V1: 1.0, X: 1.0, V2: 1.0 } 
-    })
-    odds: {
-        V1: number;
-        X: number;
-        V2: number;
-    };
+    // @Column('jsonb', { 
+    //     nullable: true,
+    //     default: { V1: 1.0, X: 1.0, V2: 1.0 } 
+    // })
+    // odds: {
+    //     V1: number;
+    //     X: number;
+    //     V2: number;
+    // };
 }

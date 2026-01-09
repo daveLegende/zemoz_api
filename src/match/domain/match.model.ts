@@ -26,7 +26,9 @@ export class Match extends ITimestamp {
   paris?: Paris[];
   isProlongation?: boolean;
   teamQualify?: string;
+  isHalfTime?: boolean;
 
+  // A supprimer après
   odds?: {
     V1: number;  // Cote pour la victoire à domicile
     X: number;   // Cote pour le match nul
