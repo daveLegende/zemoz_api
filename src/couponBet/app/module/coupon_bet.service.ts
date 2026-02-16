@@ -1,4 +1,3 @@
-import { Coupon } from "src/coupon/domain";
 import { ICreateCouponBetDTO, IUpdateCouponBetDTO } from "../dto";
 import { CouponBet } from "src/couponBet/domain";
 
@@ -16,4 +15,8 @@ export abstract class ICouponBetService {
   abstract search(data: Partial<CouponBet>): Promise<CouponBet>;
 
   abstract remove(id: string): Promise<boolean>;
+
+  abstract getMatchPendingCouponBet(id: string): Promise<CouponBet[]>;
+
+  abstract getPendingCouponBet(): Promise<CouponBet[]>;
 }

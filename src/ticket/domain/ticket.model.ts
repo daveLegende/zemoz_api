@@ -1,6 +1,7 @@
 import { ITimestamp } from 'domain/interface';
 import { TicketDuration, TicketState, TicketType } from './ticket.enum';
 import { User } from 'user/domain';
+import { Match } from 'src/match/domain';
 
 
 export class Ticket extends ITimestamp {
@@ -12,6 +13,8 @@ export class Ticket extends ITimestamp {
   lastScanDate?: Date;
   etat: TicketState;
   user: User;
-  matchs?: string[];
+  qrCode?: string;
+  code?: string;
+  matchs?: Match[];
   isDeleted: boolean;
 }

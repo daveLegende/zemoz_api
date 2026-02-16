@@ -1,11 +1,11 @@
 import {
   BadRequestException,
-    ConflictException,
-    ForbiddenException,
-    Injectable,
-    Logger,
-    NotFoundException,
-  } from '@nestjs/common';
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { ITicketService } from 'src/ticket/app/module';
 import { ITicketRepository, Ticket } from 'src/ticket/domain';
 import { TicketAccoutDTO, UpdateTicketDTO } from '../dto';
@@ -13,15 +13,24 @@ import { TicketFactory } from '../ticket.factory';
 import { IUserRepository } from 'user/domain';
 import { TicketDuration, TicketState } from 'src/ticket/domain/ticket.enum';
 import { IMatchRepository, MatchState, MatchType } from 'src/match/domain';
-  
+import { randomUUID } from 'crypto';
+import * as crypto from 'crypto';
+import * as QRCode from 'qrcode';
+
 @Injectable()
 export class TicketService implements ITicketService {
   private readonly logger = new Logger();
   constructor(
-    private ticketRepository: ITicketRepository, 
+    private ticketRepository: ITicketRepository,
     private userRepository: IUserRepository,
     private matchRepository: IMatchRepository,
-  ) {}
+  ) { }
+
+  private generateQrCode(userId: string): string {
+    const raw = randomUUID() + userId + Date.now();
+    return crypto.createHash('sha256').update(raw).digest('hex');
+  }
+
 
   async fetchAll(): Promise<Ticket[]> {
     try {
@@ -56,36 +65,103 @@ export class TicketService implements ITicketService {
     return await this.ticketRepository.tickets.findOneBy({ ...data });
   }
 
-  async add(data: TicketAccoutDTO): Promise<Ticket> {
-    try {
-      const { duree, amount, user, matchs } = data;
+  private async generateTicketIdentifier(): Promise<{
+    barcode: string;
+    qrCodeImage: string;
+  }> {
+    const uuid = randomUUID();
+    const timestamp = Date.now().toString().slice(-6);
 
-      const userExist = await this.userRepository.users.findOneByID(user);
-      const matchExist = matchs.length > 0 ? await this.matchRepository.matchs.findByIds(matchs) : [];
+    const barcode = `TKT${timestamp}${Math.random().toString().slice(2, 9)}`.substring(0, 13);
 
-      if (!userExist || !matchExist) {
-        throw new NotFoundException('Utilisateur ou matchs non trouvé');
-      }
+    const qrData = {
+      ticketId: uuid,
+      shortCode: barcode,
+      createdAt: new Date().toISOString(),
+    };
 
-      // Vérifier le solde de l'utilisateur
-      if (userExist.solde < amount) {
-        throw new ForbiddenException('Solde insuffisant pour acheter le ticket');
-      }
+    const qrCodeData = JSON.stringify(qrData);
 
-      const ticket = await this.ticketRepository.tickets.create(
-        await TicketFactory.create(data, userExist),
-      );
+    // 🔥 Générer une image QR Code en base64
+    const qrCodeImage = await QRCode.toDataURL(qrCodeData);
 
-      userExist.solde -= amount;
-
-      await this.userRepository.users.update(userExist);
-
-      return ticket;
-    } catch (error) {
-      this.logger.error(error.message, 'ERROR::TicketService.add');
-      throw error;
-    }
+    return { barcode, qrCodeImage };
   }
+
+
+  async add(data: TicketAccoutDTO): Promise<Ticket> {
+    const { amount, user, matchs } = data;
+
+    const userExist = await this.userRepository.users.findOneByID(user);
+    if (!userExist) {
+      throw new NotFoundException('Utilisateur introuvable');
+    }
+
+    const matchExist = matchs?.length
+      ? await this.matchRepository.matchs.findByIds(matchs)
+      : [];
+
+    if (matchs?.length && matchExist.length !== matchs.length) {
+      throw new NotFoundException('Un ou plusieurs matchs sont introuvables');
+    }
+
+    if (userExist.solde < amount) {
+      throw new ForbiddenException('Solde insuffisant');
+    }
+
+    const { barcode, qrCodeImage } = await this.generateTicketIdentifier();
+
+    const ticket = await this.ticketRepository.tickets.create(
+      await TicketFactory.create({
+        ...data,
+        code: barcode,          // Human readable code
+        qrCode: qrCodeImage,    // Base64 Image
+        date: new Date(),
+      } as any, userExist, matchExist),
+    );
+
+    userExist.solde -= amount;
+    await this.userRepository.users.update(userExist);
+
+    return ticket;
+  }
+
+  // async add(data: TicketAccoutDTO): Promise<Ticket> {
+  //   const { amount, user, matchs } = data;
+
+  //   const userExist = await this.userRepository.users.findOneByID(user);
+  //   if (!userExist) {
+  //     throw new NotFoundException('Utilisateur introuvable');
+  //   }
+
+  //   const matchExist = matchs?.length
+  //     ? await this.matchRepository.matchs.findByIds(matchs)
+  //     : [];
+
+  //   if (matchs?.length && matchExist.length !== matchs.length) {
+  //     throw new NotFoundException('Un ou plusieurs matchs sont introuvables');
+  //   }
+
+  //   if (userExist.solde < amount) {
+  //     throw new ForbiddenException('Solde insuffisant');
+  //   }
+
+  //   const qrCode = this.generateQrCode(userExist.id);
+
+  //   const ticket = await this.ticketRepository.tickets.create(
+  //     await TicketFactory.create({
+  //       ...data,
+  //       qrCode,
+  //       date: new Date(),
+  //     } as any, userExist, matchExist),
+  //   );
+
+  //   userExist.solde -= amount;
+  //   await this.userRepository.users.update(userExist);
+
+  //   return ticket;
+  // }
+
 
   // async edit(data: UpdateTicketDTO): Promise<Ticket> {
   //   try {
@@ -99,7 +175,7 @@ export class TicketService implements ITicketService {
   //     if (ticket) {
   //       const currentDate = new Date();
   //       if (ticket.duree === TicketDuration.SIMPLE) {
-          
+
   //       }
   //       return await this.ticketRepository.tickets.update(
   //         TicketFactory.update(ticket, data),
@@ -120,10 +196,10 @@ export class TicketService implements ITicketService {
         where: { id: id },
         relations: { user: true }
       }));
-  
+
       if (ticket) {
         const currentDate = new Date();
-  
+
         // Cas des tickets de type SIMPLE
         if (ticket.duree === TicketDuration.SIMPLE) {
           if (ticket.etat !== TicketState.VALIDE) {
@@ -132,23 +208,23 @@ export class TicketService implements ITicketService {
           // Le ticket est utilisé immédiatement après le scan
           data.etat = TicketState.UTILISER;
         }
-  
+
         // Cas des tickets pour la phase de groupe
         if (ticket.duree === TicketDuration.PHASE_POULE) {
           // Vérifier si la date de scan est déjà aujourd'hui
           if (ticket.lastScanDate && this.isSameDay(ticket.lastScanDate, currentDate)) {
             throw new BadRequestException('Le ticket a déjà été scanné aujourd\'hui');
           }
-  
+
           // Mettre à jour la date du dernier scan
           data.lastScanDate = currentDate;
-  
+
           // Si les phases de poule sont terminées, on passe l'état à UTILISER
           if (await this.areGroupStagesOver()) {
             data.etat = TicketState.UTILISER;
           }
         }
-  
+
         // Cas des tickets pour tout le tournoi (similaire à PHASE_DE_GROUPE)
         if (ticket.duree === TicketDuration.TOURNOI_COMPLET) {
           if (ticket.lastScanDate && this.isSameDay(ticket.lastScanDate, currentDate)) {
@@ -156,18 +232,18 @@ export class TicketService implements ITicketService {
           }
           data.lastScanDate = currentDate;
         }
-  
+
         // Mettre à jour le ticket
         return await this.ticketRepository.tickets.update(TicketFactory.update(ticket, data));
       }
-  
+
       throw new NotFoundException('Ticket non trouvé');
     } catch (error) {
       this.logger.error(error.message, 'ERROR::TicketService.editTicket');
       throw error;
     }
   }
-  
+
   // Fonction utilitaire pour vérifier si deux dates sont le même jour
   private isSameDay(date1: Date, date2: Date): boolean {
     return (
@@ -208,5 +284,67 @@ export class TicketService implements ITicketService {
       this.logger.error(error.message, 'ERROR::TicketService.remove');
       return false;
     }
+  }
+
+  async scanTicket(qrCode: string): Promise<Ticket> {
+
+    const ticket = await this.ticketRepository.tickets.findOne({
+      where: { qrCode },
+      relations: { matchs: true, user: true },
+    });
+
+    if (!ticket) {
+      throw new NotFoundException('QR Code invalide');
+    }
+
+    if (ticket.etat === TicketState.SUPPRIMER) {
+      throw new BadRequestException('Ticket supprimé');
+    }
+
+    const now = new Date();
+
+    switch (ticket.duree) {
+
+      // Ticket SIMPLE
+      case TicketDuration.SIMPLE:
+        if (ticket.etat === TicketState.UTILISER) {
+          throw new BadRequestException('Ticket déjà utilisé');
+        }
+        ticket.etat = TicketState.UTILISER;
+        break;
+
+      // PHASE DE POULE
+      case TicketDuration.PHASE_POULE:
+        if (ticket.lastScanDate && this.isSameDay(ticket.lastScanDate, now)) {
+          throw new BadRequestException('Ticket déjà scanné aujourd’hui');
+        }
+
+        ticket.lastScanDate = now;
+
+        if (await this.areGroupStagesOver()) {
+          ticket.etat = TicketState.UTILISER;
+        }
+        break;
+
+      // TOURNOI COMPLET
+      case TicketDuration.TOURNOI_COMPLET:
+        if (ticket.lastScanDate && this.isSameDay(ticket.lastScanDate, now)) {
+          throw new BadRequestException('Ticket déjà scanné aujourd’hui');
+        }
+
+        ticket.lastScanDate = now;
+
+        if (await this.isTournamentOver()) {
+          ticket.etat = TicketState.UTILISER;
+        }
+        break;
+    }
+
+    return await this.ticketRepository.tickets.update(ticket);
+  }
+
+  async isTournamentOver(): Promise<boolean> {
+    const matchs = await this.matchRepository.matchs.find();
+    return matchs.every(m => m.etat === MatchState.TERMINER);
   }
 }

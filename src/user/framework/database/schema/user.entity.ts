@@ -34,8 +34,8 @@ export class UserEntity extends ATimestamp implements User {
   @Column({ nullable: true, enum: SexEnum })
   sex: SexEnum;
 
-  @Column()
-  country: string;
+  @Column({ nullable: true })
+  country?: string;
 
   @Column({ default: true })
   isActivated: boolean;
@@ -61,4 +61,7 @@ export class UserEntity extends ATimestamp implements User {
 
   @OneToMany(() => ParisEntity, (paris) => paris.user, { nullable: true,  onDelete: 'CASCADE' })
   paris?: ParisEntity[];
+
+  @OneToMany(() => TransactionEntity, (transaction) => transaction.user, { nullable: true,  onDelete: 'CASCADE' })
+  transactions?: TransactionEntity[];
 }

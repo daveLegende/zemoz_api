@@ -1,24 +1,26 @@
 import { Match } from "src/match/domain";
 import { ICreateBetDTO, IUpdateBetDTO } from "../app/dto";
-import { Bet } from "../domain";
+import { Bet, CategoryName } from "../domain";
 
 export abstract class BetFactory {
-    static async create(data: ICreateBetDTO, match: Match, odds: Record<string, number>): Promise<Bet> {
-        const bet = new Bet();
+    static create(data: {
+      category: CategoryName;
+      odds: Record<string, number>;
+      match?: Match;
+      competitionId?: string;
+    }): Bet {
+      const bet = new Bet();
 
-        bet.category = data.category;
-        bet.odds = odds;
-        bet.match = match;
+      bet.category = data.category;
+      bet.odds = data.odds;
+      bet.match = data.match ?? null;
+      bet.competitionId = data.competitionId ?? null;
 
-        return bet;
+      return bet;
     }
 
-    static update(bet: Bet, data: IUpdateBetDTO): Bet {
-
-      bet.category = data.category ?? bet.category;
-      // bet.odds = data.odds ?? bet.odds;
-      bet.match = bet.match;
-  
+    static update(bet: Bet, odds: Record<string, number>): Bet {
+      bet.odds = odds;
       return bet;
     }
     

@@ -132,5 +132,10 @@ import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
     remove(@Param() { id }: IDParamDTO): Promise<boolean> {
       return this.ticketService.remove(id);
     }
+
+    @Post('scan')
+    async scanTicket(@Body('qrCode') qrCode: string) {
+      return this.ticketService.scanTicket(qrCode);
+    }
   }
   

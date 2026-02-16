@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum, IsInt, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsEnum, IsInt, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 import { TransactionType } from "src/transactions/domain";
 
 export class DocTransactionOutputDto {
@@ -16,21 +16,35 @@ export class DocTransactionOutputDto {
         description: 'montant du ticket',
         required: true,
     })
-    @IsInt()
+    @IsNumber()
     amount: number;
+
+    @ApiProperty({
+        type: Number,
+        name: 'frais',
+        description: 'Frais de pourcentage',
+    })
+    @IsNumber()
+    @IsOptional()
+    frais: number;
 
     @ApiProperty({ description: 'DEPOT ou RETRAIT', enum: TransactionType })
     @IsEnum(TransactionType)
     type: TransactionType;
 
-    @ApiProperty({ description: 'id du user', type: String })
-    @IsUUID()
+    @ApiProperty({ description: 'phone du user', type: String })
     @IsString()
-    user: string;
+    phone: string;
 
     @ApiProperty({ description: 'Id de l\'admin', type: String })
     @IsUUID()
     @IsOptional()
     @IsString()
     admin?: string;
+
+    @ApiProperty({ description: 'Id de l\'user', type: String })
+    @IsUUID()
+    @IsOptional()
+    @IsString()
+    user?: string;
 }

@@ -1,15 +1,18 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { IBetService } from 'src/bet/app/module';
-import { Bet, CategoryName } from 'src/bet/domain';
+import { Bet, CategoryName, MarketType } from 'src/bet/domain';
 import { BetAccountDto, UpdateBetDTO } from '../dto';
 import { IBetRepository } from 'src/bet/domain/data.abstract';
-import { IMatchRepository } from 'src/match/domain';
+import { IMatchRepository, Match } from 'src/match/domain';
 import { BetFactory } from '../bet.factory';
+import { MARKET_CONFIG } from 'src/bet/domain/bet.mapping';
+import { isUUID } from 'class-validator';
 
 @Injectable()
 export class BetService implements IBetService {
@@ -52,71 +55,89 @@ export class BetService implements IBetService {
 
   async add(data: BetAccountDto): Promise<Bet> {
     try {
-      const { category, match, odds } = data;
+      // Validation métier centrale
+      this.validateBet(data);
 
-      console.log(odds);
-      
+      const config = MARKET_CONFIG[data.category];
 
-      if (odds === null) {
-        throw new NotFoundException("odds not found")
-      } else {
-        const matchExisted = await this.matchRepository.matchs.findOneByID(match);
-        if(!matchExisted) throw new NotFoundException("Match non trouvé")
+      // 2️⃣ Charger match / competition si nécessaire
+      let match: Match = null;
 
-        let oddsRecord: Record<string, number> = {};
-
-        if (category === CategoryName.VICTOIRE || category === CategoryName.CARTON_JAUNE) {
-          // Convertir OddsDto en Record<string, number>
-          oddsRecord = {
-            V1: odds.V1,
-            V2: odds.V2,
-            X: odds.X,
-          };
-        } else {
-          oddsRecord = {
-            OUI: odds.OUI,
-            NON: odds.NON,
-          };
+      if (config.requiresMatch) {
+        match = await this.matchRepository.matchs.findOneByID(data.matchId);
+        if (!match) {
+          throw new NotFoundException('Match non trouvé');
         }
+      }
 
-        const existed = await this.betsRepository.bets.findOne({
-          where: {
-            category: category,
-            match: matchExisted,
-          }
-        });
-        if (existed)
-          throw new ConflictException('bets already exist');
+      // 3️⃣ Vérifier unicité du market
+      const existed = await this.betsRepository.bets.findOne({
+        where: {
+          category: data.category,
+          match: match ?? null,
+          competitionId: data.competitionId ?? null,
+        },
+      });
 
-        return await this.betsRepository.bets.create(
-          await BetFactory.create(data, matchExisted, oddsRecord),
+      if (existed) {
+        throw new ConflictException(
+          'Ce marché existe déjà pour ce match / compétition'
         );
       }
+
+      // 4️⃣ Création du bet
+      const bet = BetFactory.create({
+        category: data.category,
+        odds: data.odds.odds,
+        match,
+        competitionId: data.competitionId,
+      });
+
+      return await this.betsRepository.bets.create(bet);
+
     } catch (error) {
       this.logger.error(error.message, 'ERROR::betservice.add');
       throw error;
     }
   }
 
+
+
   async edit(data: UpdateBetDTO): Promise<Bet> {
     try {
-      const { id } = data;
-      const bets = id && (await this.betsRepository.bets.findOne({
-        where: { id: id },
-        relations: { match: true }
-      }));
-      if (bets) {
-        return await this.betsRepository.bets.update(
-          BetFactory.update(bets, data),
-        );
+      const { id, odds } = data;
+
+      const bet = await this.betsRepository.bets.findOne({
+        where: { id },
+        relations: { match: true },
+      });
+
+      if (!bet) {
+        throw new NotFoundException('Bet introuvable');
       }
-      throw new NotFoundException();
+
+      if (!odds?.odds) {
+        throw new BadRequestException('Cotes requises pour la mise à jour');
+      }
+
+      // 🔥 Validation métier avec données existantes
+      this.validateBet({
+        category: bet.category,
+        matchId: bet.match?.id,
+        competitionId: bet.competitionId,
+        odds,
+      });
+
+      const updated = BetFactory.update(bet, odds.odds);
+
+      return await this.betsRepository.bets.update(updated);
+
     } catch (error) {
       this.logger.error(error.message, 'ERROR::betservice.editbets');
-
       throw error;
     }
   }
+
 
   async setState(id: string): Promise<boolean> {
     return false;
@@ -137,4 +158,104 @@ export class BetService implements IBetService {
       return false;
     }
   }
+
+
+  validateBet(dto: BetAccountDto) {
+    const config = MARKET_CONFIG[dto.category];
+
+    if (config.requiresMatch && !dto.matchId) {
+      throw new BadRequestException("Match requis pour ce pari");
+    }
+
+    if (config.requiresCompetition && !dto.competitionId) {
+      throw new BadRequestException("Compétition requise");
+    }
+
+    // Validation des options
+    switch (config.marketType) {
+      case MarketType.ONE_X_TWO:
+        this.assertKeys(dto.odds.odds, ['V1', 'X', 'V2']);
+        break;
+
+      case MarketType.YES_NO:
+        this.assertKeys(dto.odds.odds, ['OUI', 'NON']);
+        break;
+
+      case MarketType.PLAYERS:
+        this.assertUUIDKeys(dto.odds.odds);
+        break;
+
+      case MarketType.TEAMS:
+        this.assertUUIDKeys(dto.odds.odds);
+        break;
+    }
+  }
+
+  
+  private assertKeys(
+    odds: Record<string, number>,
+    allowedKeys: string[]
+  ) {
+    if (!odds || typeof odds !== 'object') {
+      throw new BadRequestException('Cotes invalides');
+    }
+
+    const keys = Object.keys(odds);
+
+    // Clés manquantes
+    const missingKeys = allowedKeys.filter(k => !keys.includes(k));
+    if (missingKeys.length > 0) {
+      throw new BadRequestException(
+        `Options manquantes: ${missingKeys.join(', ')}`
+      );
+    }
+
+    // Clés interdites
+    const invalidKeys = keys.filter(k => !allowedKeys.includes(k));
+    if (invalidKeys.length > 0) {
+      throw new BadRequestException(
+        `Options invalides: ${invalidKeys.join(', ')}`
+      );
+    }
+
+    // Valeurs des cotes
+    for (const key of keys) {
+      const value = odds[key];
+      if (typeof value !== 'number' || value <= 1) {
+        throw new BadRequestException(
+          `Cote invalide pour ${key}`
+        );
+      }
+    }
+  }
+
+  private assertUUIDKeys(odds: Record<string, number>) {
+    if (!odds || typeof odds !== 'object') {
+      throw new BadRequestException('Cotes invalides');
+    }
+
+    const keys = Object.keys(odds);
+
+    if (keys.length === 0) {
+      throw new BadRequestException('Aucune option fournie');
+    }
+
+    for (const key of keys) {
+      if (!isUUID(key)) {
+        throw new BadRequestException(
+          `Clé invalide (UUID attendu): ${key}`
+        );
+      }
+
+      const value = odds[key];
+      if (typeof value !== 'number' || value <= 1) {
+        throw new BadRequestException(
+          `Cote invalide pour ${key}`
+        );
+      }
+    }
+  }
+
+
+
 }

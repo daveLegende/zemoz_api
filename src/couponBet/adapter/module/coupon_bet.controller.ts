@@ -30,7 +30,7 @@ import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
 @ApiTags('Coupon management')
 @ApiBearerAuth()
 @UseGuards(UserGuard, AdminGuard)
-@Controller('coupons')
+@Controller('coupon-bets')
 export class CouponBetController implements ICouponBetController {
   constructor(private readonly couponBetService: ICouponBetService) {}
 

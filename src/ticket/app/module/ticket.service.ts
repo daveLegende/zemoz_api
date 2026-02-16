@@ -16,4 +16,6 @@ export abstract class ITicketService {
   abstract search(data: Partial<Ticket>): Promise<Ticket>;
 
   abstract remove(id: string): Promise<boolean>;
+
+  abstract scanTicket(qrCode: string): Promise<Ticket>;
 }

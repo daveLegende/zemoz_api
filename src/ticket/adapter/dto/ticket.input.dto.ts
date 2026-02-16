@@ -28,7 +28,8 @@ export class TicketAccoutDTO {
   @ApiProperty({
     type: String,
     name: 'user',
-    description: 'id de user',
+    description: 'ID de l\'utilisateur',
+    example: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
   })
   @IsString()
   user: string;
@@ -41,7 +42,7 @@ export class TicketAccoutDTO {
   })
   @IsInt()
   amount: number;
-  
+
   @ApiProperty({ description: 'Date d\'achat du ticket', type: Date, example: '2024-08-25T14:00:00Z' })
   @IsDate()
   @Type(() => Date)
@@ -54,16 +55,17 @@ export class TicketAccoutDTO {
   lastScanDate?: Date;
 
   @ApiProperty({
-    type: Array,
+    type: [String],
     name: 'matchs',
-    description: 'id des matchs',
+    description: 'Liste des IDs des matchs',
+    example: ['d290f1ee-6c54-4b01-90e6-d701748f0851', 'a123f1ee-6c54-4b01-90e6-d701748f0852'],
     default: []
   })
   @IsOptional()
   @IsArray()
   matchs?: string[];
 
-  
+
 
   @ApiProperty({
     type: Boolean,

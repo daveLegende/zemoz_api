@@ -1,6 +1,8 @@
 import { IIDParamDTO } from 'app/dto';
 import { Admin } from 'src/admin/domain';
 import { ICreateAdminDTO, IUpdateAdminDTO } from '../../dto';
+import { Coupon } from 'src/coupon/domain';
+import { TournoiCoupon } from 'src/tournoiCoupon/domain';
 
 export abstract class IAdminController {
   abstract all(): Promise<Admin[]>;
@@ -16,4 +18,10 @@ export abstract class IAdminController {
   abstract setState(param: IIDParamDTO): Promise<boolean>;
 
   abstract remove(param: IIDParamDTO): Promise<boolean>;
+
+  abstract getAllCoupons(): Promise<Coupon[]>;
+
+  abstract getAllTournoiCoupons(): Promise<TournoiCoupon[]>;
+
+  abstract getCompleteFinancialReport(): Promise<any>;
 }

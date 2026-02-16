@@ -23,6 +23,8 @@ export interface ICreateCouponDTO {
 
   isDeleted?: boolean;
 
+  isPaid?: boolean;
+
 }
 
 export interface IUpdateCouponDTO extends Partial<ICreateCouponDTO> {

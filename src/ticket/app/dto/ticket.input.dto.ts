@@ -1,5 +1,5 @@
+
 import { TicketType, TicketDuration, TicketState } from "src/ticket/domain/ticket.enum";
-import { User } from "user/domain";
 
 export interface ICreateTicketDTO {
   type: TicketType;
@@ -19,6 +19,10 @@ export interface ICreateTicketDTO {
   matchs?: string[];
 
   isDeleted?: boolean;
+
+  qrCode?: string;
+
+  code?: string;
 }
 
 export interface IUpdateTicketDTO extends Partial<ICreateTicketDTO> {

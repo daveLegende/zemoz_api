@@ -26,6 +26,12 @@ export interface ICreateMatchDTO {
 
   isProlongation?: boolean;
 
+  isTirAuxButs?: boolean;
+
+  homePenalty?: number;
+
+  awayPenalty?: number;
+  
   teamQualify?: string;
   
   // Ajoutez les cotes (optionnelles si vous voulez les rendre obligatoires plus tard)

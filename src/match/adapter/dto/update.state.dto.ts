@@ -75,6 +75,43 @@ export class UpdateStateDto {
 }
 
 
+export class UpdateMatchPenaltyStateDto {
+    @ApiProperty({
+        type: String,
+        name: 'id',
+        description: 'ID de Match',
+    })
+    @IsString()
+    @IsUUID()
+    id: string;
+}
+
+export class UpdateMatchPenaltyScoreDto {
+    @ApiProperty({
+        type: String,
+        name: 'id',
+        description: 'ID de Match',
+    })
+    @IsString()
+    @IsUUID()
+    id: string;
+
+    @ApiProperty({
+        type: Number,
+        name: 'homePenalty',
+    })
+    @IsNumber()
+    homePenalty: number;
+
+    @ApiProperty({
+        type: Number,
+        name: 'awayPenalty',
+    })
+    @IsNumber()
+    awayPenalty: number;
+}
+
+
 export class UpdateOddsStateDto {
     @ApiProperty({ description: 'les cotes du match', type: OddsDTO })
     @ValidateNested()  // Valide l'objet imbriqué

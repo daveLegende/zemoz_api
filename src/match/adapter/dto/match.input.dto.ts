@@ -11,7 +11,7 @@ import {
   IsUUID,
   ValidateNested,
 } from 'class-validator';
-import { MatchScores, MatchState, MatchType } from 'src/match/domain';
+import { HalfPauseState, MatchScores, MatchState, MatchType } from 'src/match/domain';
 import { MatchEvent } from 'src/matchEvents/domain';
 import { OddsDTO } from './odds.dto';
 
@@ -43,19 +43,19 @@ export class MatchAccoutDTO {
   @Type(() => Date)
   date: Date;
 
-  @ApiProperty({ description: 'Arbitres du match', type: [String] })
+  @ApiProperty({ description: 'Liste des IDs des arbitres', type: [String], example: ['d290f1ee-6c54-4b01-90e6-d701748f0851', 'a123f1ee-6c54-4b01-90e6-d701748f0852'] })
   @IsArray()
   @IsString({ each: true })
   arbitres: string[];
 
-  @ApiProperty({ description: 'Équipe à domicile', type: String })
+  @ApiProperty({ description: 'ID de l\'équipe à domicile', type: String, example: 'd290f1ee-6c54-4b01-90e6-d701748f0851' })
   // @ValidateNested()
   // @Type(() => Team)
   @IsString()
   @IsUUID()
   home: string;
 
-  @ApiProperty({ description: 'Équipe à l\'extérieur', type: String })
+  @ApiProperty({ description: 'ID de l\'équipe à l\'extérieur', type: String, example: 'd290f1ee-6c54-4b01-90e6-d701748f0851' })
   // @ValidateNested()
   // @Type(() => Team)
   @IsString()
@@ -73,7 +73,7 @@ export class MatchAccoutDTO {
   @IsArray()
   events?: MatchEvent[];
 
-  @ApiProperty({ description: 'Poule du match', type: String, required: false })
+  @ApiProperty({ description: 'ID de la poule', type: String, required: false, example: 'd290f1ee-6c54-4b01-90e6-d701748f0851' })
   @IsOptional()
   // @ValidateNested()
   // @Type(() => String)
@@ -86,7 +86,24 @@ export class MatchAccoutDTO {
   @IsBoolean()
   isProlongation?: boolean;
 
-  @ApiProperty({ description: 'Id de team qui est qualifiée', type: String }) 
+  @ApiProperty({ description: 'Match dans les séances de tir aux buts', type: Boolean })
+  @IsOptional()
+  // @ValidateNested()
+  // @Type(() => Team)
+  @IsBoolean()
+  isTirAuxButs?: boolean;
+
+  @ApiProperty({ description: 'Score de l\'équipe a domicile au tir aux buts', type: Number, example: 1, required: false })
+  @IsOptional()
+  @IsInt()
+  homePenalty?: number;
+
+  @ApiProperty({ description: 'Score de l\'équipe à l\'extérieur au tir aux buts', type: Number, example: 1, required: false })
+  @IsOptional()
+  @IsInt()
+  awayPenalty?: number;
+
+  @ApiProperty({ description: 'ID de l\'équipe qualifiée', type: String, example: 'd290f1ee-6c54-4b01-90e6-d701748f0851' })
   @IsOptional()
   @IsString()
   @IsUUID()
@@ -108,4 +125,10 @@ export class UpdateMatchDTO extends PartialType(MatchAccoutDTO) {
   @IsString()
   @IsUUID()
   id: string;
+}
+
+
+export class UpdateHalfTimeDto {
+  id: string;
+  halfPauseState: HalfPauseState;
 }

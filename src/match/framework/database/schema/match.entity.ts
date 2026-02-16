@@ -1,6 +1,6 @@
 import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ATimestamp } from 'framework/timestamp.abstract';
-import { Match, MatchScores, MatchState, MatchType } from 'src/match/domain';
+import { HalfPauseState, Match, MatchScores, MatchState, MatchType } from 'src/match/domain';
 import { PouleEntity } from 'src/poule/framework/database/schema/poule.entity';
 import { TeamEntity } from 'src/team/framework/database/schema/team.entity';
 import { ArbitreEntity } from 'src/arbitre/framework/database/schema/arbitre.entity';
@@ -80,21 +80,26 @@ export class MatchEntity extends ATimestamp implements Match {
     @Column({ nullable: true, default: false })
     isProlongation?: boolean;
 
+    @Column({ nullable: true, default: false })
+    isTirAuxButs?: boolean;
+
+    @Column({ nullable: true, default: 0 })
+    homePenalty?: number;
+
+    @Column({ nullable: true, default: 0 })
+    awayPenalty?: number;
+
     @Column({ nullable: true })
     teamQualify?: string;
 
-    @Column({ default: false })
-    isHalfTime: boolean;
+    // @Column({ default: false })
+    // isHalfTime: boolean;
 
-    // @Column({ nullable: true })
-    // odds?: OddsDTO;
-    // @Column('jsonb', { 
-    //     nullable: true,
-    //     default: { V1: 1.0, X: 1.0, V2: 1.0 } 
-    // })
-    // odds: {
-    //     V1: number;
-    //     X: number;
-    //     V2: number;
-    // };
+    @Column({
+        type: 'enum',
+        enum: HalfPauseState,
+        nullable: true,
+        default: HalfPauseState.FIRST_HALF
+    })
+    halfPauseState?: HalfPauseState;
 }

@@ -5,7 +5,7 @@ export enum TicketDuration {
 }
 
 export enum TicketType {
-    STARNDARD = "STARNDARD",
+    STANDARD = "STANDARD",
     VIP = "VIP",
 }
 

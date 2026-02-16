@@ -22,4 +22,8 @@ export abstract class ICouponService {
 
   abstract validatePendingCoupons(): Promise<any>;
 
+  // abstract getMatchPendingCoupons(id: string): Promise<Coupon[]>;
+
+  abstract getPendingCoupons(): Promise<Coupon[]>;
+
 }

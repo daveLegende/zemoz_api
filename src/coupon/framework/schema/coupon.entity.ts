@@ -30,4 +30,7 @@ export class CouponEntity extends ATimestamp implements Coupon {
 
     @Column({ default: false })
     isDeleted: boolean;
+
+    @Column({ default: false })
+    isPaid: boolean;
 }

@@ -51,6 +51,20 @@ export class CouponController implements ICouponController {
   }
 
 
+  @Get("pending-coupons")
+  // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
+  @ApiConsumes('application/json')
+  @ApiOperation({
+    summary: 'Pending coupons list',
+    description: 'Fetch all pending Coupons in the DB',
+  })
+  // @ApiResponse({ type: [CouponAccountDTO] })
+  async getPendingCoupons(): Promise<Coupon[]> {
+    const coupons = await this.couponService.getPendingCoupons();
+    return coupons?.map((coupon) => CouponFactory.getCoupon(coupon));
+  }
+
+
   @Get('search')
   async search(@Query() param: Coupon): Promise<Coupon> {
     if (param) {

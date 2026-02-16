@@ -5,6 +5,13 @@ export enum MatchState {
 }
 
 
+export enum HalfPauseState {
+    FIRST_HALF = 'FIRST_HALF',
+    HALF_TIME = 'HALF_TIME',
+    SECOND_HALF = 'SECOND_HALF'
+}
+
+
 
 export enum MatchType {
     POULE = "PHASE DE POULE",

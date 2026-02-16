@@ -19,4 +19,6 @@ export abstract class ITicketController {
   abstract setState(param: IIDParamDTO): Promise<boolean>;
 
   abstract remove(param: IIDParamDTO): Promise<boolean>;
+
+  abstract scanTicket(qrCode: string): Promise<Ticket>;
 }

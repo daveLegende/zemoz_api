@@ -20,7 +20,16 @@ export class BetEntity extends ATimestamp implements Bet {
 
     @ManyToOne(() => MatchEntity, (match) => match.bets)
     match: MatchEntity;
+    
+    @Column('uuid', { nullable: true })
+    competitionId?: string;
 
     @OneToMany(() => CouponBetEntity, (couponBet) => couponBet.bet)
     couponBets: CouponBetEntity[];
+
+    @Column({ default: true })
+    isActive: boolean;
+
+    @Column({ type: 'timestamp', nullable: true })
+    closedAt?: Date;
 }

@@ -15,22 +15,19 @@ import {
   ReinitialisePassAccountDTO,
   UpdateUserDTO,
   UserAccoutDTO,
+  UserRegisterDTO,
 } from 'user/adapter/dto/user.input.dto';
 import { IUserService } from 'user/app/module/user';
 import { User } from 'user/domain';
-import { IUserRepository } from 'user/domain/data.abstract';
-import { ForgotPass, IForgotPassRepository } from 'src/forgotpass/domain';
-import { ForgotPassAccountDto } from 'src/forgotpass/adapter/dto';
-import { ForgotPassFactory } from 'src/forgotpass/adapter/fgp.factory';
-import { IReinitialisePassDTO, IChangePasswordDTO } from 'user/app/dto';
-import { HashFactory } from 'user/adapter/guard/hash.factory';
+import { IUserRepository } from 'user/domain/data.abstract';import { HashFactory } from 'user/adapter/guard/hash.factory';
 import { ITicketRepository, Ticket } from 'src/ticket/domain';
-import { DocUserOutputDTO } from 'user/adapter/dto';
 import { Coupon } from 'src/coupon/domain';
 import { ICouponRepository } from 'src/coupon/domain/data.abstract';
 import { CouponFactory } from 'src/coupon/adapter/coupon.factory';
 import { Paris } from 'src/paris/domain';
 import { IParisRepository } from 'src/paris/domain/data.abstract';
+import { TournoiCoupon } from 'src/tournoiCoupon/domain';
+import { ITournoiCouponRepository } from 'src/tournoiCoupon/domain/data.abstract';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -40,6 +37,7 @@ export class UserService implements IUserService {
     private parisRepository: IParisRepository,
     private ticketRepository: ITicketRepository,
     private couponRepository: ICouponRepository,
+    private tournoiCouponRepository: ITournoiCouponRepository,
   ) {}
 
   async fetchAll(): Promise<User[]> {
@@ -68,10 +66,15 @@ export class UserService implements IUserService {
     return await this.userRepository.users.findOneBy({ ...data });
   }
 
-  async add(data: RegisterAccoutDTO): Promise<User> {
+  async add(data: UserRegisterDTO): Promise<User> {
     try {
-      const { email } = data;
-      const existed = await this.userRepository.users.findOneBy({ email });
+      const { phone, email, password, confirmPass } = data;
+
+      // Vérification supplémentaire que les mots de passe correspondent
+      if (password !== confirmPass) {
+        throw new BadRequestException('Les mots de passe ne correspondent pas');
+      }
+      const existed = await this.userRepository.users.findOneBy({ phone });
       if (existed)
         throw new ConflictException('User account email allready exist');
       return await this.userRepository.users.create(
@@ -335,6 +338,30 @@ export class UserService implements IUserService {
       });
 
       return paris;
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
+      return error;
+    }
+  }
+
+  async getUserTournoiCoupons(id: string): Promise<TournoiCoupon[]> {
+    try {
+      const user = await this.userRepository.users.findOneByID(id);
+
+      if (!user) {
+        throw new NotFoundException("Utilisateur non trouvé");
+      }
+      
+      const tournoiCoupons = await this.tournoiCouponRepository.tournoiCoupons.find({
+        where: { 
+          user: { id: user.id } as User,
+       },
+        relations: { 
+          user: true,
+        }
+      });
+
+      return tournoiCoupons;
     } catch (error) {
       this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
       return error;

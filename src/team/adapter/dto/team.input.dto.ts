@@ -74,11 +74,12 @@ export class TeamAccoutDTO {
   butConcedes?: number;
 
   @ApiProperty({
-    type: Player,
-    isArray: true,
+    type: [Object],
     name: 'joueurs',
     description: 'Les joueurs de l\'équipe',
+    required: false
   })
+  @IsOptional()
   @IsArray()
   joueurs: Player[];
 

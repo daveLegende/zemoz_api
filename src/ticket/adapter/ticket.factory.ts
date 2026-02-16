@@ -4,15 +4,18 @@ import { Ticket } from '../domain'
 
 
 export abstract class TicketFactory {
-  static async create(data: ICreateTicketDTO, user: User): Promise<Ticket> {
+  static async create(data: ICreateTicketDTO, user: User, matchs: any[] = []): Promise<Ticket> {
     const ticket = new Ticket();
     ticket.type = data.type;
     ticket.duree = data.duree;
+    ticket.qrCode = data.qrCode;
+    ticket.code = data.code;
     ticket.etat = data.etat;
     ticket.amount = data.amount;
     ticket.user = user;
     ticket.date = data.date;
-    
+    ticket.matchs = matchs;
+
     return ticket;
   }
 
@@ -38,6 +41,8 @@ export abstract class TicketFactory {
         amount: ticket.amount,
         user: ticket.user,
         date: ticket.date,
+        qrCode: ticket.qrCode,
+        code: ticket.code,
         matchs: ticket.matchs,
         isDeleted: ticket.isDeleted,
         createdAt: ticket.createdAt,

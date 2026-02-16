@@ -9,16 +9,18 @@ import { AuthApiModule } from 'user/framework/API';
 import { UserRepositoryModule } from 'user/framework/database/user.repository.module';
 import { AdminAuthApiModule } from 'src/admin/framework/API';
 import { AdminRepositoryModule } from 'src/admin/framework/database/admin.repository.module';
+import { MatchRepositoryModule } from 'src/match/framework/database/match.repository.module';
 
 
 @Module({
   imports: [
     CouponBetRepositoryModule, 
     CouponRepositoryModule, 
-    BetRepositoryModule, 
+    BetRepositoryModule,
     UserRepositoryModule,
+    MatchRepositoryModule,
     AuthApiModule,
-    AdminRepositoryModule, 
+    AdminRepositoryModule,
     AdminAuthApiModule,
   ],
   controllers: [CouponBetController],

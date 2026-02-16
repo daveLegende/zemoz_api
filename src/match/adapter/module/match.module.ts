@@ -13,9 +13,15 @@ import { AdminAuthApiModule } from 'src/admin/framework/API';
 import { AdminRepositoryModule } from 'src/admin/framework/database/admin.repository.module';
 import { AuthApiModule } from 'user/framework/API';
 import { UserRepositoryModule } from 'user/framework/database/user.repository.module';
-import { CouponModule } from 'src/coupon/adapter/module';
 import { CouponRepositoryModule } from 'src/coupon/framework/coupon.module.repository';
 import { ParisRepositoryModule } from 'src/paris/framework/paris.module.repository';
+import { ParisModule } from 'src/paris/adapter/module';
+import { UserModule } from 'user/adapter/module/user';
+import { EntityManager } from 'typeorm';
+import { CouponBetRepositoryModule } from 'src/couponBet/framework/coupon.module.repository';
+import { CouponBetModule } from 'src/couponBet/adapter/module';
+import { CouponModule } from 'src/coupon/adapter/module';
+import { CloudinaryModule } from 'src/shared/infrastructure/cloudinary/cloudinary.module';
 
 
 @Module({
@@ -26,13 +32,20 @@ import { ParisRepositoryModule } from 'src/paris/framework/paris.module.reposito
     PouleRepositoryModule, 
     PlayerRepositoryModule,
     MatchEventRepositoryModule,
+    CouponRepositoryModule,
+    CouponBetRepositoryModule,
     UserRepositoryModule,
     AuthApiModule,
     AdminRepositoryModule, 
     AdminAuthApiModule,
     CouponRepositoryModule,
     ParisRepositoryModule,
+    ParisModule,
+    UserModule,
+    EntityManager,
+    CouponBetModule,
     CouponModule,
+    // CloudinaryModule,
   ],
   controllers: [MatchController],
   providers: [MatchGateway, { provide: IMatchService, useClass: MatchService }],

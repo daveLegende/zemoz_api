@@ -23,7 +23,9 @@ export class BetCouponDTO {
 export class CouponAccountDto {
     @ApiProperty({
         type: String,
-        name: 'user id',
+        name: 'user',
+        description: 'ID de l\'utilisateur',
+        example: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
     })
     @IsString()
     user: string;
@@ -32,8 +34,8 @@ export class CouponAccountDto {
     @IsArray()
     couponBets: CouponBet[];
 
-    @ApiProperty({ 
-        name: 'totalOdds', 
+    @ApiProperty({
+        name: 'totalOdds',
         type: Number
     })
     @IsOptional()
@@ -61,6 +63,7 @@ export class CouponAccountDto {
         description: 'PERDU ou GAGNER ou PENDING',
     })
     @IsEnum(CouponState)
+    @IsOptional()
     etat: CouponState;
 
     @ApiProperty({
@@ -70,15 +73,23 @@ export class CouponAccountDto {
     @IsOptional()
     @IsBoolean()
     isDeleted?: boolean;
+
+    @ApiProperty({
+        type: Boolean,
+        name: 'isPaid',
+    })
+    @IsOptional()
+    @IsBoolean()
+    isPaid?: boolean;
 }
 
 export class UpdateCouponDTO extends PartialType(CouponAccountDto) {
     @ApiProperty({
-      type: String,
-      name: 'id',
-      description: 'ID',
+        type: String,
+        name: 'id',
+        description: 'ID',
     })
     @IsString()
     @IsUUID()
     id: string;
-  }
+}

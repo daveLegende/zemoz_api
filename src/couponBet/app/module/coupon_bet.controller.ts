@@ -1,5 +1,4 @@
 import { IIDParamDTO } from 'app/dto';
-import { Coupon } from 'src/coupon/domain';
 import { ICreateCouponBetDTO, IUpdateCouponBetDTO } from '../dto';
 import { CouponBet } from 'src/couponBet/domain';
 
@@ -17,4 +16,8 @@ export abstract class ICouponBetController {
   abstract setState(param: IIDParamDTO): Promise<boolean>;
 
   abstract remove(param: IIDParamDTO): Promise<boolean>;
+
+  // abstract getMatchPendingCouponBet(param: IIDParamDTO): Promise<CouponBet[]>;
+
+  // abstract getPendingCouponBet(): Promise<CouponBet[]>;
 }

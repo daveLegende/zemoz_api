@@ -42,6 +42,7 @@ import {
   ChangePassAccountDTO,
   DeleteUserBetDTO,
   DeleteUserTicketDTO,
+  UserRegisterDTO,
 } from 'user/adapter/dto';
 import { UserFactory } from 'user/adapter/user.factory';
 import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
@@ -49,6 +50,8 @@ import { Ticket } from 'src/ticket/domain';
 import { AuthGuard } from '@nestjs/passport';
 import { Coupon } from 'src/coupon/domain';
 import { Paris } from 'src/paris/domain';
+import { IIDParamDTO } from 'app/dto';
+import { TournoiCoupon } from 'src/tournoiCoupon/domain';
 
 @ApiTags('Users management')
 // @ApiBearerAuth()
@@ -58,6 +61,11 @@ export class UserController implements IUserController {
   constructor(
     private readonly userService: IUserService,
   ) {}
+
+  @Get('tournoi-coupon/:id')
+  getUserTournoiCoupons(@Param() { id }: IDParamDTO): Promise<TournoiCoupon[]> {
+    return this.userService.getUserTournoiCoupons(id);
+  }
 
   @Get("current/:id")
   async getCurrentUser(@Param() { id }: IDParamDTO): Promise<User> {
@@ -136,28 +144,28 @@ export class UserController implements IUserController {
    * @method POST
    */
 
-  @Post()
+  @Post("register")
   // @HasPermission(AccessEnum.CAN_CREATE_USER)
   @UseInterceptors(
-    FileInterceptor('avatar', {
-      storage: diskStorage({
-        destination: BaseConfig.setFilePath,
-        filename: BaseConfig.editFileName,
-      }),
-      fileFilter: BaseConfig.imageFileFilter,
-    }),
+    // FileInterceptor('avatar', {
+    //   storage: diskStorage({
+    //     destination: BaseConfig.setFilePath,
+    //     filename: BaseConfig.editFileName,
+    //   }),
+    //   fileFilter: BaseConfig.imageFileFilter,
+    // }),
   )
-  @ApiConsumes('multipart/form-data', 'application/json')
+  @ApiConsumes('application/json')
   @ApiOperation({
     summary: 'Create account user',
   })
-  @ApiBody({ type: RegisterAccoutDTO })
+  @ApiBody({ type: UserRegisterDTO })
   @ApiResponse({ type: DocUserOutputDTO })
   async create(
-    @Body() data: RegisterAccoutDTO,
-    @UploadedFile() file: Express.Multer.File,
+    @Body() data: UserRegisterDTO,
+    // @UploadedFile() file: Express.Multer.File,
   ): Promise<User> {
-    data.avatar = file?.filename;
+    // data.avatar = file?.filename;
     const user = await this.userService.add(data);
     if (user) return UserFactory.getUser(user);
   }
@@ -166,26 +174,26 @@ export class UserController implements IUserController {
    * @method PATCH
    */
 
-  @Patch()
+  @Patch("update")
   @HasPermission(AccessEnum.CAN_UPDATE_USER)
   @UseInterceptors(
-    FileInterceptor('avatar', {
-      storage: diskStorage({
-        destination: BaseConfig.setFilePath,
-        filename: BaseConfig.editFileName,
-      }),
-      fileFilter: BaseConfig.fileFilter,
-    }),
+    // FileInterceptor('avatar', {
+    //   storage: diskStorage({
+    //     destination: BaseConfig.setFilePath,
+    //     filename: BaseConfig.editFileName,
+    //   }),
+    //   fileFilter: BaseConfig.fileFilter,
+    // }),
   )
-  @ApiConsumes('multipart/form-data', 'application/json')
+  @ApiConsumes('application/json')
   @ApiOperation({ summary: 'Update user account' })
   @ApiBody({ type: UpdateUserDTO })
   @ApiResponse({ type: DocUserOutputDTO })
   async update(
     @Body() data: UpdateUserDTO,
-    @UploadedFile() file: Express.Multer.File,
+    // @UploadedFile() file: Express.Multer.File,
   ): Promise<User> {
-    data.avatar = file?.filename;
+    // data.avatar = file?.filename;
     return UserFactory.getUser(await this.userService.edit(data));
   }
 

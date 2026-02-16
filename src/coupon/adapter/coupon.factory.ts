@@ -22,6 +22,7 @@ export abstract class CouponFactory {
 
       coupon.etat = data.etat ?? coupon.etat;
       coupon.isDeleted = coupon.isDeleted;
+      coupon.isPaid = coupon.isPaid;
   
       return coupon;
     }
@@ -35,6 +36,7 @@ export abstract class CouponFactory {
           gains: coupon.gains,
           amount: coupon.amount,
           etat: coupon.etat,
+          isPaid: coupon.isPaid,
           couponBets: coupon.couponBets,
           isDeleted: coupon.isDeleted,
           createdAt: coupon.createdAt,

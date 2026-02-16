@@ -18,7 +18,10 @@ export abstract class ICouponController {
   abstract setState(param: IIDParamDTO): Promise<boolean>;
 
   abstract remove(param: IIDParamDTO): Promise<boolean>;
-  
 
   abstract checkCoupons(data: IUpdateMatchDTO): Promise<any>;
+
+  // abstract getMatchPendingCoupons(param: IIDParamDTO): Promise<Coupon[]>;
+
+  abstract getPendingCoupons(): Promise<Coupon[]>;
 }

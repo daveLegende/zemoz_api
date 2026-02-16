@@ -16,4 +16,6 @@ export abstract class IMatchController {
   abstract setState(param: IIDParamDTO): Promise<boolean>;
 
   abstract remove(param: IIDParamDTO): Promise<boolean>;
+
+  // abstract uploadLogo(id: string, file: Express.Multer.File): Promise<Match>;
 }

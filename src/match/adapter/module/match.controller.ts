@@ -10,6 +10,10 @@ import {
     UseGuards,
     UseInterceptors,
     UploadedFile,
+    HttpCode,
+    HttpStatus,
+    UsePipes,
+    ValidationPipe,
   } from '@nestjs/common';
   import {
     ApiTags,
@@ -20,17 +24,18 @@ import {
     ApiConsumes,
     ApiBearerAuth,
   } from '@nestjs/swagger';
-  import { FileInterceptor } from '@nestjs/platform-express';
-  import { diskStorage } from 'multer';
-  import { IDParamDTO } from 'adapter/dto';
-  import { BaseConfig } from 'config/base.config';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { IDParamDTO } from 'adapter/dto';
+import { BaseConfig } from 'config/base.config';
 import { IMatchController, IMatchService } from 'src/match/app/module';
 import { Match } from 'src/match/domain';
 import { MatchFactory } from '../match.factory';
-import { MatchAccoutDTO, MatchDocOutputDTO, UpdateMatchDTO } from '../dto';
+import { MatchAccoutDTO, MatchDocOutputDTO, UpdateMatchDTO, UpdateMatchPenaltyScoreDto, UpdateMatchPenaltyStateDto } from '../dto';
 import { DocArbitreOutputDto } from 'src/arbitre/adapter/dto';
 import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
-import { UserGuard } from 'user/adapter/guard/auth.guard';
+import * as multer from 'multer';
+
   
   @ApiTags('matchs management')
   @Controller('matchs')
@@ -155,5 +160,35 @@ import { UserGuard } from 'user/adapter/guard/auth.guard';
     remove(@Param() { id }: IDParamDTO): Promise<boolean> {
       return this.matchService.remove(id);
     }
+
+  @Patch(':id/penalty-scores')
+  @HttpCode(HttpStatus.OK)
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async updatePenaltyScoresWithParam(
+    @Body() data: UpdateMatchPenaltyScoreDto
+  ) {
+    return await this.matchService.updatePenaltyScores(data);
   }
+
+  @Patch(':id/tir-aux-buts')
+  @HttpCode(HttpStatus.OK)
+  async activateTirAuxButs(@Body() data: UpdateMatchPenaltyStateDto) {
+    return await this.matchService.updateTirAuxButsStatus(data);
+  }
+
+  // @Post('upload-logo/:id')
+  // @UseInterceptors(
+  //   FileInterceptor('file', {
+  //     storage: multer.memoryStorage(),
+  //   }),
+  // )
+  // async uploadLogo(
+  //   @Param('id') id: string,
+  //   @UploadedFile() file: Express.Multer.File,
+  // ) {
+  //   return this.matchService.uploadLogo(id, file);
+  // }
+
+
+}
   
