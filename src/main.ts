@@ -12,6 +12,7 @@ import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from 'adapter/exception/http-exception.filter';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { CustomExceptionFilter } from './common/filters/custom-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -32,7 +33,7 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   app.setGlobalPrefix('api/v1');
   const config = new DocumentBuilder()
-    .setTitle('ZEMOZ STARTER API')
+    .setTitle('ZEMOZ API')
     .setDescription('The basic nestjs project of infinitus')
     .addTag('API STARTER')
     .addBearerAuth()
@@ -40,6 +41,8 @@ async function bootstrap() {
     .addBasicAuth()
     .setVersion('1.0')
     .build();
+
+  app.useGlobalFilters(new CustomExceptionFilter());
   const document = SwaggerModule.createDocument(app, config);
   const customOptions: SwaggerCustomOptions = {
     swaggerOptions: { persistAuthorization: true },

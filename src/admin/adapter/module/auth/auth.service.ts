@@ -2,7 +2,6 @@ import { BadRequestException, ConflictException, Injectable, Logger, NotFoundExc
 import { JwtService } from '@nestjs/jwt';
 import { IAdminService } from 'src/admin/app/module';
 import { Admin, IAdminRepository } from 'src/admin/domain';
-import { HashFactory } from '../../guard/hash.factory';
 import { AdminFactory } from '../../admin.factory';
 import { AdminAccountDto } from '../../dto';
 import * as bcrypt from 'bcrypt';
@@ -22,15 +21,15 @@ export class AdminAuthService {
       where: {email: email}
     });
     if (!admin) {
-      throw new NotFoundException("Aucun admin trouvé");
+      throw new UnauthorizedException("Email incorrect");
     }
     console.log('--------------------------'+admin.password);
     
 
     const isPasswordValid = await bcrypt.compare(password, admin.password);
     if (!isPasswordValid) {
-        console.log(`Invalid password for admin: ${email}`);
-        throw new UnauthorizedException('Invalid credentials');
+        // console.log(`Invalid password for admin: ${email}`);
+        throw new UnauthorizedException('Mot de passe incorrect');
     }
 
     return admin;
