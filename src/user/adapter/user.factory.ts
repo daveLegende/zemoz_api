@@ -1,4 +1,4 @@
-import { HashFactory } from 'user/adapter/guard/hash.factory';
+import { HashFactory } from './guard/hash.factory';
 import { ICreateUserDTO, IUpdateUserDTO } from '../app/dto/user.input.dto';
 import { User } from '../domain/user.model';
 

@@ -1,7 +1,7 @@
-import { ITimestamp } from "domain/interface";
-import { User } from "user/domain";
+import { ITimestamp } from "../../_shared/domain/interface";
+import { User } from "../../user/domain";
 import { CouponState } from "./coupon.enum";
-import { CouponBet } from "src/couponBet/domain";
+import { CouponBet } from "../../couponBet/domain";
 
 export class Coupon extends ITimestamp {
     id: string;

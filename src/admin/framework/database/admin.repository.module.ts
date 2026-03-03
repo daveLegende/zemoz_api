@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { IAdminRepository } from 'src/admin/domain';
+import { IAdminRepository } from '../../domain';
 import { AdminRepository } from './admin.repository';
 import { AdminEntity } from './schema/admin.entity';
 
@@ -16,4 +16,4 @@ import { AdminEntity } from './schema/admin.entity';
   ],
   exports: [IAdminRepository],
 })
-export class AdminRepositoryModule {}
+export class AdminRepositoryModule { }

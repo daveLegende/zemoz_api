@@ -1,4 +1,4 @@
-import { PartialDeep, PartialDeepBool, PartialOrder } from 'domain/types';
+import { PartialDeep, PartialDeepBool, PartialOrder } from '../types';
 
 export interface RepoParam<T> {
   relations?: PartialDeepBool<T>;

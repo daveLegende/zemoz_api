@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { OnApplicationBootstrap, Injectable } from '@nestjs/common';
 import axios from 'axios';
-import { IEvent } from 'app/abstract/generic.event';
-import { AxiosRest } from 'framework/rest.adapter';
-import { ISigninUserDTO } from 'user/app/dto';
-import { User } from 'user/domain';
+import { IEvent } from '../../../_shared/app/abstract/generic.event';
+import { AxiosRest } from '../../../_shared/framework/rest.adapter';
+import { ISigninUserDTO } from '../../../user/app/dto';
+import { User } from '../../../user/domain';
 
 class GenericAuthAPI {
   private axiosAdapter: AxiosRest<User>;

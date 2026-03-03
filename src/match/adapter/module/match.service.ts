@@ -386,8 +386,8 @@ export class MatchService implements IMatchService {
           }
         }
 
-        if (match.type === MatchType.HUITIEME || match.type === MatchType.QUART || 
-            match.type === MatchType.DEMI || match.type === MatchType.FINALE) {
+        if (match.type === MatchType.HUITIEME || match.type === MatchType.QUART ||
+          match.type === MatchType.DEMI || match.type === MatchType.FINALE) {
           if (match.scores.home === match.scores.away) {
             match.teamQualify = match.homePenalty > match.awayPenalty ? match.home.id : match.away.id;
           } else {
@@ -581,22 +581,22 @@ export class MatchService implements IMatchService {
     this.logger.log(`État du match: ${match.etat}`);
     this.logger.log(`Score: ${match.scores.home}-${match.scores.away}`);
     this.logger.log(`Nombre d'événements chargés: ${match.events?.length || 0}`); // ✅ LOG
-    
+
     const pendingCouponBets = await this.couponBetRepository.couponBets.find({
-      where: { 
+      where: {
         bet: { match: { id: matchId } },
         status: BetStatus.PENDING
       },
-      relations: { 
-        bet: { 
+      relations: {
+        bet: {
           match: { home: true, away: true }
-        }, 
+        },
         coupon: { user: true }
       }
     });
-    
+
     this.logger.log(`Nombre de couponBets en attente trouvés: ${pendingCouponBets.length}`);
-    
+
     if (pendingCouponBets.length === 0) {
       this.logger.warn(`Aucun couponBet en attente pour le match ${matchId}`);
       return;
@@ -607,7 +607,7 @@ export class MatchService implements IMatchService {
         this.logger.error(`CouponBet ${couponBet.id} sans bet associé - ERREUR DE CHARGEMENT`);
         continue;
       }
-      
+
       if (!couponBet.coupon) {
         this.logger.error(`CouponBet ${couponBet.id} sans coupon associé - ERREUR DE CHARGEMENT`);
         continue;
@@ -640,7 +640,7 @@ export class MatchService implements IMatchService {
         await this.updateCouponStatus(couponBet.coupon.id);
       }
     }
-    
+
     this.logger.log(`=== Fin checkRealTimeCoupons pour match ${matchId} ===`);
   }
 
@@ -667,7 +667,7 @@ export class MatchService implements IMatchService {
     }
 
     const selectedPlayerId = selectedPlayerIds[0];
-    
+
     this.logger.log(`--- checkMatchGoalScorer pour CouponBet ${couponBet.id} ---`);
     this.logger.log(`Joueur sélectionné: ${selectedPlayerId}`);
     this.logger.log(`État du match: ${match.etat}`);
@@ -684,7 +684,7 @@ export class MatchService implements IMatchService {
     if (match.etat === MatchState.TERMINER) {
       this.logger.log(`Match terminé - Vérification des événements...`);
       this.logger.log(`Nombre d'événements: ${match.events?.length || 0}`);
-      
+
       // ✅ Afficher tous les événements pour déboguer
       if (match.events && match.events.length > 0) {
         match.events.forEach((event, index) => {
@@ -693,7 +693,7 @@ export class MatchService implements IMatchService {
       } else {
         this.logger.warn(`Aucun événement trouvé dans le match!`);
       }
-      
+
       // Vérifier si le joueur a marqué
       const playerScored = match.events?.some(event => {
         const hasScored = event.type === EventType.BUT && event.joueur?.id === selectedPlayerId;
@@ -746,13 +746,13 @@ export class MatchService implements IMatchService {
    */
   private async checkMatchResult(couponBet: CouponBet, match: Match): Promise<void> {
     const selectedResult = Object.keys(couponBet.selectedOptions || {})[0];
-    
+
     this.logger.log(`--- checkMatchResult pour CouponBet ${couponBet.id} ---`);
     this.logger.log(`selectedOptions: ${JSON.stringify(couponBet.selectedOptions)}`);
     this.logger.log(`selectedResult: ${selectedResult}`);
     this.logger.log(`État match: ${match.etat}`);
     this.logger.log(`Score actuel: ${match.scores.home}-${match.scores.away}`);
-    
+
     if (!selectedResult) {
       this.logger.warn(`Aucune option sélectionnée pour le couponBet ${couponBet.id}`);
       return;
@@ -760,7 +760,7 @@ export class MatchService implements IMatchService {
 
     if (match.etat === MatchState.TERMINER) {
       const actualResult = this.calculateMatchResult(match);
-      
+
       this.logger.log(`✅ Match terminé - Résultat attendu: ${selectedResult}, Résultat réel: ${actualResult}`);
 
       if (selectedResult === actualResult) {
@@ -943,7 +943,7 @@ export class MatchService implements IMatchService {
   private async updateCouponStatus(couponId: string): Promise<void> {
     try {
       this.logger.log(`--- updateCouponStatus pour coupon ${couponId} ---`);
-      
+
       const coupon = await this.couponRepository.coupons.findOne({
         where: { id: couponId },
         relations: {

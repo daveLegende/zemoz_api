@@ -1,9 +1,9 @@
-import { Coupon } from 'src/coupon/domain';
-import { Paris } from 'src/paris/domain';
-import { Ticket } from 'src/ticket/domain';
-import { TournoiCoupon } from 'src/tournoiCoupon/domain';
-import { IChangePasswordDTO, ICreateUserDTO, IDeleteUserBetOrTicketDTO, IReinitialisePassDTO, IUpdateUserDTO } from 'user/app/dto';
-import { User } from 'user/domain';
+import { Coupon } from '../../../../coupon/domain';
+import { Paris } from '../../../../paris/domain';
+import { Ticket } from '../../../../ticket/domain';
+import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
+import { IChangePasswordDTO, ICreateUserDTO, IDeleteUserBetOrTicketDTO, IReinitialisePassDTO, IUpdateUserDTO } from '../../dto';
+import { User } from '../../../domain';
 
 export abstract class IUserService {
   abstract getCurrentUser(id: string): Promise<User>

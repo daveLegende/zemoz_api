@@ -5,7 +5,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { UserFactory } from 'user/adapter/user.factory';
+import { UserFactory } from '../../user.factory';
 import {
   ChangePassAccountDTO,
   DeleteUserBetDTO,
@@ -16,18 +16,19 @@ import {
   UpdateUserDTO,
   UserAccoutDTO,
   UserRegisterDTO,
-} from 'user/adapter/dto/user.input.dto';
-import { IUserService } from 'user/app/module/user';
-import { User } from 'user/domain';
-import { IUserRepository } from 'user/domain/data.abstract';import { HashFactory } from 'user/adapter/guard/hash.factory';
-import { ITicketRepository, Ticket } from 'src/ticket/domain';
-import { Coupon } from 'src/coupon/domain';
-import { ICouponRepository } from 'src/coupon/domain/data.abstract';
-import { CouponFactory } from 'src/coupon/adapter/coupon.factory';
-import { Paris } from 'src/paris/domain';
-import { IParisRepository } from 'src/paris/domain/data.abstract';
-import { TournoiCoupon } from 'src/tournoiCoupon/domain';
-import { ITournoiCouponRepository } from 'src/tournoiCoupon/domain/data.abstract';
+} from '../../dto/user.input.dto';
+import { AuthService } from '../auth/auth.service';
+import { IUserService } from '../../../app/module/user';
+import { User } from '../../../domain';
+import { IUserRepository } from '../../../domain/data.abstract'; import { HashFactory } from '../../guard/hash.factory';
+import { ITicketRepository, Ticket } from '../../../../ticket/domain';
+import { Coupon } from '../../../../coupon/domain';
+import { ICouponRepository } from '../../../../coupon/domain/data.abstract';
+import { CouponFactory } from '../../../../coupon/adapter/coupon.factory';
+import { Paris } from '../../../../paris/domain';
+import { IParisRepository } from '../../../../paris/domain/data.abstract';
+import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
+import { ITournoiCouponRepository } from '../../../../tournoiCoupon/domain/data.abstract';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -38,7 +39,7 @@ export class UserService implements IUserService {
     private ticketRepository: ITicketRepository,
     private couponRepository: ICouponRepository,
     private tournoiCouponRepository: ITournoiCouponRepository,
-  ) {}
+  ) { }
 
   async fetchAll(): Promise<User[]> {
     try {
@@ -130,7 +131,7 @@ export class UserService implements IUserService {
     }
   }
 
-  
+
   async fetchByEmail(email: string): Promise<User> {
     try {
       const user = await this.userRepository.users.findOne({
@@ -165,12 +166,12 @@ export class UserService implements IUserService {
     }
   }
 
-  
+
   async reinitialisePass(data: ReinitialisePassAccountDTO): Promise<User> {
     try {
-      const { email, password, confirm  } = data;
+      const { email, password, confirm } = data;
 
-      const user = await this.userRepository.users.findOneBy({email});
+      const user = await this.userRepository.users.findOneBy({ email });
 
       if (password.length < 6 || !password || !confirm || !email) {
         throw new BadRequestException("Données invalides")
@@ -199,11 +200,11 @@ export class UserService implements IUserService {
 
   async changePass(data: ChangePassAccountDTO): Promise<User> {
     try {
-      const { id, oldpass, newpass, confirm  } = data;
+      const { id, oldpass, newpass, confirm } = data;
 
       const userE = await this.userRepository.users.findOneByID(id);
 
-      if (newpass.length < 6 || !oldpass|| !newpass || !confirm) {
+      if (newpass.length < 6 || !oldpass || !newpass || !confirm) {
         throw new BadRequestException("Données invalides")
       }
       if (!userE) {
@@ -240,13 +241,13 @@ export class UserService implements IUserService {
       if (!user) {
         throw new NotFoundException("Utilisateur non trouvé");
       }
-      console.log("wsugsdhfligywsilhvi "+user);
-      
+      console.log("wsugsdhfligywsilhvi " + user);
+
       const tickets = await this.ticketRepository.tickets.find({
-        where: { 
+        where: {
           user: { id: user.id },
           isDeleted: false,
-       },
+        },
         relations: { user: true }
       });
 
@@ -267,10 +268,10 @@ export class UserService implements IUserService {
       }
       const ticket = await this.ticketRepository.tickets.findOne(
         {
-          where: { 
+          where: {
             id: id,
             user: { id: user.id },
-        },
+          },
           relations: { user: true }
         }
       );
@@ -292,15 +293,15 @@ export class UserService implements IUserService {
       if (!user) {
         throw new NotFoundException("Utilisateur non trouvé");
       }
-      console.log("wsugsdhfligywsilhvi "+user);
-      
+      console.log("wsugsdhfligywsilhvi " + user);
+
       const coupons = await this.couponRepository.coupons.find({
-        where: { 
+        where: {
           user: { id: user.id },
           isDeleted: false,
-       },
-        relations: { 
-          user: true, 
+        },
+        relations: {
+          user: true,
           couponBets: {
             bet: {
               match: {
@@ -326,13 +327,13 @@ export class UserService implements IUserService {
       if (!user) {
         throw new NotFoundException("Utilisateur non trouvé");
       }
-      
+
       const paris = await this.parisRepository.paris.find({
-        where: { 
+        where: {
           user: { id: user.id } as User,
           // isDeleted: false,
-       },
-        relations: { 
+        },
+        relations: {
           user: true,
         }
       });
@@ -351,12 +352,12 @@ export class UserService implements IUserService {
       if (!user) {
         throw new NotFoundException("Utilisateur non trouvé");
       }
-      
+
       const tournoiCoupons = await this.tournoiCouponRepository.tournoiCoupons.find({
-        where: { 
+        where: {
           user: { id: user.id } as User,
-       },
-        relations: { 
+        },
+        relations: {
           user: true,
         }
       });
@@ -378,10 +379,10 @@ export class UserService implements IUserService {
       }
       const coupon = await this.couponRepository.coupons.findOne(
         {
-          where: { 
+          where: {
             id: id,
             user: { id: user.id },
-        },
+          },
           relations: { user: true }
         }
       );

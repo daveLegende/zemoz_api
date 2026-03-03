@@ -7,16 +7,15 @@ import {
   IFindOneGeneric,
   IRemoveGeneric,
   IUpdateGeneric,
-} from 'domain/abstract';
+} from '../domain/abstract';
 
 export class DBGenericRepository<T>
   implements
-    IFindGeneric<T>,
-    IFindOneGeneric<T>,
-    ICreateGeneric<T>,
-    IUpdateGeneric<T>,
-    IRemoveGeneric<T>
-{
+  IFindGeneric<T>,
+  IFindOneGeneric<T>,
+  ICreateGeneric<T>,
+  IUpdateGeneric<T>,
+  IRemoveGeneric<T> {
   private _repository: Repository<T>;
 
   constructor(repository: Repository<T>) {

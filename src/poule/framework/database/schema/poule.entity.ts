@@ -1,6 +1,7 @@
-import { MatchEntity } from "src/match/framework/database/schema/match.entity";
-import { Poule } from "src/poule/domain";
-import { TeamEntity } from "src/team/framework/database/schema/team.entity";
+import { ATimestamp } from '../../../../_shared/framework/timestamp.abstract';
+import { Poule } from '../../../../poule/domain/poule.model';
+import { TeamEntity } from '../../../../team/framework/database/schema/team.entity';
+import { MatchEntity } from '../../../../match/framework/database/schema/match.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('poules')

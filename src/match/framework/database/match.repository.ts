@@ -9,11 +9,11 @@ import { MatchEntity } from './schema/match.entity';
 @Injectable()
 export class MatchRepository implements IMatchRepository, OnApplicationBootstrap {
     matchs: IGenericRepository<Match>;
-    
+
     constructor(
         @InjectRepository(MatchEntity)
         private matchRepository: Repository<MatchEntity>,
-    ) {}
+    ) { }
 
     async save(match: MatchEntity): Promise<MatchEntity> {
         return await this.matchRepository.save(match);

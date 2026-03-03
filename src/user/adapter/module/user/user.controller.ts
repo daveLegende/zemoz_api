@@ -60,7 +60,7 @@ import { TournoiCoupon } from 'src/tournoiCoupon/domain';
 export class UserController implements IUserController {
   constructor(
     private readonly userService: IUserService,
-  ) {}
+  ) { }
 
   @Get('tournoi-coupon/:id')
   getUserTournoiCoupons(@Param() { id }: IDParamDTO): Promise<TournoiCoupon[]> {
@@ -75,7 +75,7 @@ export class UserController implements IUserController {
   @Get("profile")
   async getProfile(@Req() req): Promise<User> {
     console.log(req);
-    
+
     return await this.userService.getCurrentUser(req.user);
   }
 
@@ -240,7 +240,7 @@ export class UserController implements IUserController {
     return user;
   }
 
-  
+
   /**
    *
    * @method POST

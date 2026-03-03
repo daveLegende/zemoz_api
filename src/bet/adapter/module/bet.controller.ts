@@ -33,7 +33,7 @@ import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
 @ApiBearerAuth()
 @Controller('bets')
 export class BetController implements IBetController {
-  constructor(private readonly betService: IBetService) {}
+  constructor(private readonly betService: IBetService) { }
 
   @Get()
   // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)

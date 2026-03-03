@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { CustomMethod } from 'domain/types';
+import { CustomMethod } from '../../domain/types';
 
 export interface FetcherParam<D = any> {
   url?: string;

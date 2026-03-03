@@ -30,6 +30,6 @@ export class UpdateAdminDTO extends PartialType(AdminAccountDto) {
       description: 'ID de l\'Admin',
     })
     @IsString()
-    @IsUUID()
-    id: string;
+@IsUUID()
+id: string;
 }
