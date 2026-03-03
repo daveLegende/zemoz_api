@@ -22,6 +22,7 @@ import {
   } from '@nestjs/swagger';
   import { FileInterceptor } from '@nestjs/platform-express';
   import { diskStorage } from 'multer';
+  import { Express } from 'express';
   import { IDParamDTO } from 'adapter/dto';
   import { BaseConfig } from 'config/base.config';
 import { PrononsticFactory } from '../pronos.factory';

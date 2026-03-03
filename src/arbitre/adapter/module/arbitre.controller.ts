@@ -20,6 +20,7 @@ import {
     ApiConsumes,
     ApiBearerAuth,
   } from '@nestjs/swagger';
+  import { Express } from 'express';
   import { FileInterceptor } from '@nestjs/platform-express';
   import { diskStorage } from 'multer';
   import { IDParamDTO } from 'adapter/dto';

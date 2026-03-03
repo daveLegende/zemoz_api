@@ -23,6 +23,7 @@ import {
   import { FileInterceptor } from '@nestjs/platform-express';
   import { diskStorage } from 'multer';
   import { IDParamDTO } from 'adapter/dto';
+  import { Express } from 'express';
   import { BaseConfig } from 'config/base.config';
 import { PouleFactory } from '../poule.factory';
 import { IPouleController, IPouleService } from 'src/poule/app/module';

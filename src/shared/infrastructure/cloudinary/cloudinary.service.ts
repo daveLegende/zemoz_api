@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { v2 as cloudinary } from 'cloudinary';
 import { IFileStorage } from '../../domain/file-storage.interface';
+import { Express } from 'express';
 
 @Injectable()
 export class CloudinaryService implements IFileStorage {
