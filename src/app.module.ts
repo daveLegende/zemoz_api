@@ -70,7 +70,7 @@ export class IAppModule {}
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.dev.env', //.dev.env, .prod.env
+      envFilePath: '.prod.env', //.dev.env, .prod.env
       expandVariables: true,
       isGlobal: true,
     }),
