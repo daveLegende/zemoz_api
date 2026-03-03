@@ -14,6 +14,9 @@ yarn-error.log*
 .prod.env
 .test.env
 
+# upload images
+upload/
+
 # Debugging output
 npm-debug.log*
 yarn-debug.log*
