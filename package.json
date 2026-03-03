@@ -24,9 +24,9 @@
   },
   "scripts": {
     "compodoc": "npx @compodoc/compodoc -p tsconfig.json -s",
-    "build": "NODE_OPTIONS=--max-old-space-size=4096 nest build",
+    "build": "tsc -p tsconfig.build.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start --max-old-space-size=4096",
+    "start": "node dist/main",
     "start:dev": "nest start --watch --max-old-space-size=4096",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node --max-old-space-size=4096 dist/main",

@@ -9,5 +9,3 @@ services:
         value: production
       - key: NODE_OPTIONS
         value: --max-old-space-size=4096
-      - key: PORT
-        value: 10000
