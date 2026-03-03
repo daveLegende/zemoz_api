@@ -30,6 +30,8 @@
     "start:dev": "nest start --watch --max-old-space-size=4096",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node --max-old-space-size=4096 dist/main",
+    "start:render": "node --max-old-space-size=4096 dist/main",
+    "render-build": "npm install && npm run build",
     "start:prod:with-memory": "node --max-old-space-size=4096 dist/main",
     "test": "jest",
     "test:watch": "jest --watch",
