@@ -10,7 +10,7 @@ import {
 import helmet from 'helmet';
 
 import { AppModule } from './app.module';
-import { HttpExceptionFilter } from 'adapter/exception/http-exception.filter';
+import { HttpExceptionFilter } from './_shared/adapter/exception/http-exception.filter';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { CustomExceptionFilter } from './common/filters/custom-exception.filter';
 

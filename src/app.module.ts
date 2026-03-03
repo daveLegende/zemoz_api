@@ -8,10 +8,10 @@ import * as winston from 'winston';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { HttpExceptionFilter } from 'adapter/exception/http-exception.filter';
+import { HttpExceptionFilter } from './_shared/adapter/exception/http-exception.filter';
 import { UserModule } from './user/adapter/module/user';
 import { AuthModule } from './user/adapter/module/auth';
-import { SeedsModule } from 'framework/seed/seeds.module';
+import { SeedsModule } from './_shared/framework/seed/seeds.module';
 import { PlayerModule } from './player/adapter/module';
 import { TeamModule } from './team/adapter/module';
 import { PouleModule } from './poule/adapter/module';
