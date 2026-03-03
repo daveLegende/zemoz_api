@@ -24,7 +24,6 @@ import {
   import { diskStorage } from 'multer';
   import { IDParamDTO } from 'adapter/dto';
   import { Express } from 'express';
-  import { BaseConfig } from 'config/base.config';
 import { PouleFactory } from '../poule.factory';
 import { IPouleController, IPouleService } from 'src/poule/app/module';
 import { Poule } from 'src/poule/domain';

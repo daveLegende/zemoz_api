@@ -31,7 +31,6 @@ import { IUserController, IUserService } from 'user/app/module/user';
 import { User } from 'user/domain/user.model';
 import { HasPermission } from 'adapter/decorator';
 import { UserGuard } from 'user/adapter/guard/auth.guard';
-import { BaseConfig } from 'config/base.config';
 import { GetAccount } from 'user/adapter/decorator';
 import {
   DocUserOutputDTO,

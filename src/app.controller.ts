@@ -2,7 +2,7 @@ import { Controller, Get, Param, Res } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { AppService } from './app.service';
 import { Response } from 'express';
-import { BaseConfig } from 'config/base.config';
+import { BaseConfig } from './_shared/config/base.config';
 
 import * as path from 'path';
 

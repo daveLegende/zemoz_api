@@ -24,7 +24,7 @@ import {
   import { diskStorage } from 'multer';
   import { Express } from 'express';
   import { IDParamDTO } from 'adapter/dto';
-  import { BaseConfig } from 'config/base.config';
+  import { BaseConfig } from '../../../_shared/config/base.config';
 import { UpdateTournoiDTO } from 'src/tournoi/adapter/dto';
 import { Tournoi } from 'src/tournoi/domain';
 import { RegisterAccoutDTO, DocUserOutputDTO } from 'user/adapter/dto';

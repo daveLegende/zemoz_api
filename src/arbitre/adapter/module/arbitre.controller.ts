@@ -24,7 +24,7 @@ import {
   import { FileInterceptor } from '@nestjs/platform-express';
   import { diskStorage } from 'multer';
   import { IDParamDTO } from 'adapter/dto';
-  import { BaseConfig } from 'config/base.config';
+  import { BaseConfig } from '../../../_shared/config/base.config';
 import { IArbitreController, IArbitreService } from 'src/arbitre/app/module';
 import { Arbitre } from 'src/arbitre/domain';
 import { ArbitreFactory } from '../arbitre.factory';

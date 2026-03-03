@@ -24,7 +24,7 @@ import {
   import { diskStorage } from 'multer';
   import { Express } from 'express';
   import { IDParamDTO } from 'adapter/dto';
-  import { BaseConfig } from 'config/base.config';
+  import { BaseConfig } from '../../../_shared/config/base.config';
 import { MatchEvent } from 'src/matchEvents/domain';
 import { MatchEventDTO, UpdateMatchEventDto } from '../dto';
 import { MatchEventFactory } from '../match.events.factory';

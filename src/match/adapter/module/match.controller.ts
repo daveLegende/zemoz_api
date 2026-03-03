@@ -28,7 +28,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Express } from 'express';
 import { IDParamDTO } from 'adapter/dto';
-import { BaseConfig } from 'config/base.config';
+import { BaseConfig } from '../../../_shared/config/base.config';
 import { IMatchController, IMatchService } from 'src/match/app/module';
 import { Match } from 'src/match/domain';
 import { MatchFactory } from '../match.factory';

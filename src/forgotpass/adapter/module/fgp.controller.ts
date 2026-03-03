@@ -24,7 +24,6 @@ import {
   import { diskStorage } from 'multer';
   import { Express } from 'express';
   import { IDParamDTO } from 'adapter/dto';
-  import { BaseConfig } from 'config/base.config';
 import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
 import { IForgotPassController, IForgotPassService } from 'src/forgotpass/app/module';
 import { ForgotPass } from 'src/forgotpass/domain';

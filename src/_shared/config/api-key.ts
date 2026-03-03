@@ -1,7 +1,7 @@
 // import { Logger } from '@nestjs/common';
 // import * as fs from 'fs';
 // import * as path from 'path';
-// import { BaseConfig } from 'config/base.config';
+// import { BaseConfig } from './_shared/config/base.config';
 // import { IApiKey } from 'project/domain/project.interface';
 // import { AppEnum } from 'project/domain/project.enum';
 

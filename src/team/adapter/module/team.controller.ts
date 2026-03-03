@@ -24,7 +24,7 @@ import {
   import { diskStorage } from 'multer';
   import { Express } from 'express';
   import { IDParamDTO } from 'adapter/dto';
-  import { BaseConfig } from 'config/base.config';
+  import { BaseConfig } from '../../../_shared/config/base.config';
 import { UpdateTeamDTO } from 'src/team/adapter/dto';
 import { Team } from 'src/team/domain';
 import { RegisterAccoutDTO, DocUserOutputDTO } from 'user/adapter/dto';

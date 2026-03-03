@@ -24,7 +24,6 @@ import {
   import { diskStorage } from 'multer';
   import { Express } from 'express';
   import { IDParamDTO } from 'adapter/dto';
-  import { BaseConfig } from 'config/base.config';
 import { UserGuard } from 'user/adapter/guard/auth.guard';
 import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
 import { ITransactionController, ITransactionService } from 'src/transactions/app/module';

@@ -24,7 +24,6 @@ import {
   import { diskStorage } from 'multer';
   import { Express } from 'express';
   import { IDParamDTO } from 'adapter/dto';
-  import { BaseConfig } from 'config/base.config';
 import { PrononsticFactory } from '../pronos.factory';
 import { PrononsticAccoutDTO, UpdatePrononsticDTO } from '../dto';
 import { IPrononsticController, IPrononsticService } from 'src/prononstic/app/module';
