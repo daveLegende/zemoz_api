@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
-import { IIDParamDTO } from 'src/_shared/app/dto';
+import { IIDParamDTO } from '../../../../_shared/app/dto';
 
-import { Coupon } from 'src/coupon/domain';
-import { Paris } from 'src/paris/domain';
-import { Ticket } from 'src/ticket/domain';
-import { TournoiCoupon } from 'src/tournoiCoupon/domain';
-import { DeleteUserBetDTO, DeleteUserTicketDTO, DocUserOutputDTO } from '../../../../user/adapter/dto';
-import { IChangePasswordDTO, ICreateUserDTO, IReinitialisePassDTO, IUpdateUserDTO } from 'src/user/app/dto/user.input.dto';
-import { User } from 'src/user/domain/user.model';
+import { Coupon } from '../../../../coupon/domain';
+import { Paris } from '../../../../paris/domain';
+import { Ticket } from '../../../../ticket/domain';
+import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
+import { DeleteUserBetDTO, DeleteUserTicketDTO } from '../../../../user/adapter/dto';
+import { IChangePasswordDTO, ICreateUserDTO, IReinitialisePassDTO, IUpdateUserDTO } from '../../../../user/app/dto/user.input.dto';
+import { User } from '../../../../user/domain/user.model';
 
 export abstract class IUserController {
   abstract getCurrentUser(param: IIDParamDTO, file?: any): Promise<User>

@@ -1,5 +1,4 @@
-import { ITimestamp } from "domain/interface";
-import { User } from "user/domain";
+import { ITimestamp } from "../../_shared/domain/interface";
 
 export class ForgotPass extends ITimestamp {
     id: string;

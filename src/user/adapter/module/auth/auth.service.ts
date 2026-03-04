@@ -1,14 +1,14 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { IUserService } from 'user/app/module/user';
+import { IUserService } from '../../../app/module/user';
 
 import * as bcrypt from 'bcrypt';
 import * as moment from 'moment';
-import { IOtpRepository } from 'src/otp/domain';
-import { TwilioService } from 'src/twilio/twilio.service';
-import { OtpFactory } from 'src/otp/adapter/otp.factory';
-import { OtpAccountDto, SendOtpDTo, VerifyOtpDTo } from 'src/otp/adapter/dto';
-import { IUserRepository, User } from 'user/domain';
+import { IOtpRepository } from '../../../../otp/domain';
+import { TwilioService } from '../../../../twilio/twilio.service';
+import { OtpFactory } from '../../../../otp/adapter/otp.factory';
+import { OtpAccountDto, SendOtpDTo, VerifyOtpDTo } from '../../../../otp/adapter/dto';
+import { IUserRepository, User } from '../../../domain';
 
 @Injectable()
 export class AuthService {

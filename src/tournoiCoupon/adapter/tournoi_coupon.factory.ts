@@ -1,4 +1,4 @@
-import { User } from "user/domain";
+import { User } from "../../user/domain";
 import { ICreateTournoiCouponDTO, IUpdateTournoiCouponDTO } from "../app/dto";
 import { TournoiCoupon } from "../domain";
 

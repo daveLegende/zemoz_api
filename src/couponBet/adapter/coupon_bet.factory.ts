@@ -1,8 +1,6 @@
-import { User } from "user/domain";
-import { ICreateCouponBetDTO, IUpdateCouponBetDTO } from "../app/dto";
 import { BetStatus, CouponBet } from "../domain";
-import { Bet } from "src/bet/domain";
-import { Coupon } from "src/coupon/domain";
+import { Bet } from "../../bet/domain";
+import { Coupon } from "../../coupon/domain";
 
 // export abstract class CouponBetFactory {
 //     static async create(data: ICreateCouponBetDTO, bet: Bet, coupon: Coupon, selectedOptions: Record<string, number>): Promise<CouponBet> {

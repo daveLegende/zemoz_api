@@ -1,9 +1,8 @@
 import { ATimestamp } from "framework/timestamp.abstract";
-import { MatchEntity } from "src/match/framework/database/schema/match.entity";
-import { Prononstic, PronoState } from "src/prononstic/domain";
+import { MatchEntity } from "../../../../match/framework/database/schema/match.entity";
+import { Prononstic, PronoState } from "../../../../prononstic/domain";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { User } from "user/domain";
-import { UserEntity } from "user/framework/database/schema/user.entity";
+import { UserEntity } from "../../../../user/framework/database/schema/user.entity";
 
 
 @Entity('pronos')

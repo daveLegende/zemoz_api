@@ -4,11 +4,11 @@ import {
     Logger,
     NotFoundException,
   } from '@nestjs/common';
-import { IPrononsticService } from 'src/prononstic/app/module';
-import { IPronosRepository, Prononstic } from 'src/prononstic/domain';
+import { IPrononsticService } from '../../../prononstic/app/module';
+import { IPronosRepository, Prononstic } from '../../../prononstic/domain';
 import { PrononsticAccoutDTO, UpdatePrononsticDTO } from '../dto';
-import { IUserRepository } from 'user/domain';
-import { IMatchRepository } from 'src/match/domain';
+import { IUserRepository } from '../../../user/domain';
+import { IMatchRepository } from '../../../match/domain';
 import { PrononsticFactory } from '../pronos.factory';
   
   @Injectable()

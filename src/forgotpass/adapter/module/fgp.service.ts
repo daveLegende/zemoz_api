@@ -5,14 +5,12 @@ import {
     Logger,
     NotFoundException,
   } from '@nestjs/common';
-import { ForgotPassAccountDto, UpdateForgotPassDTO } from '../dto';
+import { ForgotPassAccountDto } from '../dto';
 import { ForgotPassFactory } from '../fgp.factory';
-import { IUserRepository } from 'user/domain';
-import { IForgotPassService } from 'src/forgotpass/app/module';
-import { ForgotPass, IForgotPassRepository } from 'src/forgotpass/domain';
+import { IUserRepository } from '../../../user/domain';
+import { IForgotPassService } from '../../../forgotpass/app/module';
+import { ForgotPass, IForgotPassRepository } from '../../../forgotpass/domain';
 import * as nodemailer from 'nodemailer';
-import { ICreateForgotPassDTO } from 'src/forgotpass/app/dto';
-import { IsNull, Not } from 'typeorm';
   
   @Injectable()
   export class ForgotPassService implements IForgotPassService {

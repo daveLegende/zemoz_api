@@ -1,7 +1,7 @@
 import { ITimestamp } from "domain/interface";
-import { User } from "user/domain";
+import { User } from "../../user/domain";
 import { TournoiCouponState } from "./tournoi_coupon.enum";
-import { TournoiCouponBet } from "src/tournoiCouponBet/domain";
+import { TournoiCouponBet } from "../../tournoiCouponBet/domain";
 
 export class TournoiCoupon extends ITimestamp {
     id: string;

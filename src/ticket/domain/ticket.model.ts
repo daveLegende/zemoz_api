@@ -1,7 +1,7 @@
 import { ITimestamp } from 'domain/interface';
 import { TicketDuration, TicketState, TicketType } from './ticket.enum';
-import { User } from 'user/domain';
-import { Match } from 'src/match/domain';
+import { User } from '../../user/domain';
+import { Match } from '../../match/domain';
 
 
 export class Ticket extends ITimestamp {

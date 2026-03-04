@@ -6,12 +6,12 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { ITicketService } from 'src/ticket/app/module';
-import { ITicketRepository, Ticket } from 'src/ticket/domain';
+import { ITicketService } from '../../../ticket/app/module';
+import { ITicketRepository, Ticket } from '../../../ticket/domain';
 import { TicketAccoutDTO, UpdateTicketDTO } from '../dto';
 import { TicketFactory } from '../ticket.factory';
-import { IUserRepository } from 'user/domain';
-import { TicketDuration, TicketState } from 'src/ticket/domain/ticket.enum';
+import { IUserRepository } from '../../../user/domain';
+import { TicketDuration, TicketState } from '../../../ticket/domain/ticket.enum';
 import { IMatchRepository, MatchState, MatchType } from 'src/match/domain';
 import { randomUUID } from 'crypto';
 import * as crypto from 'crypto';

@@ -1,9 +1,7 @@
 import { ITimestamp } from "domain/interface";
-import { Match } from "src/match/domain";
-import { User } from "user/domain";
-import { BetType, CategoryName } from "./bet.enum";
-import { CouponBet } from "src/couponBet/domain";
-import { Tournoi } from "src/tournoi/domain";
+import { Match } from "../../match/domain";
+import { CategoryName } from "./bet.enum";
+import { CouponBet } from "../../couponBet/domain";
 
 
 export class BetCategories extends ITimestamp {

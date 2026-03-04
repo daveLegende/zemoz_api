@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { User, SexEnum } from 'user/domain';
+import { User, SexEnum } from '../../domain';
 
 export class DocUserOutputDTO implements User {
   @ApiProperty({ type: String, name: 'id' })

@@ -1,7 +1,7 @@
-import { Match } from "src/match/domain";
+import { Match } from "../../match/domain";
 import { ICreateParisDTO, IUpdateParisDTO } from "../app/dto";
 import { Paris } from "../domain";
-import { User } from "user/domain";
+import { User } from "../../user/domain";
 
 export abstract class ParisFactory {
     static async create(data: ICreateParisDTO, match: Match, user: User): Promise<Paris> {

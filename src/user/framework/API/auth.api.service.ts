@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { OnApplicationBootstrap, Injectable } from '@nestjs/common';
-import axios from 'axios';
 import { IEvent } from '../../../_shared/app/abstract/generic.event';
 import { AxiosRest } from '../../../_shared/framework/rest.adapter';
 import { ISigninUserDTO } from '../../../user/app/dto';

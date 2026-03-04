@@ -1,4 +1,4 @@
-import { User } from "user/domain";
+import { User } from "../../user/domain";
 import { ICreateTicketDTO, IUpdateTicketDTO } from "../app/dto";
 import { Ticket } from '../domain'
 

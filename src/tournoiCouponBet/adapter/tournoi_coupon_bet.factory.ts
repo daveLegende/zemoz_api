@@ -1,9 +1,7 @@
-import { User } from "user/domain";
-import { ICreateTournoiCouponBetDTO, IUpdateTournoiCouponBetDTO } from "../app/dto";
+
 import { BetStatus, TournoiCouponBet } from "../domain";
-import { Bet } from "src/bet/domain";
-import { Coupon } from "src/coupon/domain";
-import { TournoiCoupon } from "src/tournoiCoupon/domain";
+import { Bet } from "../../bet/domain";
+import { TournoiCoupon } from "../../tournoiCoupon/domain";
 
 // export abstract class CouponBetFactory {
 //     static async create(data: ICreateCouponBetDTO, bet: Bet, coupon: Coupon, selectedOptions: Record<string, number>): Promise<CouponBet> {

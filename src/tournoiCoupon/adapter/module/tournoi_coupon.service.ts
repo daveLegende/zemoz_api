@@ -5,22 +5,19 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { Coupon, CouponState } from 'src/coupon/domain';
 import { TournoiCouponAccountDto, UpdateTournoiCouponDTO } from '../dto';
-import { ICouponRepository } from 'src/coupon/domain/data.abstract';
-import { IUserRepository } from 'user/domain';
+import { IUserRepository } from '../../../user/domain';
 import { TournoiCouponFactory } from '../tournoi_coupon.factory';
-import { IBetRepository } from 'src/bet/domain/data.abstract';
-import { ICouponBetRepository } from 'src/couponBet/domain/data.abstract';
-import { BetStatus, CouponBet } from 'src/couponBet/domain';
-import { CategoryName } from 'src/bet/domain';
-import { TournoiCoupon, TournoiCouponState } from 'src/tournoiCoupon/domain';
-import { ITournoiCouponRepository } from 'src/tournoiCoupon/domain/data.abstract';
-import { ITournoiCouponBetRepository, TournoiCouponBet } from 'src/tournoiCouponBet/domain';
-import { ITournoiCouponService } from 'src/tournoiCoupon/app/module';
-import { IMatchRepository, MatchType } from 'src/match/domain';
-import { IPlayerRepository } from 'src/player/domain';
-import { TournoiCouponEntity } from 'src/tournoiCoupon/framework/schema/tournoi_coupon.entity';
+import { IBetRepository } from '../../../bet/domain/data.abstract';
+import { BetStatus } from '../../../couponBet/domain';
+import { CategoryName } from '../../../bet/domain';
+import { TournoiCoupon, TournoiCouponState } from '../../../tournoiCoupon/domain';
+import { ITournoiCouponRepository } from '../../../tournoiCoupon/domain/data.abstract';
+import { ITournoiCouponBetRepository, TournoiCouponBet } from '../../../tournoiCouponBet/domain';
+import { ITournoiCouponService } from '../../../tournoiCoupon/app/module';
+import { IMatchRepository, MatchType } from '../../../match/domain';
+import { IPlayerRepository } from '../../../player/domain';
+import { TournoiCouponEntity } from '../../../tournoiCoupon/framework/schema/tournoi_coupon.entity';
 import { DataSource } from 'typeorm';
 
 @Injectable()

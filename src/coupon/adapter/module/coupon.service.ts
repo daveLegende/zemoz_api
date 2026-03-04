@@ -424,15 +424,14 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { Coupon, CouponState } from 'src/coupon/domain';
+import { Coupon, CouponState } from '../../../coupon/domain';
 import { CouponAccountDto, UpdateCouponDTO } from '../dto';
-import { ICouponRepository } from 'src/coupon/domain/data.abstract';
-import { IUserRepository } from 'user/domain';
+import { ICouponRepository } from '../../../coupon/domain/data.abstract';
+import { IUserRepository } from '../../../user/domain';
 import { CouponFactory } from '../coupon.factory';
-import { IBetRepository } from 'src/bet/domain/data.abstract';
-import { ICouponBetRepository } from 'src/couponBet/domain/data.abstract';
-import { BetStatus, CouponBet } from 'src/couponBet/domain';
-import { CategoryName } from 'src/bet/domain';
+import { IBetRepository } from '../../../bet/domain/data.abstract';
+import { ICouponBetRepository } from '../../../couponBet/domain/data.abstract';
+import { BetStatus, CouponBet } from '../../../couponBet/domain';
 
 @Injectable()
 export class CouponService {

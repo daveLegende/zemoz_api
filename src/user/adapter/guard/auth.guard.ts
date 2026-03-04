@@ -6,10 +6,10 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
-import { AccessEnum } from 'user/domain';
+import { AccessEnum } from '../../domain';
 import { IUserRepository } from '../../domain/data.abstract';
 // import { IAuthAPIDataServices } from 'user/app/abstract';
-import { AuthAPIService } from 'user/framework/API/auth.api.service';
+import { AuthAPIService } from '../../framework/API/auth.api.service';
 
 export const _extractTokenFromHeader = (
   request: Request,
