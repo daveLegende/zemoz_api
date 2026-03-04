@@ -1,7 +1,7 @@
-import { ITimestamp } from "domain/interface";
-import { Match } from "src/match/domain";
-import { Player } from "src/player/domain";
-import { Team } from "src/team/domain";
+import { ITimestamp } from "../../_shared/domain/interface";
+import { Match } from "../../match/domain";
+import { Player } from "../../player/domain";
+import { Team } from "../../team/domain";
 
 // TypeScript
 export class MatchEvent extends ITimestamp{

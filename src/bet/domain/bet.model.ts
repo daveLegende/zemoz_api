@@ -1,4 +1,4 @@
-import { ITimestamp } from "domain/interface";
+import { ITimestamp } from "../../_shared/domain/interface";
 import { Match } from "../../match/domain";
 import { CategoryName } from "./bet.enum";
 import { CouponBet } from "../../couponBet/domain";

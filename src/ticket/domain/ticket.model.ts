@@ -1,4 +1,4 @@
-import { ITimestamp } from 'domain/interface';
+import { ITimestamp } from '../../_shared/domain/interface';
 import { TicketDuration, TicketState, TicketType } from './ticket.enum';
 import { User } from '../../user/domain';
 import { Match } from '../../match/domain';

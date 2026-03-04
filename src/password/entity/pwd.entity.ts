@@ -1,6 +1,5 @@
-import { ITimestamp } from 'domain/interface';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-import { Password } from '../dto/pwd.model';
+
 
 @Entity('passwords')
 export class PasswordEntity{

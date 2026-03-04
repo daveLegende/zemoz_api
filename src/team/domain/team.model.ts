@@ -1,6 +1,6 @@
-import { ITimestamp } from 'domain/interface';
-import { Player } from 'src/player/domain';
-import { Poule } from 'src/poule/domain';
+import { ITimestamp } from '../../_shared/domain/interface';
+import { Player } from '../../player/domain';
+import { Poule } from '../../poule/domain';
 
 export class Team extends ITimestamp {
   id: string;

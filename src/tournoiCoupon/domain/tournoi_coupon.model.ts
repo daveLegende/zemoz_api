@@ -1,4 +1,4 @@
-import { ITimestamp } from "domain/interface";
+import { ITimestamp } from "../../_shared/domain/interface";
 import { User } from "../../user/domain";
 import { TournoiCouponState } from "./tournoi_coupon.enum";
 import { TournoiCouponBet } from "../../tournoiCouponBet/domain";

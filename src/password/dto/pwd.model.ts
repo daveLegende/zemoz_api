@@ -1,4 +1,4 @@
-import { ITimestamp } from 'domain/interface';
+import { ITimestamp } from '../../_shared/domain/interface';
 
 export class Password extends ITimestamp {
   id: string;
