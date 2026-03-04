@@ -2,7 +2,7 @@ import { ATimestamp } from "../../../_shared/framework/timestamp.abstract";
 import { TournoiCoupon, TournoiCouponState } from "../../../tournoiCoupon/domain";
 import { TournoiCouponBetEntity } from "../../../tournoiCouponBet/framework/schema/tournoi_coupon_bet.entity";
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from "typeorm";
-import { UserEntity } from "../../../../user/framework/database/schema/user.entity";
+import { UserEntity } from "../../../user/framework/database/schema/user.entity";
 
 @Entity('tournoi_coupons')
 export class TournoiCouponEntity extends ATimestamp implements TournoiCoupon {
