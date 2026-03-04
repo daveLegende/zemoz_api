@@ -26,11 +26,11 @@ import { Express } from 'express';
 import { IDParamDTO } from '../../../_shared/adapter/dto';
 import { PrononsticFactory } from '../pronos.factory';
 import { PrononsticAccoutDTO, UpdatePrononsticDTO } from '../dto';
-import { IPrononsticController, IPrononsticService } from 'src/prononstic/app/module';
-import { Prononstic } from 'src/prononstic/domain';
+import { IPrononsticController, IPrononsticService } from '../../app/module';
+import { Prononstic } from '../../domain';
 import { DocPrononsticOutputDTO } from '../dto/doc.pronos.dto';
 import { UserGuard } from 'user/adapter/guard/auth.guard';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 
 @ApiTags('pronos management')
 @ApiBearerAuth()

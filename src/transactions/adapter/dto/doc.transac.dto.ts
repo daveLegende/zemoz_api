@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsInt, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
-import { TransactionType } from "src/transactions/domain";
+import { TransactionType } from "../../domain";
 
 export class DocTransactionOutputDto {
     @ApiProperty({

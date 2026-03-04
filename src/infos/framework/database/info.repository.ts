@@ -1,8 +1,8 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DBGenericRepository } from 'framework/database.repository';
-import { IGenericRepository } from 'src/igeneric.interface';
-import { IInfoRepository, Info } from 'src/infos/domain';
+import { DBGenericRepository } from '../../../_shared/framework/database.repository';
+import { IGenericRepository } from '../../../igeneric.interface';
+import { IInfoRepository, Info } from '../../../infos/domain';
 import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { InfoEntity } from './schema/info.entity';
 

@@ -22,10 +22,10 @@ import { IDParamDTO } from '../../../_shared/adapter/dto';
 import { CouponBetFactory } from '../coupon_bet.factory';
 import { CouponBetAccountDto, UpdateCouponBetDTO } from '../dto';
 import { DocCouponBetOutputDto } from '../dto/doc.output_bet.dto';
-import { CouponBet } from 'src/couponBet/domain';
-import { ICouponBetController, ICouponBetService } from 'src/couponBet/app/module';
-import { UserGuard } from 'user/adapter/guard/auth.guard';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { CouponBet } from '../../../couponBet/domain';
+import { ICouponBetController, ICouponBetService } from '../../../couponBet/app/module';
+import { UserGuard } from '../../../user/adapter/guard/auth.guard';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 
 @ApiTags('Coupon management')
 @ApiBearerAuth()

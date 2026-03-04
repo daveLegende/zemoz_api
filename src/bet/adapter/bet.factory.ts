@@ -1,5 +1,4 @@
-import { Match } from "src/match/domain";
-import { ICreateBetDTO, IUpdateBetDTO } from "../app/dto";
+import { Match } from "../../match/domain";
 import { Bet, CategoryName } from "../domain";
 
 export abstract class BetFactory {

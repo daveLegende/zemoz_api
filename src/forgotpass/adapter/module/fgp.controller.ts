@@ -20,13 +20,9 @@ import {
   ApiConsumes,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { Express } from 'express';
 import { IDParamDTO } from '../../../_shared/adapter/dto';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
-import { IForgotPassController, IForgotPassService } from 'src/forgotpass/app/module';
-import { ForgotPass } from 'src/forgotpass/domain';
+import { IForgotPassController, IForgotPassService } from '../../../forgotpass/app/module';
+import { ForgotPass } from '../../../forgotpass/domain';
 import { ForgotPassAccountDto } from '../dto';
 import { ForgotPassFactory } from '../fgp.factory';
 

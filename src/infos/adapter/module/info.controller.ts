@@ -25,12 +25,11 @@ import {
   import { Express } from 'express';
   import { IDParamDTO } from '../../../_shared/adapter/dto';
   import { BaseConfig } from '../../../_shared/config/base.config';
-import { IInfoController, IInfoService } from 'src/infos/app/module';
+import { IInfoController, IInfoService } from '../../../infos/app/module';
 import { InfoFactory } from '../info.factory';
-import { Info } from 'src/infos/domain';
+import { Info } from '../../../infos/domain';
 import { DocInfoOutputDto, InfoAccountDto, UpdateInfoDTO } from '../dto';
-import {  } from 'user/adapter/guard/auth.guard';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
   
   @ApiTags('infos management')
   @Controller('infos')

@@ -1,6 +1,6 @@
-import { IIDParamDTO } from 'app/dto';
-import { Otp } from 'src/otp/domain';
-import { ICreateOtpDTO, IUpdateOtpDTO } from '../dto';
+import { IIDParamDTO } from '../../../_shared/app/dto';
+import { Otp } from '../../../otp/domain';
+import { ICreateOtpDTO } from '../dto';
 
 export abstract class IOtpController {
 

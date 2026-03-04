@@ -1,5 +1,5 @@
-import { IIDParamDTO } from 'app/dto';
-import { Bet } from 'src/bet/domain';
+import { IIDParamDTO } from '../../../_shared/app/dto';
+import { Bet } from '../../../bet/domain';
 import { ICreateBetDTO, IUpdateBetDTO } from '../dto';
 
 export abstract class IBetController {

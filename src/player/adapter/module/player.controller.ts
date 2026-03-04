@@ -30,12 +30,12 @@ import {
     DocUserOutputDTO,
     RegisterAccoutDTO,
   } from '../../../user/adapter/dto';
-import { IPlayerController, IPlayerService } from 'src/player/app/module';
-import { Player } from 'src/player/domain';
+import { IPlayerController, IPlayerService } from '../../app/module';
+import { Player } from '../../domain';
 import { PlayerAccoutDTO, UpdatePlayerDTO } from '../dto';
 import { PlayerFactory } from '../player.factory';
 import { DocPlayerOutputDTO } from '../dto/doc.player.dto';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
   
   @ApiTags('players management')
   @ApiBearerAuth()

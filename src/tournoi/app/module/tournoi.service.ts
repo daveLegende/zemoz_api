@@ -1,4 +1,4 @@
-import { Tournoi } from "src/tournoi/domain";
+import { Tournoi } from "../../domain";
 import { ICreateTournoiDTO, IUpdateTournoiDTO } from "../dto";
 
 

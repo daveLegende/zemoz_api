@@ -1,4 +1,4 @@
-import { IGenericRepository } from "src/igeneric.interface";
+import { IGenericRepository } from "../../igeneric.interface";
 import { Paris } from "./paris.model";
 
 export abstract class IParisRepository {

@@ -4,13 +4,13 @@ import {
     Logger,
     NotFoundException,
   } from '@nestjs/common';
-import { ITournoiService } from 'src/tournoi/app/module';
-import { ITournoiRepository, Tournoi } from 'src/tournoi/domain';
+import { ITournoiService } from '../../app/module';
+import { ITournoiRepository, Tournoi } from '../../domain';
 import { TournoiAccoutDTO, UpdateTournoiDTO } from '../dto';
 import { TournoiFactory } from '../tournoi.factory';
-import { PlayerFactory } from 'src/player/adapter/player.factory';
-import { PlayerAccoutDTO } from 'src/player/adapter/dto';
-import { IPlayerRepository } from 'src/player/domain';
+import { PlayerFactory } from '../../../player/adapter/player.factory';
+import { PlayerAccoutDTO } from '../../../player/adapter/dto';
+import { IPlayerRepository } from '../../../player/domain';
   
 @Injectable()
 export class TournoiService implements ITournoiService {

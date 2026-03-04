@@ -7,25 +7,25 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { IMatchService } from 'src/match/app/module';
-import { EventType, HalfPauseState, IMatchRepository, Match, MatchState, MatchType } from 'src/match/domain';
+import { IMatchService } from '../../app/module';
+import { EventType, HalfPauseState, IMatchRepository, Match, MatchState, MatchType } from '../../domain';
 import { MatchAccoutDTO, UpdateMatchDTO, UpdateMatchPenaltyScoreDto, UpdateMatchPenaltyStateDto, UpdateMatchScoreEventDto, UpdateStateDto } from '../dto';
 import { MatchFactory } from '../match.factory';
-import { IArbitreRepository } from 'src/arbitre/domain';
-import { ITeamRepository } from 'src/team/domain';
-import { IPouleRepository, Poule } from 'src/poule/domain';
-import { IPlayerRepository } from 'src/player/domain';
-import { IMatchEventRepository, MatchEvent } from 'src/matchEvents/domain';
-import { MatchEventFactory } from 'src/matchEvents/adapter/match.events.factory';
+import { IArbitreRepository } from '../../../arbitre/domain';
+import { ITeamRepository } from '../../../team/domain';
+import { IPouleRepository, Poule } from '../../../poule/domain';
+import { IPlayerRepository } from '../../../player/domain';
+import { IMatchEventRepository, MatchEvent } from '../../../matchEvents/domain';
+import { MatchEventFactory } from '../../../matchEvents/adapter/match.events.factory';
 import { MatchGateway } from './match.gateway';
-import { ICouponRepository } from 'src/coupon/domain/data.abstract';
-import { ICouponBetService } from 'src/couponBet/app/module/coupon_bet.service';
-import { CategoryName } from 'src/bet/domain';
-import { BetStatus, CouponBet, ICouponBetRepository } from 'src/couponBet/domain';
-import { CouponBetFactory } from 'src/couponBet/adapter/coupon_bet.factory';
-import { Coupon, CouponState } from 'src/coupon/domain';
+import { ICouponRepository } from '../../../coupon/domain/data.abstract';
+import { ICouponBetService } from '../../../couponBet/app/module/coupon_bet.service';
+import { CategoryName } from '../../../bet/domain';
+import { BetStatus, CouponBet, ICouponBetRepository } from '../../../couponBet/domain';
+import { CouponBetFactory } from '../../../couponBet/adapter/coupon_bet.factory';
+import { Coupon, CouponState } from '../../../coupon/domain';
 import { DataSource } from 'typeorm';
-import { CouponEntity } from 'src/coupon/framework/schema/coupon.entity';
+import { CouponEntity } from '../../../coupon/framework/schema/coupon.entity';
 
 @Injectable()
 export class MatchService implements IMatchService {

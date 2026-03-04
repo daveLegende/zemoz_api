@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
 import { IsArray, IsString, IsUUID } from "class-validator";
-import { Team } from "src/team/domain";
+import { Team } from "../../../team/domain";
 
 export class PouleAccountDto {
     @ApiProperty({

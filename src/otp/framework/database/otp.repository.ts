@@ -1,8 +1,8 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DBGenericRepository } from 'framework/database.repository';
-import { IGenericRepository } from 'src/igeneric.interface';
-import { IOtpRepository, Otp } from 'src/otp/domain';
+import { DBGenericRepository } from '../../../_shared/framework/database.repository';
+import { IGenericRepository } from '../../../igeneric.interface';
+import { IOtpRepository, Otp } from '../../../otp/domain';
 import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { OtpEntity } from './schema/otp.entity';
 

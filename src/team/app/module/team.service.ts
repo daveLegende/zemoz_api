@@ -1,6 +1,6 @@
-import { Team } from "src/team/domain";
+import { Team } from "../../domain";
 import { ICreateTeamDTO, IUpdateTeamDTO } from "../dto";
-import { ICreatePlayerDTO } from "src/player/app/dto";
+import { ICreatePlayerDTO } from "../../../player/app/dto";
 
 
 export abstract class ITeamService {

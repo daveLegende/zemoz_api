@@ -21,12 +21,12 @@ import {
 import { IDParamDTO } from '../../../_shared/adapter/dto/param.dto';
 import { RegisterAccoutDTO, DocUserOutputDTO } from '../../../user/adapter/dto';
 import { TicketFactory } from '../ticket.factory';
-import { ITicketController, ITicketService } from 'src/ticket/app/module';
-import { Ticket } from 'src/ticket/domain';
+import { ITicketController, ITicketService } from '../../app/module';
+import { Ticket } from '../../domain';
 import { TicketAccoutDTO, UpdateTicketDTO } from '../dto';
 import { DocTicketOutputDTO } from '../dto/doc.ticket.dto';
 import { UserGuard } from 'user/adapter/guard/auth.guard';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
   
   @ApiTags('tickets management')
   @ApiBearerAuth()

@@ -1,6 +1,6 @@
-import { OddsClass } from "src/bet/domain";
-import { TournoiCouponState } from "src/tournoiCoupon/domain";
-import { TournoiCouponBet } from "src/tournoiCouponBet/domain";
+import { OddsClass } from "../../../bet/domain";
+import { TournoiCouponState } from "../../domain";
+import { TournoiCouponBet } from "../../../tournoiCouponBet/domain";
 
 export class BetTournoiCoupon {
   bet: string;

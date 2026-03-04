@@ -1,5 +1,5 @@
-import { MatchScores, MatchState, MatchType } from "src/match/domain";
-import { MatchEvent } from "src/matchEvents/domain";
+import { MatchScores, MatchState, MatchType } from "../../../match/domain";
+import { MatchEvent } from "../../../matchEvents/domain";
 
 export interface ICreateMatchDTO {
   lieu: string;

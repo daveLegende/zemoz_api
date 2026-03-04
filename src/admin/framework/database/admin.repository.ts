@@ -1,8 +1,8 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DBGenericRepository } from 'framework/database.repository';
-import { Admin, IAdminRepository } from 'src/admin/domain';
-import { IGenericRepository } from 'src/igeneric.interface';
+import { DBGenericRepository } from '../../../_shared/framework/database.repository';
+import { Admin, IAdminRepository } from '../../../admin/domain';
+import { IGenericRepository } from '../../../igeneric.interface';
 import { AdminEntity } from './schema/admin.entity';
 import { Repository } from 'typeorm';
 

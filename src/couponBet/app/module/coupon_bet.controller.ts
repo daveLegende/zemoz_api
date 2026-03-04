@@ -1,6 +1,6 @@
-import { IIDParamDTO } from 'app/dto';
+import { IIDParamDTO } from '../../../_shared/app/dto';
 import { ICreateCouponBetDTO, IUpdateCouponBetDTO } from '../dto';
-import { CouponBet } from 'src/couponBet/domain';
+import { CouponBet } from '../../../couponBet/domain';
 
 export abstract class ICouponBetController {
   abstract all(): Promise<CouponBet[]>;

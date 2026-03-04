@@ -1,4 +1,4 @@
-import { Ticket } from "src/ticket/domain";
+import { Ticket } from "../../domain";
 import { ICreateTicketDTO, IUpdateTicketDTO } from "../dto";
 
 

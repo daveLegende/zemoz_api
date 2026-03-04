@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ITournoiRepository } from 'src/tournoi/domain';
+import { ITournoiRepository } from '../../domain';
 import { TournoiRepository } from './tournoi.repository';
 import { TournoiEntity } from './schema/tournoi.entity';
 

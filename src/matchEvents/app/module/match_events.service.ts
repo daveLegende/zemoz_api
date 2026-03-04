@@ -1,5 +1,5 @@
 import { ICreateMatchEventDTO, IUpdateMatchEventDTO } from "../dto";
-import { MatchEvent } from "src/matchEvents/domain";
+import { MatchEvent } from "../../../matchEvents/domain";
 
 export abstract class IMatchEventService {
   abstract add(data: ICreateMatchEventDTO): Promise<MatchEvent>;

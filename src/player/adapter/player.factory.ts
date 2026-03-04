@@ -1,4 +1,4 @@
-import { Team } from "src/team/domain";
+import { Team } from "../../team/domain";
 import { ICreatePlayerDTO, IUpdatePlayerDTO } from "../app/dto";
 import { Player } from '../domain'
 

@@ -1,4 +1,4 @@
-import { EventType } from "src/match/domain";
+import { EventType } from "../../../match/domain";
 
 export class ICreateMatchEventDTO {
     match: string;

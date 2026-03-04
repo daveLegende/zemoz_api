@@ -1,4 +1,4 @@
-import { Info } from "src/infos/domain";
+import { Info } from "../../../infos/domain";
 import { ICreateInfoDTO, IUpdateInfoDTO } from "../dto";
 
 export abstract class IInfoService {

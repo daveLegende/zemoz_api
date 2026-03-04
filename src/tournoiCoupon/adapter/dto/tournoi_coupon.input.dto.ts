@@ -1,9 +1,9 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsArray, IsBoolean, IsEnum, IsInt, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from "class-validator";
-import { OddsDto } from "src/bet/adapter/dto";
-import { BetTournoiCoupon } from "src/tournoiCoupon/app/dto";
-import { TournoiCouponState } from "src/tournoiCoupon/domain";
+import { OddsDto } from "../../../bet/adapter/dto";
+import { BetTournoiCoupon } from "../../app/dto";
+import { TournoiCouponState } from "../../domain";
 
 export class BetTournoiCouponDTO {
     @ApiProperty({

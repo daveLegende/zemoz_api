@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsArray, IsBoolean, IsEnum, IsNumber, IsString, IsUUID } from "class-validator";
-import { TournoiCouponState } from "src/tournoiCoupon/domain";
+import { TournoiCouponState } from "../../domain";
 
 export class DocTournoiCouponOutputDto {
     @ApiProperty({

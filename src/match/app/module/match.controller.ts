@@ -1,5 +1,5 @@
-import { IIDParamDTO } from 'app/dto';
-import { Match } from 'src/match/domain';
+import { IIDParamDTO } from '../../../_shared/app/dto';
+import { Match } from '../../../match/domain';
 import { ICreateMatchDTO, IUpdateMatchDTO } from '../dto';
 
 export abstract class IMatchController {

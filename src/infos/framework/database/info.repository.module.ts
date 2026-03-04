@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { IInfoRepository } from 'src/infos/domain';
+import { IInfoRepository } from '../../../infos/domain';
 import { InfoRepository } from './info.repository';
 import { InfoEntity } from './schema/info.entity';
 

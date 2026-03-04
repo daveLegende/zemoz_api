@@ -25,14 +25,14 @@ import {
   import { Express } from 'express';
   import { IDParamDTO } from '../../../_shared/adapter/dto';
   import { BaseConfig } from '../../../_shared/config/base.config';
-import { UpdateTeamDTO } from 'src/team/adapter/dto';
-import { Team } from 'src/team/domain';
+import { UpdateTeamDTO } from '../dto';
+import { Team } from '../../domain';
 import { RegisterAccoutDTO, DocUserOutputDTO } from '../../../user/adapter/dto';
 import { TeamFactory } from '../team.factory';
-import { ITeamController, ITeamService } from 'src/team/app/module';
+import { ITeamController, ITeamService } from '../../app/module';
 import { TeamAccoutDTO } from '../dto';
 import { DocTeamOutputDTO } from '../dto/doc.team.dto';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
   
 @ApiTags('teams management')
 @Controller('teams')

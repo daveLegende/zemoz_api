@@ -4,13 +4,13 @@ import {
     Logger,
     NotFoundException,
   } from '@nestjs/common';
-import { ITeamService } from 'src/team/app/module';
-import { ITeamRepository, Team } from 'src/team/domain';
+import { ITeamService } from '../../app/module';
+import { ITeamRepository, Team } from '../../domain';
 import { TeamAccoutDTO, UpdateTeamDTO } from '../dto';
 import { TeamFactory } from '../team.factory';
-import { PlayerFactory } from 'src/player/adapter/player.factory';
-import { PlayerAccoutDTO } from 'src/player/adapter/dto';
-import { IPlayerRepository } from 'src/player/domain';
+import { PlayerFactory } from '../../../player/adapter/player.factory';
+import { PlayerAccoutDTO } from '../../../player/adapter/dto';
+import { IPlayerRepository } from '../../../player/domain';
   
   @Injectable()
   export class TeamService implements ITeamService {

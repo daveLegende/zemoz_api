@@ -1,4 +1,4 @@
-import { Arbitre } from "src/arbitre/domain";
+import { Arbitre } from "../../domain";
 import { ICreateArbitreDTO, IUpdateArbitreDTO } from "../dto";
 
 

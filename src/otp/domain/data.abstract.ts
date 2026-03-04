@@ -1,4 +1,4 @@
-import { IGenericRepository } from "src/igeneric.interface";
+import { IGenericRepository } from "../../igeneric.interface";
 import { Otp } from "./otp.model";
 
 export abstract class IOtpRepository {

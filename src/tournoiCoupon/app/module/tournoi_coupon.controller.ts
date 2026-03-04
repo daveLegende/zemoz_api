@@ -1,5 +1,5 @@
 import { IIDParamDTO } from 'app/dto';
-import { TournoiCoupon } from 'src/tournoiCoupon/domain';
+import { TournoiCoupon } from '../../domain';
 import { ICreateTournoiCouponDTO, IUpdateTournoiCouponDTO } from '../dto';
 
 export abstract class ITournoiCouponController {

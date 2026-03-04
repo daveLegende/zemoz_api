@@ -1,8 +1,8 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DBGenericRepository } from 'framework/database.repository';
-import { IGenericRepository } from 'src/igeneric.interface';
-import { IMatchRepository, Match } from 'src/match/domain';
+import { DBGenericRepository } from '../../../_shared/framework/database.repository';
+import { IGenericRepository } from '../../../igeneric.interface';
+import { IMatchRepository, Match } from '../../../match/domain';
 import { Repository } from 'typeorm';
 import { MatchEntity } from './schema/match.entity';
 

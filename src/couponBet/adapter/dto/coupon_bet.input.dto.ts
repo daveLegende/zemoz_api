@@ -1,14 +1,13 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsEnum, IsString, IsUUID, ValidateNested } from "class-validator";
-import { OddsDto } from "src/bet/adapter/dto";
-import { BetStatus } from "src/couponBet/domain";
+import { BetStatus } from "../../../couponBet/domain";
 
 export class CouponBetAccountDto {
     @ApiProperty({
         type: String,
         name: 'bet',
-        description: 'ID du pari',
+        description: 'ID du bet',
         example: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
     })
     @IsString()

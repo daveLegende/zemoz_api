@@ -1,4 +1,4 @@
-import { ForgotPass } from "src/forgotpass/domain";
+import { ForgotPass } from "../../../../forgotpass/domain";
 import { Column, DeleteDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('forgotpass')

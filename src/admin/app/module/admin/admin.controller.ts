@@ -1,8 +1,8 @@
-import { IIDParamDTO } from 'app/dto';
-import { Admin } from 'src/admin/domain';
+import { IIDParamDTO } from '../../../../_shared/app/dto';
+import { Admin } from '../../../../admin/domain';
 import { ICreateAdminDTO, IUpdateAdminDTO } from '../../dto';
-import { Coupon } from 'src/coupon/domain';
-import { TournoiCoupon } from 'src/tournoiCoupon/domain';
+import { Coupon } from '../../../../coupon/domain';
+import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
 
 export abstract class IAdminController {
   abstract all(): Promise<Admin[]>;

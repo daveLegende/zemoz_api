@@ -21,10 +21,10 @@ import {
     ApiBearerAuth,
   } from '@nestjs/swagger';
   import { IDParamDTO } from '../../../_shared/adapter/dto/param.dto';
-import { IOtpController, IOtpService } from 'src/otp/app/module';
+import { IOtpController, IOtpService } from '../../../otp/app/module';
 import { OtpFactory } from '../otp.factory';
 import { DocOtpOutputDto, OtpAccountDto } from '../dto';
-import { Otp } from 'src/otp/domain';
+import { Otp } from '../../../otp/domain';
 import { OtpService } from './otp.service';
   
   @ApiTags('Otps management')

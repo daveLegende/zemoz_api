@@ -10,7 +10,7 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import { TicketDuration, TicketState, TicketType } from 'src/ticket/domain/ticket.enum';
+import { TicketDuration, TicketState, TicketType } from '../../domain/ticket.enum';
 
 export class TicketAccoutDTO {
   @ApiProperty({ description: 'VIP ou STANDARD', enum: TicketType })

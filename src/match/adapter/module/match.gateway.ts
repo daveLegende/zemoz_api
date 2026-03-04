@@ -1,16 +1,7 @@
 import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { UpdateHalfTimeDto, UpdateMatchScoreEventDto, UpdateStateDto } from '../dto';
-import { IMatchService } from 'src/match/app/module';
-import { Logger } from '@nestjs/common';
-import { ICouponService } from 'src/coupon/app/module';
-import { IUserService } from 'user/app/module/user';
-import { IParisService } from 'src/paris/app/module';
-import { IParisRepository } from 'src/paris/domain/data.abstract';
-import { UserRepository } from 'user/framework/database/user.repository';
-import { ParisFactory } from 'src/paris/adapter/paris.factory';
-import { EntityManager } from 'typeorm';
-import { MatchState } from 'src/match/domain';
+import { IMatchService } from '../../../match/app/module';
 
 // // @WebSocketGateway(81, { transports: ['websocket'] })
 // // export class MatchGateway {

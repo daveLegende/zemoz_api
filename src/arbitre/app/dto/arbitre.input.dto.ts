@@ -1,4 +1,4 @@
-import { RoleArbitre } from "src/arbitre/domain";
+import { RoleArbitre } from "../../domain";
 
 
 export interface ICreateArbitreDTO {

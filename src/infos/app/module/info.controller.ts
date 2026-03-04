@@ -1,5 +1,5 @@
-import { IIDParamDTO } from 'app/dto';
-import { Info } from 'src/infos/domain';
+import { IIDParamDTO } from '../../../_shared/app/dto';
+import { Info } from '../../../infos/domain';
 import { ICreateInfoDTO, IUpdateInfoDTO } from '../dto';
 
 export abstract class IInfoController {

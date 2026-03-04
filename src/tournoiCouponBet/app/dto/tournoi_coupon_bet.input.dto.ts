@@ -1,5 +1,5 @@
-import { OddsClass } from "src/bet/domain";
-import { BetStatus } from "src/couponBet/domain";
+import { OddsClass } from "../../../bet/domain";
+import { BetStatus } from "../../../couponBet/domain";
 
 export interface ICreateTournoiCouponBetDTO {
 

@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { OnApplicationBootstrap, Injectable } from '@nestjs/common';
-import axios from 'axios';
-import { IEvent } from 'app/abstract/generic.event';
-import { AxiosRest } from 'framework/rest.adapter';
-import { Admin } from 'src/admin/domain';
-import { ICreateAdminDTO } from 'src/admin/app/dto';
+import { IEvent } from '../../../_shared/app/abstract/generic.event';
+import { AxiosRest } from '../../../_shared/framework/rest.adapter';
+import { Admin } from '../../../admin/domain';
+import { ICreateAdminDTO } from '../../../admin/app/dto';
 
 class GenericAuthAPI {
   private axiosAdapter: AxiosRest<Admin>;

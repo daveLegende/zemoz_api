@@ -1,5 +1,5 @@
 import { IIDParamDTO } from 'app/dto';
-import { Poule } from 'src/poule/domain';
+import { Poule } from '../../domain';
 import { ICreatePouleDTO, IUpdatePouleDTO } from '../dto';
 
 export abstract class IPouleController {

@@ -1,5 +1,5 @@
-import { OddsDto } from "src/bet/adapter/dto";
-import { CategoryName, OddsClass } from "src/bet/domain";
+import { OddsDto } from "../../../bet/adapter/dto";
+import { CategoryName, OddsClass } from "../../../bet/domain";
 
 export interface ICreateBetDTO {
     

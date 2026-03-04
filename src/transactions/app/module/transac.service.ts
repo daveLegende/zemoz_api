@@ -1,4 +1,4 @@
-import { Transaction } from "src/transactions/domain";
+import { Transaction } from "../../domain";
 import { ICreatePassDTO, ICreateTransactionDTO, IUpdateTransactionDTO } from "../dto";
 
 export abstract class ITransactionService {

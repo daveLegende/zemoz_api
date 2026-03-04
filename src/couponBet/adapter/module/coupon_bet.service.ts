@@ -7,12 +7,12 @@ import {
 } from '@nestjs/common';
 import { CouponBetAccountDto, UpdateCouponBetDTO } from '../dto';
 import { CouponBetFactory } from '../coupon_bet.factory';
-import { IBetRepository } from 'src/bet/domain/data.abstract';
-import { BetStatus, CouponBet } from 'src/couponBet/domain';
-import { ICouponBetRepository } from 'src/couponBet/domain/data.abstract';
-import { ICouponRepository } from 'src/coupon/domain/data.abstract';
-import { ICouponBetService } from 'src/couponBet/app/module';
-import { IMatchRepository } from 'src/match/domain';
+import { IBetRepository } from '../../../bet/domain/data.abstract';
+import { BetStatus, CouponBet } from '../../../couponBet/domain';
+import { ICouponBetRepository } from '../../../couponBet/domain/data.abstract';
+import { ICouponRepository } from '../../../coupon/domain/data.abstract';
+import { ICouponBetService } from '../../../couponBet/app/module';
+import { IMatchRepository } from '../../../match/domain';
 
 @Injectable()
 export class CouponBetService implements ICouponBetService {

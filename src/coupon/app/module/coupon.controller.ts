@@ -1,8 +1,7 @@
-import { IIDParamDTO } from 'app/dto';
-import { Coupon } from 'src/coupon/domain';
+import { IIDParamDTO } from '../../../_shared/app/dto';
+import { Coupon } from '../../../coupon/domain';
 import { ICreateCouponDTO, IUpdateCouponDTO } from '../dto';
-import { Match } from 'src/match/domain';
-import { IUpdateMatchDTO } from 'src/match/app/dto';
+import { IUpdateMatchDTO } from '../../../match/app/dto';
 
 export abstract class ICouponController {
   abstract all(): Promise<Coupon[]>;

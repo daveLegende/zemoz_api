@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
 import { IIDParamDTO } from 'app/dto';
-import { Tournoi } from 'src/tournoi/domain';
+import { Tournoi } from '../../domain';
 import { ICreateTournoiDTO, IUpdateTournoiDTO } from '../dto';
 
 export abstract class ITournoiController {

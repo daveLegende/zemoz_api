@@ -1,4 +1,4 @@
-import { Bet } from "src/bet/domain";
+import { Bet } from "../../../bet/domain";
 import { ICreateBetDTO, IUpdateBetDTO } from "../dto";
 
 

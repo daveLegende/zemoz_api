@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
 import { IsArray, IsDate, IsEnum, IsInt, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
-import { TransactionType } from "src/transactions/domain/";
+import { TransactionType } from "../../domain";
 
 export class TransactionAccountDto {
 

@@ -1,5 +1,5 @@
-import { AdminEntity } from "src/admin/framework/database/schema/admin.entity";
-import { Transaction, TransactionType } from "src/transactions/domain";
+import { AdminEntity } from "../../../../admin/framework/database/schema/admin.entity";
+import { Transaction, TransactionType } from "../../../domain";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserEntity } from "user/framework/database/schema/user.entity";
 

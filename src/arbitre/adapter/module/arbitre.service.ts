@@ -4,8 +4,8 @@ import {
     Logger,
     NotFoundException,
   } from '@nestjs/common';
-import { IArbitreService } from 'src/arbitre/app/module';
-import { Arbitre, IArbitreRepository } from 'src/arbitre/domain';
+import { IArbitreService } from '../../app/module';
+import { Arbitre, IArbitreRepository } from '../../domain';
 import { ArbitreFactory } from '../arbitre.factory';
 import { ArbitreAccountDto, UpdateArbitreDTO } from '../dto';
   

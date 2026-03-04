@@ -1,4 +1,4 @@
-import { Prononstic } from "src/prononstic/domain";
+import { Prononstic } from "../../domain";
 import { ICreatePronosDTO, IUpdatePronosDTO } from "../dto";
 
 

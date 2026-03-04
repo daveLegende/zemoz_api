@@ -1,4 +1,3 @@
-import { Team } from "src/team/domain";
 import { Info } from "../domain";
 import { ICreateInfoDTO, IUpdateInfoDTO } from "../app/dto";
 

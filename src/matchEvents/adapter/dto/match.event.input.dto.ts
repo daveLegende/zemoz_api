@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsString, IsUUID, IsNumber, IsEnum } from "class-validator";
-import { EventType } from "src/match/domain";
+import { EventType } from "../../../match/domain";
 
 export class MatchEventDTO {
     @ApiProperty({ description: 'Id du match', type: String })

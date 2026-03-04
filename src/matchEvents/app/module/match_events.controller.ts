@@ -1,6 +1,6 @@
-import { IIDParamDTO } from 'app/dto';
+import { IIDParamDTO } from '../../../_shared/app/dto';
 import { ICreateMatchEventDTO, IUpdateMatchEventDTO } from '../dto';
-import { MatchEvent } from 'src/matchEvents/domain';
+import { MatchEvent } from '../../../matchEvents/domain';
 
 export abstract class IMatchEventController {
   abstract all(): Promise<MatchEvent[]>;

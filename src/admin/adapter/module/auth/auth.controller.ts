@@ -1,7 +1,7 @@
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { AdminAuthService } from './auth.service';
 import { AdminAccountDto } from '../../dto';
-import { Admin } from 'src/admin/domain';
+import { Admin } from '../../../domain';
 
 @Controller('admins')
 export class AuthController {

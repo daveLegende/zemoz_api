@@ -25,11 +25,11 @@ import {
   import { IDParamDTO } from '../../../_shared/adapter/dto';
   import { Express } from 'express';
 import { PouleFactory } from '../poule.factory';
-import { IPouleController, IPouleService } from 'src/poule/app/module';
-import { Poule } from 'src/poule/domain';
-import { UpdatePouleDTO } from 'src/poule/adapter/dto';
+import { IPouleController, IPouleService } from '../../app/module';
+import { Poule } from '../../domain';
+import { UpdatePouleDTO } from '../dto';
 import { DocPouleOutputDto, PouleAccountDto } from '../dto';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
   
   @ApiTags('poules management')
   @Controller('poules')

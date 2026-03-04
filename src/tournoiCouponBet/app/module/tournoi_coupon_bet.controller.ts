@@ -1,6 +1,6 @@
 import { IIDParamDTO } from 'app/dto';
 import { ICreateTournoiCouponBetDTO, IUpdateTournoiCouponBetDTO } from '../dto';
-import { TournoiCouponBet } from 'src/tournoiCouponBet/domain/tournoi_coupon_bet.model';
+import { TournoiCouponBet } from '../../domain/tournoi_coupon_bet.model';
 
 export abstract class ITournoiCouponBetController {
   abstract all(): Promise<TournoiCouponBet[]>;

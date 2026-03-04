@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
 import { IIDParamDTO } from 'app/dto';
-import { Prononstic } from 'src/prononstic/domain';
+import { Prononstic } from '../../domain';
 import { ICreatePronosDTO, IUpdatePronosDTO } from '../dto';
 export abstract class IPrononsticController {
   abstract all(): Promise<Prononstic[]>;

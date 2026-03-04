@@ -41,10 +41,10 @@ import {
   UserRegisterDTO,
 } from '../../dto';
 import { UserFactory } from '../../user.factory';
-import { Ticket } from 'src/ticket/domain';
-import { Coupon } from 'src/coupon/domain';
-import { Paris } from 'src/paris/domain';
-import { TournoiCoupon } from 'src/tournoiCoupon/domain';
+import { Ticket } from '../../../../ticket/domain';
+import { Coupon } from '../../../../coupon/domain';
+import { Paris } from '../../../../paris/domain';
+import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
 
 @ApiTags('Users management')
 // @ApiBearerAuth()

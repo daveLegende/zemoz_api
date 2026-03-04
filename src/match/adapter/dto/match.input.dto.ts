@@ -11,8 +11,8 @@ import {
   IsUUID,
   ValidateNested,
 } from 'class-validator';
-import { HalfPauseState, MatchScores, MatchState, MatchType } from 'src/match/domain';
-import { MatchEvent } from 'src/matchEvents/domain';
+import { HalfPauseState, MatchScores, MatchState, MatchType } from '../../../match/domain';
+import { MatchEvent } from '../../../matchEvents/domain';
 import { OddsDTO } from './odds.dto';
 
 export class MatchAccoutDTO {

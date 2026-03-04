@@ -7,7 +7,7 @@ import {
     IsPhoneNumber,
     IsString,
 } from 'class-validator';
-import { TicketType, TicketDuration, TicketState } from 'src/ticket/domain/ticket.enum';
+import { TicketType, TicketDuration, TicketState } from '../../domain/ticket.enum';
 
 export class DocTicketOutputDTO {
     @ApiProperty({ type: String, name: 'id' })

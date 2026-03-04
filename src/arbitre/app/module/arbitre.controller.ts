@@ -1,5 +1,5 @@
-import { IIDParamDTO } from 'app/dto';
-import { Arbitre } from 'src/arbitre/domain';
+import { IIDParamDTO } from '../../../_shared/app/dto';
+import { Arbitre } from '../../domain';
 import { ICreateArbitreDTO, IUpdateArbitreDTO } from '../dto';
 
 export abstract class IArbitreController {

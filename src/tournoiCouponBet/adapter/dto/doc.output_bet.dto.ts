@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsString, ValidateNested } from "class-validator";
-import { OddsDto } from "src/bet/adapter/dto";
+import { OddsDto } from "../../../bet/adapter/dto";
 
 export class DocTournoiCouponBetOutputDto {
     @ApiProperty({

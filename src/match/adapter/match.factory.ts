@@ -1,8 +1,8 @@
-import { Team } from "src/team/domain";
+import { Team } from "../../team/domain";
 import { ICreateMatchDTO, IUpdateMatchDTO } from "../app/dto";
 import { Match, MatchScores } from "../domain";
-import { Arbitre } from "src/arbitre/domain";
-import { Poule } from "src/poule/domain";
+import { Arbitre } from "../../arbitre/domain";
+import { Poule } from "../../poule/domain";
 import {  UpdateMatchPenaltyScoreDto, UpdateMatchPenaltyStateDto, UpdateMatchScoreEventDto, UpdateOddsStateDto, UpdateStateDto } from "./dto";
 
 export abstract class MatchFactory {

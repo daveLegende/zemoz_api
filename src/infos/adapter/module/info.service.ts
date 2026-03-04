@@ -5,8 +5,8 @@ import {
     NotFoundException,
   } from '@nestjs/common';
 import { InfoAccountDto, UpdateInfoDTO } from '../dto';
-import { IInfoService } from 'src/infos/app/module';
-import { IInfoRepository, Info } from 'src/infos/domain';
+import { IInfoService } from '../../../infos/app/module';
+import { IInfoRepository, Info } from '../../../infos/domain';
 import { InfoFactory } from '../info.factory';
   
   @Injectable()

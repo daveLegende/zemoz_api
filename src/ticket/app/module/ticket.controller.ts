@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
 import { IIDParamDTO } from 'app/dto';
-import { Ticket } from 'src/ticket/domain';
+import { Ticket } from '../../domain';
 import { ICreateTicketDTO, IUpdateTicketDTO } from '../dto';
 
 export abstract class ITicketController {

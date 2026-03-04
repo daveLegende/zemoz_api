@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ITicketRepository } from 'src/ticket/domain';
+import { ITicketRepository } from '../../domain';
 import { TicketEntity } from './schema/ticket.entity';
 import { TicketRepository } from './ticket.repository';
 

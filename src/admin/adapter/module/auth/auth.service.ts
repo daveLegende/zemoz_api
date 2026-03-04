@@ -1,7 +1,7 @@
 import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { IAdminService } from 'src/admin/app/module';
-import { Admin, IAdminRepository } from 'src/admin/domain';
+import { IAdminService } from '../../../app/module';
+import { Admin, IAdminRepository } from '../../../domain';
 import { AdminFactory } from '../../admin.factory';
 import { AdminAccountDto } from '../../dto';
 import * as bcrypt from 'bcrypt';

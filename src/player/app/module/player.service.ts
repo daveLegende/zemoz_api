@@ -1,4 +1,4 @@
-import { Player } from "src/player/domain";
+import { Player } from "../../domain";
 import { ICreatePlayerDTO, IUpdatePlayerDTO } from "../dto";
 
 

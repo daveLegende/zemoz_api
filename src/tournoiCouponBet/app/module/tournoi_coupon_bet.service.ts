@@ -1,4 +1,4 @@
-import { TournoiCouponBet } from "src/tournoiCouponBet/domain/tournoi_coupon_bet.model";
+import { TournoiCouponBet } from "../../domain/tournoi_coupon_bet.model";
 import { ICreateTournoiCouponBetDTO, IUpdateTournoiCouponBetDTO } from "../dto";
 
 export abstract class ITournoiCouponBetService {

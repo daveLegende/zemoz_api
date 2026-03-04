@@ -21,12 +21,12 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { IDParamDTO } from '../../../_shared/adapter/dto';
-import { IBetController, IBetService } from 'src/bet/app/module';
-import { Bet } from 'src/bet/domain';
+import { IBetController, IBetService } from '../../../bet/app/module';
+import { Bet } from '../../../bet/domain';
 import { BetFactory } from '../bet.factory';
 import { BetAccountDto, UpdateBetDTO } from '../dto';
 import { DocBetOutputDto } from '../dto/doc.output.dto';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 
 @ApiTags('Bet management')
 @UseGuards(AdminGuard)

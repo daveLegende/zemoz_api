@@ -1,4 +1,4 @@
-import { Player } from "src/player/domain";
+import { Player } from "../../../player/domain";
 
 export interface ICreateTeamDTO {
   name: string;

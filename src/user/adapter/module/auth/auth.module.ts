@@ -7,8 +7,8 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from 'config/strategy';
 import { UserRepositoryModule } from 'user/framework/database/user.repository.module';
 import { UserModule } from '../user';
-import { OtpRepositoryModule } from 'src/otp/framework/database/otp.repository.module';
-import { TwilioModule } from 'src/twilio/twilio.module';
+import { OtpRepositoryModule } from '../../../../otp/framework/database/otp.repository.module';
+import { TwilioModule } from '../../../../twilio/twilio.module';
 
 @Module({
   imports: [

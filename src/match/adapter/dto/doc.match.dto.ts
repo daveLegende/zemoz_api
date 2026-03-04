@@ -10,10 +10,10 @@ import {
   IsUUID,
   ValidateNested,
 } from 'class-validator';
-import { MatchType, MatchState, MatchScores } from 'src/match/domain';
-import { MatchEvent } from 'src/matchEvents/domain';
-import { Poule } from 'src/poule/domain';
-import { Team } from 'src/team/domain';
+import { MatchType, MatchState, MatchScores } from '../../../match/domain';
+import { MatchEvent } from '../../../matchEvents/domain';
+import { Poule } from '../../../poule/domain';
+import { Team } from '../../../team/domain';
 import { OddsDTO } from './odds.dto';
 
 export class MatchDocOutputDTO {

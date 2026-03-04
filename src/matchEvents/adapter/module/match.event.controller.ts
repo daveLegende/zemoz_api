@@ -25,12 +25,11 @@ import { diskStorage } from 'multer';
 import { Express } from 'express';
 import { IDParamDTO } from '../../../_shared/adapter/dto';
 import { BaseConfig } from '../../../_shared/config/base.config';
-import { MatchEvent } from 'src/matchEvents/domain';
+import { MatchEvent } from '../../../matchEvents/domain';
 import { MatchEventDTO, UpdateMatchEventDto } from '../dto';
 import { MatchEventFactory } from '../match.events.factory';
-import { IMatchEventController, IMatchEventService } from 'src/matchEvents/app/module';
-import { UserGuard } from 'user/adapter/guard/auth.guard';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { IMatchEventController, IMatchEventService } from '../../../matchEvents/app/module';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 
 @ApiTags('matchs management')
 @Controller('matchs_events')

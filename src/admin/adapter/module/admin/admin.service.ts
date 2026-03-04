@@ -5,15 +5,15 @@ import {
     Logger,
     NotFoundException,
   } from '@nestjs/common';
-import { IAdminService } from 'src/admin/app/module';
-import { Admin, IAdminRepository } from 'src/admin/domain';
+import { IAdminService } from '../../../app/module';
+import { Admin, IAdminRepository } from '../../../domain';
 import { AdminFactory } from '../../admin.factory';
 import { AdminAccountDto, UpdateAdminDTO } from '../../dto';
-import { ICouponRepository } from 'src/coupon/domain/data.abstract';
-import { ITournoiCouponRepository } from 'src/tournoiCoupon/domain/data.abstract';
-import { ITransactionRepository, TransactionType } from 'src/transactions/domain';
-import { Coupon, CouponState } from 'src/coupon/domain';
-import { TournoiCoupon, TournoiCouponState } from 'src/tournoiCoupon/domain';
+import { ICouponRepository } from '../../../../coupon/domain/data.abstract';
+import { ITournoiCouponRepository } from '../../../../tournoiCoupon/domain/data.abstract';
+import { ITransactionRepository, TransactionType } from '../../../../transactions/domain';
+import { Coupon, CouponState } from '../../../../coupon/domain';
+import { TournoiCoupon, TournoiCouponState } from '../../../../tournoiCoupon/domain';
   
 @Injectable()
 export class AdminService implements IAdminService {

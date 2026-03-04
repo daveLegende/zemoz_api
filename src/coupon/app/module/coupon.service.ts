@@ -1,7 +1,6 @@
-import { Coupon } from "src/coupon/domain";
+import { Coupon } from "../../../coupon/domain";
 import { ICreateCouponDTO, IUpdateCouponDTO } from "../dto";
-import { Match } from "src/match/domain";
-import { IUpdateMatchDTO } from "src/match/app/dto";
+import { IUpdateMatchDTO } from "../../../match/app/dto";
 
 export abstract class ICouponService {
   abstract add(data: ICreateCouponDTO): Promise<Coupon>;

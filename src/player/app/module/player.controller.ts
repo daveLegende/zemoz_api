@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
 import { IIDParamDTO } from 'app/dto';
-import { Player } from 'src/player/domain';
+import { Player } from '../../domain';
 import { ICreatePlayerDTO, IUpdatePlayerDTO } from '../dto';
 
 export abstract class IPlayerController {

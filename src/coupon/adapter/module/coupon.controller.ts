@@ -21,14 +21,14 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { IDParamDTO } from '../../../_shared/adapter/dto';
-import { ICouponController, ICouponService } from 'src/coupon/app/module';
-import { Coupon } from 'src/coupon/domain';
+import { ICouponController, ICouponService } from '../../../coupon/app/module';
+import { Coupon } from '../../../coupon/domain';
 import { CouponFactory } from '../coupon.factory';
 import { CouponAccountDto, UpdateCouponDTO } from '../dto';
 import { DocCouponOutputDto } from '../dto/doc.output.dto';
-import { UpdateMatchDTO } from 'src/match/adapter/dto';
-import { UserGuard } from 'user/adapter/guard/auth.guard';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { UpdateMatchDTO } from '../../../match/adapter/dto';
+import { UserGuard } from '../../../user/adapter/guard/auth.guard';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 
 @ApiTags('Coupon management')
 @ApiBearerAuth()

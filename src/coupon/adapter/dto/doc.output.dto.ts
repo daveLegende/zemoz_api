@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
 import { IsArray, IsBoolean, IsEnum, IsNumber, IsString, IsUUID } from "class-validator";
-import { CouponState } from "src/coupon/domain";
+import { CouponState } from "../../../coupon/domain";
 
 export class DocCouponOutputDto {
     @ApiProperty({

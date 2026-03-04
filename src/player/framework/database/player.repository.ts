@@ -4,8 +4,8 @@ import { Repository } from 'typeorm';
 
 import { DBGenericRepository } from 'framework/database.repository';
 import { PlayerEntity } from './schema/player.entity';
-import { IPlayerRepository, Player } from 'src/player/domain';
-import { IGenericRepository } from 'src/igeneric.interface';
+import { IPlayerRepository, Player } from '../../domain';
+import { IGenericRepository } from '../../../igeneric.interface';
 
 @Injectable()
 export class PlayerRepository implements IPlayerRepository, OnApplicationBootstrap {

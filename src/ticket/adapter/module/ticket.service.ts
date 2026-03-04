@@ -12,7 +12,7 @@ import { TicketAccoutDTO, UpdateTicketDTO } from '../dto';
 import { TicketFactory } from '../ticket.factory';
 import { IUserRepository } from '../../../user/domain';
 import { TicketDuration, TicketState } from '../../../ticket/domain/ticket.enum';
-import { IMatchRepository, MatchState, MatchType } from 'src/match/domain';
+import { IMatchRepository, MatchState, MatchType } from '../../../match/domain';
 import { randomUUID } from 'crypto';
 import * as crypto from 'crypto';
 import * as QRCode from 'qrcode';

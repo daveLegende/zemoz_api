@@ -1,9 +1,9 @@
-import { Team } from "src/team/domain";
-import { Arbitre } from "src/arbitre/domain";
+import { Team } from "../../team/domain";
+import { Arbitre } from "../../arbitre/domain";
 import { MatchEvent } from "../domain";
 import { ICreateMatchEventDTO, IUpdateMatchEventDTO } from "../app/dto";
-import { Player } from "src/player/domain";
-import { Match } from "src/match/domain";
+import { Player } from "../../player/domain";
+import { Match } from "../../match/domain";
 
 export abstract class MatchEventFactory {
   static async create(data: ICreateMatchEventDTO, equipe: Team, joueur: Player, match: Match): Promise<MatchEvent> {

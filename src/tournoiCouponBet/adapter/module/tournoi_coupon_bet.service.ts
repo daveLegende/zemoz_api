@@ -7,11 +7,11 @@ import {
 } from '@nestjs/common';
 import { TournoiCouponBetAccountDto, UpdateTournoiCouponBetDTO } from '../dto';
 import { TournoiCouponBetFactory } from '../tournoi_coupon_bet.factory';
-import { IBetRepository } from 'src/bet/domain/data.abstract';
-import { BetStatus, CouponBet } from 'src/couponBet/domain';
-import { ITournoiCouponBetService } from 'src/tournoiCouponBet/app/module';
-import { ITournoiCouponBetRepository, TournoiCouponBet } from 'src/tournoiCouponBet/domain';
-import { ITournoiCouponRepository } from 'src/tournoiCoupon/domain/data.abstract';
+import { IBetRepository } from '../../../bet/domain/data.abstract';
+import { BetStatus, CouponBet } from '../../../couponBet/domain';
+import { ITournoiCouponBetService } from '../../app/module';
+import { ITournoiCouponBetRepository, TournoiCouponBet } from '../../domain';
+import { ITournoiCouponRepository } from '../../../tournoiCoupon/domain/data.abstract';
 
 @Injectable()
 export class TournoiCouponBetService implements ITournoiCouponBetService {

@@ -21,13 +21,13 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { IDParamDTO } from '../../../../_shared/adapter/dto';
-import { IAdminController, IAdminService } from 'src/admin/app/module';
-import { Admin } from 'src/admin/domain';
+import { IAdminController, IAdminService } from '../../../app/module';
+import { Admin } from '../../../domain';
 import { AdminFactory } from '../../admin.factory';
 import { DocAdminOutputDto, AdminAccountDto, UpdateAdminDTO } from '../../dto';
 import { AdminGuard } from '../../guard/auth.guard';
-import { Coupon } from 'src/coupon/domain';
-import { TournoiCoupon } from 'src/tournoiCoupon/domain';
+import { Coupon } from '../../../../coupon/domain';
+import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
 
 @ApiTags('Admins management')
 @UseGuards(AdminGuard)

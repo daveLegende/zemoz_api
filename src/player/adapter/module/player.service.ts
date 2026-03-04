@@ -4,11 +4,11 @@ import {
     Logger,
     NotFoundException,
   } from '@nestjs/common';
-import { IPlayerService } from 'src/player/app/module';
-import { IPlayerRepository, Player } from 'src/player/domain';
+import { IPlayerService } from '../../app/module';
+import { IPlayerRepository, Player } from '../../domain';
 import { PlayerAccoutDTO, UpdatePlayerDTO } from '../dto';
 import { PlayerFactory } from '../player.factory';
-import { ITeamRepository } from 'src/team/domain';
+import { ITeamRepository } from '../../../team/domain';
   
   @Injectable()
   export class PlayerService implements IPlayerService {

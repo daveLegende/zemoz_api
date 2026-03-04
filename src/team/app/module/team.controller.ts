@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
 import { IIDParamDTO } from 'app/dto';
-import { Team } from 'src/team/domain';
+import { Team } from '../../domain';
 import { ICreateTeamDTO, IUpdateTeamDTO } from '../dto';
 
 export abstract class ITeamController {

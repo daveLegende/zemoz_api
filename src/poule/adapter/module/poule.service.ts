@@ -4,11 +4,11 @@ import {
     Logger,
     NotFoundException,
   } from '@nestjs/common';
-import { IPouleService } from 'src/poule/app/module';
-import { IPouleRepository, Poule } from 'src/poule/domain';
+import { IPouleService } from '../../app/module';
+import { IPouleRepository, Poule } from '../../domain';
 import { PouleFactory } from '../poule.factory';
 import { PouleAccountDto, UpdatePouleDTO } from '../dto';
-import { ITeamRepository } from 'src/team/domain';
+import { ITeamRepository } from '../../../team/domain';
   
   @Injectable()
   export class PouleService implements IPouleService {

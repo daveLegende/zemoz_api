@@ -1,7 +1,7 @@
-import { Coupon } from "src/coupon/domain";
+import { Coupon } from "../../../coupon/domain";
 import { ICreateTournoiCouponDTO, IUpdateTournoiCouponDTO } from "../dto";
-import { IUpdateMatchDTO } from "src/match/app/dto";
-import { TournoiCoupon } from "src/tournoiCoupon/domain";
+import { IUpdateMatchDTO } from "../../../match/app/dto";
+import { TournoiCoupon } from "../../domain";
 
 export abstract class ITournoiCouponService {
   abstract add(data: ICreateTournoiCouponDTO): Promise<TournoiCoupon>;

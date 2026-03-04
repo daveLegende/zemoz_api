@@ -4,15 +4,12 @@ import {
     Logger,
     NotFoundException,
   } from '@nestjs/common';
-import { IMatchService } from 'src/match/app/module';
-import { EventType, IMatchRepository, Match, MatchState, MatchType } from 'src/match/domain';
-import { IArbitreRepository } from 'src/arbitre/domain';
-import { ITeamRepository } from 'src/team/domain';
-import { IPouleRepository, Poule } from 'src/poule/domain';
-import { IPlayerRepository } from 'src/player/domain';
-import { MatchEventDTO, UpdateMatchEventDto } from 'src/matchEvents/adapter/dto';
-import { IMatchEventRepository, MatchEvent } from 'src/matchEvents/domain';
-import { IMatchEventService } from 'src/matchEvents/app/module';
+import { IMatchRepository, Match, MatchState, MatchType } from '../../../match/domain';
+import { ITeamRepository } from '../../../team/domain';
+import { IPlayerRepository } from '../../../player/domain';
+import { MatchEventDTO, UpdateMatchEventDto } from '../dto';
+import { IMatchEventRepository, MatchEvent } from '../../../matchEvents/domain';
+import { IMatchEventService } from '../../../matchEvents/app/module';
 import { MatchEventFactory } from '../match.events.factory';
   
   @Injectable()

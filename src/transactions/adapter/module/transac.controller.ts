@@ -25,11 +25,11 @@ import { diskStorage } from 'multer';
 import { Express } from 'express';
 import { IDParamDTO } from '../../../_shared/adapter/dto';
 import { UserGuard } from 'user/adapter/guard/auth.guard';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
-import { ITransactionController, ITransactionService } from 'src/transactions/app/module';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
+import { ITransactionController, ITransactionService } from '../../app/module';
 import { DocTransactionOutputDto, PassAccountDto, TransactionAccountDto, UpdateTransactionDTO } from '../dto';
 import { TransactionFactory } from '../transac.factory';
-import { Transaction } from 'src/transactions/domain';
+import { Transaction } from '../../domain';
 
 @ApiTags('Transactions management')
 @Controller('transactions')

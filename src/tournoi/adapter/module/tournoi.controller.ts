@@ -25,14 +25,14 @@ import {
   import { Express } from 'express';
   import { IDParamDTO } from '../../../_shared/adapter/dto';
   import { BaseConfig } from '../../../_shared/config/base.config';
-import { UpdateTournoiDTO } from 'src/tournoi/adapter/dto';
-import { Tournoi } from 'src/tournoi/domain';
+import { UpdateTournoiDTO } from '../dto';
+import { Tournoi } from '../../domain';
 import { RegisterAccoutDTO, DocUserOutputDTO } from '../../../user/adapter/dto';
 import { TournoiFactory } from '../tournoi.factory';
-import { ITournoiController, ITournoiService } from 'src/tournoi/app/module';
+import { ITournoiController, ITournoiService } from '../../app/module';
 import { TournoiAccoutDTO } from '../dto';
 import { DocTournoiOutputDTO } from '../dto/doc.tournoi.dto';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
   
 @ApiTags('Tournois management')
 @Controller('tournois')

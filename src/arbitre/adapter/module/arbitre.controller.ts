@@ -25,11 +25,11 @@ import {
   import { diskStorage } from 'multer';
   import { IDParamDTO } from '../../../_shared/adapter/dto';
   import { BaseConfig } from '../../../_shared/config/base.config';
-import { IArbitreController, IArbitreService } from 'src/arbitre/app/module';
-import { Arbitre } from 'src/arbitre/domain';
+import { IArbitreController, IArbitreService } from '../../app/module';
+import { Arbitre } from '../../domain';
 import { ArbitreFactory } from '../arbitre.factory';
 import { ArbitreAccountDto, DocArbitreOutputDto, UpdateArbitreDTO } from '../dto';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
   
   @ApiTags('Arbitres management')
   @UseGuards(AdminGuard)

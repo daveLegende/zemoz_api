@@ -1,8 +1,8 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DBGenericRepository } from 'framework/database.repository';
-import { IGenericRepository } from 'src/igeneric.interface';
-import { ITournoiRepository, Tournoi } from 'src/tournoi/domain';
+import { IGenericRepository } from '../../../igeneric.interface';
+import { ITournoiRepository, Tournoi } from '../../domain';
 import { Repository } from 'typeorm';
 import { TournoiEntity } from './schema/tournoi.entity';
 

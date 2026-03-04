@@ -29,12 +29,12 @@ import { diskStorage } from 'multer';
 import { Express } from 'express';
 import { IDParamDTO } from '../../../_shared/adapter/dto';
 import { BaseConfig } from '../../../_shared/config/base.config';
-import { IMatchController, IMatchService } from 'src/match/app/module';
-import { Match } from 'src/match/domain';
+import { IMatchController, IMatchService } from '../../../match/app/module';
+import { Match } from '../../../match/domain';
 import { MatchFactory } from '../match.factory';
 import { MatchAccoutDTO, MatchDocOutputDTO, UpdateMatchDTO, UpdateMatchPenaltyScoreDto, UpdateMatchPenaltyStateDto } from '../dto';
-import { DocArbitreOutputDto } from 'src/arbitre/adapter/dto';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { DocArbitreOutputDto } from '../../../arbitre/adapter/dto';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 import * as multer from 'multer';
 
   

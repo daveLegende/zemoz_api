@@ -5,13 +5,13 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { IBetService } from 'src/bet/app/module';
-import { Bet, CategoryName, MarketType } from 'src/bet/domain';
+import { IBetService } from '../../../bet/app/module';
+import { Bet, CategoryName, MarketType } from '../../../bet/domain';
 import { BetAccountDto, UpdateBetDTO } from '../dto';
-import { IBetRepository } from 'src/bet/domain/data.abstract';
-import { IMatchRepository, Match } from 'src/match/domain';
+import { IBetRepository } from '../../../bet/domain/data.abstract';
+import { IMatchRepository, Match } from '../../../match/domain';
 import { BetFactory } from '../bet.factory';
-import { MARKET_CONFIG } from 'src/bet/domain/bet.mapping';
+import { MARKET_CONFIG } from '../../../bet/domain/bet.mapping';
 import { isUUID } from 'class-validator';
 
 @Injectable()

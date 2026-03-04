@@ -1,7 +1,7 @@
-import { Admin } from "src/admin/domain";
+import { Admin } from "../../../../admin/domain";
 import { ICreateAdminDTO, IUpdateAdminDTO } from "../../dto";
-import { Coupon } from "src/coupon/domain";
-import { TournoiCoupon } from "src/tournoiCoupon/domain";
+import { Coupon } from "../../../../coupon/domain";
+import { TournoiCoupon } from "../../../../tournoiCoupon/domain";
 
 export abstract class IAdminService {
   abstract add(data: ICreateAdminDTO): Promise<Admin>;
