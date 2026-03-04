@@ -18,14 +18,14 @@ import {
   ApiConsumes,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { IDParamDTO } from 'src/_shared/adapter/dto/param.dto';
+import { IDParamDTO } from '../../../_shared/adapter/dto/param.dto';
 import { TournoiCouponBetFactory } from '../tournoi_coupon_bet.factory';
 import { TournoiCouponBetAccountDto, UpdateTournoiCouponBetDTO } from '../dto';
 import { DocTournoiCouponBetOutputDto } from '../dto/doc.output_bet.dto';
-import { TournoiCouponBet } from 'src/tournoiCouponBet/domain';
-import { ITournoiCouponBetController, ITournoiCouponBetService } from 'src/tournoiCouponBet/app/module';
-import { UserGuard } from 'user/adapter/guard/auth.guard';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { TournoiCouponBet } from '../../../tournoiCouponBet/domain';
+import { ITournoiCouponBetController, ITournoiCouponBetService } from '../../../tournoiCouponBet/app/module';
+import { UserGuard } from '../../../user/adapter/guard/auth.guard';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 
 @ApiTags('Coupon management')
 @ApiBearerAuth()

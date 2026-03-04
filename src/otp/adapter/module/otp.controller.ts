@@ -20,7 +20,7 @@ import {
     ApiConsumes,
     ApiBearerAuth,
   } from '@nestjs/swagger';
-  import { IDParamDTO } from 'src/_shared/adapter/dto/param.dto';
+  import { IDParamDTO } from '../../../_shared/adapter/dto/param.dto';
 import { IOtpController, IOtpService } from 'src/otp/app/module';
 import { OtpFactory } from '../otp.factory';
 import { DocOtpOutputDto, OtpAccountDto } from '../dto';
