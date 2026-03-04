@@ -25,7 +25,7 @@ import { ITicketController, ITicketService } from '../../app/module';
 import { Ticket } from '../../domain';
 import { TicketAccoutDTO, UpdateTicketDTO } from '../dto';
 import { DocTicketOutputDTO } from '../dto/doc.ticket.dto';
-import { UserGuard } from 'user/adapter/guard/auth.guard';
+import { UserGuard } from '../../../user/adapter/guard/auth.guard';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
   
   @ApiTags('tickets management')

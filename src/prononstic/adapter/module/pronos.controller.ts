@@ -29,7 +29,7 @@ import { PrononsticAccoutDTO, UpdatePrononsticDTO } from '../dto';
 import { IPrononsticController, IPrononsticService } from '../../app/module';
 import { Prononstic } from '../../domain';
 import { DocPrononsticOutputDTO } from '../dto/doc.pronos.dto';
-import { UserGuard } from 'user/adapter/guard/auth.guard';
+import { UserGuard } from '../../../user/adapter/guard/auth.guard';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 
 @ApiTags('pronos management')

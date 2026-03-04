@@ -24,7 +24,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Express } from 'express';
 import { IDParamDTO } from '../../../_shared/adapter/dto';
-import { UserGuard } from 'user/adapter/guard/auth.guard';
+import { UserGuard } from '../../../user/adapter/guard/auth.guard';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 import { ITransactionController, ITransactionService } from '../../app/module';
 import { DocTransactionOutputDto, PassAccountDto, TransactionAccountDto, UpdateTransactionDTO } from '../dto';
