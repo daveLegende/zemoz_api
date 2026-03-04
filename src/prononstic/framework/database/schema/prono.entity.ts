@@ -1,4 +1,4 @@
-import { ATimestamp } from "framework/timestamp.abstract";
+import { ATimestamp } from "../../../../_shared/framework/timestamp.abstract";
 import { MatchEntity } from "../../../../match/framework/database/schema/match.entity";
 import { Prononstic, PronoState } from "../../../../prononstic/domain";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
