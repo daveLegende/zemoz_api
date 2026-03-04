@@ -18,7 +18,7 @@ import {
   ApiConsumes,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { IDParamDTO } from 'src/_shared/adapter/dto';
+import { IDParamDTO } from 'src/_shared/adapter/dto/param.dto';
 import { RegisterAccoutDTO, DocUserOutputDTO } from 'src/user/adapter/dto';
 import { TicketFactory } from '../ticket.factory';
 import { ITicketController, ITicketService } from 'src/ticket/app/module';
