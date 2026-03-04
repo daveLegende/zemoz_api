@@ -1,6 +1,6 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DBGenericRepository } from 'framework/database.repository';
+import { DBGenericRepository } from '../../../_shared/framework/database.repository';
 import { IGenericRepository } from '../../../igeneric.interface';
 import { ITransactionRepository, Transaction } from '../../domain';
 import { Repository } from 'typeorm';
