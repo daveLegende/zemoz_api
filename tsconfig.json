@@ -78,5 +78,7 @@
       "twilio/*": ["./src/twilio/*"],
       "config/*": ["src/_shared/config/*"]
     }
-  }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts"]
 }
