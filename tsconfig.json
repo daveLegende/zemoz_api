@@ -19,19 +19,7 @@
     "noFallthroughCasesInSwitch": false,
     "types": ["node"],
     "paths": {
-      "domain": ["./src/_shared/domain"],
-      "domain/*": ["./src/_shared/domain/*"],
-      "app": ["./src/_shared/app"],
-      "app/*": ["./src/_shared/app/*"],
-      "adapter": ["./src/_shared/adapter"],
-      "adapter/*": ["./src/_shared/adapter/*"],
-      "framework": ["./src/_shared/framework"],
-      "framework/*": ["./src/_shared/framework/*"],
-      "todo/*": ["./src/todo/*"],
-      "project/*": ["./src/project/*"],
-      "product/*": ["./src/product/*"],
-      "user/*": ["./src/user/*"],
-      "config/*": ["src/_shared/config/*"]
+      "src/*": ["*"]
     }
   }
 }
