@@ -27,7 +27,7 @@ import {
   import { BaseConfig } from '../../../_shared/config/base.config';
 import { UpdateTournoiDTO } from 'src/tournoi/adapter/dto';
 import { Tournoi } from 'src/tournoi/domain';
-import { RegisterAccoutDTO, DocUserOutputDTO } from 'user/adapter/dto';
+import { RegisterAccoutDTO, DocUserOutputDTO } from '../../../user/adapter/dto';
 import { TournoiFactory } from '../tournoi.factory';
 import { ITournoiController, ITournoiService } from 'src/tournoi/app/module';
 import { TournoiAccoutDTO } from '../dto';

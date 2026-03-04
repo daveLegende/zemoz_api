@@ -29,7 +29,7 @@ import {
   import {
     DocUserOutputDTO,
     RegisterAccoutDTO,
-  } from 'user/adapter/dto';
+  } from '../../../user/adapter/dto';
 import { IPlayerController, IPlayerService } from 'src/player/app/module';
 import { Player } from 'src/player/domain';
 import { PlayerAccoutDTO, UpdatePlayerDTO } from '../dto';

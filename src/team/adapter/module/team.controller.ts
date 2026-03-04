@@ -27,7 +27,7 @@ import {
   import { BaseConfig } from '../../../_shared/config/base.config';
 import { UpdateTeamDTO } from 'src/team/adapter/dto';
 import { Team } from 'src/team/domain';
-import { RegisterAccoutDTO, DocUserOutputDTO } from 'user/adapter/dto';
+import { RegisterAccoutDTO, DocUserOutputDTO } from '../../../user/adapter/dto';
 import { TeamFactory } from '../team.factory';
 import { ITeamController, ITeamService } from 'src/team/app/module';
 import { TeamAccoutDTO } from '../dto';
