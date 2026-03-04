@@ -25,7 +25,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Express } from 'express';
-import { IDParamDTO } from 'adapter/dto';
+import { IDParamDTO } from '../../../../_shared/adapter/dto';
 import { AccessEnum } from 'user/domain';
 import { IUserController, IUserService } from 'user/app/module/user';
 import { User } from 'user/domain/user.model';

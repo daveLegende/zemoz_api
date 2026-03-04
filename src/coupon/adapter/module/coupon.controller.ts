@@ -20,7 +20,7 @@ import {
   ApiConsumes,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { IDParamDTO } from 'adapter/dto';
+import { IDParamDTO } from '../../../_shared/adapter/dto';
 import { ICouponController, ICouponService } from 'src/coupon/app/module';
 import { Coupon } from 'src/coupon/domain';
 import { CouponFactory } from '../coupon.factory';

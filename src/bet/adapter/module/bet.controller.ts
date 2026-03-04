@@ -20,7 +20,7 @@ import {
   ApiConsumes,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { IDParamDTO } from 'adapter/dto';
+import { IDParamDTO } from '../../../_shared/adapter/dto';
 import { IBetController, IBetService } from 'src/bet/app/module';
 import { Bet } from 'src/bet/domain';
 import { BetFactory } from '../bet.factory';

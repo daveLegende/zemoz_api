@@ -23,7 +23,7 @@ import {
   import { Express } from 'express';
   import { FileInterceptor } from '@nestjs/platform-express';
   import { diskStorage } from 'multer';
-  import { IDParamDTO } from 'adapter/dto';
+  import { IDParamDTO } from '../../../_shared/adapter/dto';
   import { BaseConfig } from '../../../_shared/config/base.config';
 import { IArbitreController, IArbitreService } from 'src/arbitre/app/module';
 import { Arbitre } from 'src/arbitre/domain';

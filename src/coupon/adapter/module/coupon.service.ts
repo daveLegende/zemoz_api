@@ -20,7 +20,7 @@
 // import { IMatchRepository, Match, MatchState } from 'src/match/domain';
 // import { Connection } from 'typeorm';
 // import { CategoryName } from 'src/bet/domain';
-// import { UpdateMatchDTO } from 'src/match/adapter/dto';
+// import { UpdateMatchDTO } from 'src/match/import { IDParamDTO } from '../../../_shared/adapter/dto';';
 
 // @Injectable()
 // export class CouponService implements ICouponService {

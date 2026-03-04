@@ -23,7 +23,7 @@ import {
   import { FileInterceptor } from '@nestjs/platform-express';
   import { diskStorage } from 'multer';
   import { Express } from 'express';
-  import { IDParamDTO } from 'adapter/dto';
+  import { IDParamDTO } from '../../../_shared/adapter/dto';
   import { BaseConfig } from '../../../_shared/config/base.config';
 import { UpdateTeamDTO } from 'src/team/adapter/dto';
 import { Team } from 'src/team/domain';

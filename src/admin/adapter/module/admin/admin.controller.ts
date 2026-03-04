@@ -20,7 +20,7 @@ import {
   ApiConsumes,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { IDParamDTO } from 'adapter/dto';
+import { IDParamDTO } from '../../../../_shared/adapter/dto';
 import { IAdminController, IAdminService } from 'src/admin/app/module';
 import { Admin } from 'src/admin/domain';
 import { AdminFactory } from '../../admin.factory';

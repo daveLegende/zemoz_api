@@ -22,7 +22,7 @@ import {
   } from '@nestjs/swagger';
   import { FileInterceptor } from '@nestjs/platform-express';
   import { diskStorage } from 'multer';
-  import { IDParamDTO } from 'adapter/dto';
+  import { IDParamDTO } from '../../../_shared/adapter/dto';
   import { Express } from 'express';
 import { PouleFactory } from '../poule.factory';
 import { IPouleController, IPouleService } from 'src/poule/app/module';

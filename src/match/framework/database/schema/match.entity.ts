@@ -8,7 +8,7 @@ import { MatchEventEntity } from 'src/matchEvents/framework/database/schema/matc
 import { PrononsticEntity } from 'src/prononstic/framework/database/schema/prono.entity';
 import { BetEntity } from 'src/bet/framework/schema/bet.entity';
 import { TicketEntity } from 'src/ticket/framework/database/schema/ticket.entity';
-import { OddsDTO } from 'src/match/adapter/dto/odds.dto';
+import { OddsDTO } from 'src/match/import { IDParamDTO } from '../../../ _shared / adapter / dto';/odds.dto';
 import { ParisEntity } from 'src/paris/framework/schema/paris.entity';
 
 @Entity('matchs')
@@ -65,7 +65,7 @@ export class MatchEntity extends ATimestamp implements Match {
     poule?: PouleEntity;
 
     @ManyToMany(() => ArbitreEntity, (arbitre) => arbitre.matchs)
-    @JoinTable({ name: "matchs_arbitres"})
+    @JoinTable({ name: "matchs_arbitres" })
     arbitres: ArbitreEntity[]
 
     @OneToMany(() => PrononsticEntity, pronostic => pronostic.match)
