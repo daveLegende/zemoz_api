@@ -8,7 +8,7 @@ import { UserFactory } from 'user/adapter/user.factory';
 import { ICreateUserDTO } from 'user/app/dto/user.input.dto';
 import { IUserService } from 'user/app/module/user';
 import { IUserRepository } from 'user/domain/data.abstract';
-import { SexEnum } from 'user/domain/user.enum';
+import { SexEnum } from 'src/user/domain/user.enum';
 
 describe('UserService', () => {
   let service: IUserService;

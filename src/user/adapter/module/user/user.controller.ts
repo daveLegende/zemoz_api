@@ -25,12 +25,11 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Express } from 'express';
-import { IDParamDTO } from '../../../../_shared/adapter/dto';
+import { IDParamDTO } from 'src/_shared/adapter/dto';
 import { AccessEnum } from 'user/domain';
 import { IUserController, IUserService } from 'user/app/module/user';
-import { User } from 'user/domain/user.model';
+import { User } from 'src/user/domain/user.model';
 import { HasPermission } from 'adapter/decorator';
-import { UserGuard } from 'user/adapter/guard/auth.guard';
 import { GetAccount } from 'user/adapter/decorator';
 import {
   DocUserOutputDTO,
@@ -45,12 +44,9 @@ import {
   UserRegisterDTO,
 } from 'user/adapter/dto';
 import { UserFactory } from 'user/adapter/user.factory';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
 import { Ticket } from 'src/ticket/domain';
-import { AuthGuard } from '@nestjs/passport';
 import { Coupon } from 'src/coupon/domain';
 import { Paris } from 'src/paris/domain';
-import { IIDParamDTO } from 'app/dto';
 import { TournoiCoupon } from 'src/tournoiCoupon/domain';
 
 @ApiTags('Users management')

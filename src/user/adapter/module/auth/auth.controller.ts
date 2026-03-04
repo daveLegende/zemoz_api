@@ -1,17 +1,17 @@
 import { BadRequestException, Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SigninAccoutDTO } from 'user/import { IDParamDTO } from '../../../ _shared / adapter / dto';';
+import { SigninAccoutDTO } from 'src/user/adapter/dto';
 import { ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { OtpAccountDto, SendOtpDTo, VerifyOtpDTo } from 'src/otp/import { IDParamDTO } from '../../../ _shared / adapter / dto';';
+import { OtpAccountDto, SendOtpDTo, VerifyOtpDTo } from 'src/otp/adapter/dto';
 import { OtpFactory } from 'src/otp/adapter/otp.factory';
 import { Otp } from 'src/otp/domain';
 import { User } from 'user/domain';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+    constructor(private authService: AuthService) {}
 
-  //   @UseGuards(LocalAuthGuard) 
+//   @UseGuards(LocalAuthGuard) 
   @Post('login')
   async login(@Body() loginDto: SigninAccoutDTO): Promise<{ accessToken: string; refreshToken: string; user: User }> {
     const user = await this.authService.validateUser(loginDto.phone, loginDto.password);
@@ -34,7 +34,7 @@ export class AuthController {
     @Body() data: SendOtpDTo
   ) {
     console.log("cdfcxch c v");
-
+    
     return await this.authService.sendOTP(data);
   }
 

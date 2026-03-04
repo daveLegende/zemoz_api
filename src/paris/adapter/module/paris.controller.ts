@@ -20,7 +20,7 @@ import {
   ApiConsumes,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { IDParamDTO } from 'import { IDParamDTO } from '../../../ _shared / adapter / dto';';
+import { IDParamDTO } from 'src/_shared/adapter/dto';
 import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
 import { IParisController, IParisService } from 'src/paris/app/module';
 import { Paris } from 'src/paris/domain';
@@ -33,7 +33,7 @@ import { DocParisOutputDto } from '../dto/doc.output.dto';
 @ApiBearerAuth()
 @Controller('paris')
 export class ParisController implements IParisController {
-  constructor(private readonly parisService: IParisService) { }
+  constructor(private readonly parisService: IParisService) {}
 
   @Get()
   // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)

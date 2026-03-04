@@ -18,7 +18,7 @@ import {
   ApiConsumes,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { IDParamDTO } from 'import { IDParamDTO } from '../../../ _shared / adapter / dto';';
+import { IDParamDTO } from 'src/_shared/adapter/dto';
 import { TournoiCouponBetFactory } from '../tournoi_coupon_bet.factory';
 import { TournoiCouponBetAccountDto, UpdateTournoiCouponBetDTO } from '../dto';
 import { DocTournoiCouponBetOutputDto } from '../dto/doc.output_bet.dto';

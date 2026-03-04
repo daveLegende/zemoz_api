@@ -12,7 +12,7 @@ import {
   IForgotPasswordDTO,
   ISigninUserDTO,
 } from 'user/app/dto/auth.input.dto';
-import { SexEnum } from 'user/domain/user.enum';
+import { SexEnum } from 'src/user/domain/user.enum';
 
 export class UserAccoutDTO {
   @ApiProperty({

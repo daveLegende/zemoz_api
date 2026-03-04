@@ -7,42 +7,41 @@ import * as moment from 'moment';
 import { IOtpRepository } from 'src/otp/domain';
 import { TwilioService } from 'src/twilio/twilio.service';
 import { OtpFactory } from 'src/otp/adapter/otp.factory';
-import { OtpAccountDto, SendOtpDTo, VerifyOtpDTo } from 'src/otp/import { IDParamDTO } from '../../../ _shared / adapter / dto';';
+import { OtpAccountDto, SendOtpDTo, VerifyOtpDTo } from 'src/otp/adapter/dto';
 import { IUserRepository, User } from 'user/domain';
-import { UserRegisterDTO } from 'user/import { IDParamDTO } from '../../../ _shared / adapter / dto';';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private usersService: IUserService,
-    private userRepository: IUserRepository,
-    private otpRepository: IOtpRepository,
-    private twilioService: TwilioService,
-    private jwtService: JwtService,
-  ) { }
-
-  // async validateUser(email: string, pass: string): Promise<any> {
-  //   const user = await this.usersService.fetchByEmail(email);
-  //   if (user && user.password === pass) { 
-  //     const { password, ...result } = user;
-  //     return result;
-  //   }
-  //   return null;
-  // }
+    constructor(
+      private usersService: IUserService,
+      private userRepository: IUserRepository,
+      private otpRepository: IOtpRepository,
+      private twilioService: TwilioService,
+      private jwtService: JwtService,
+    ) {}
+    
+      // async validateUser(email: string, pass: string): Promise<any> {
+      //   const user = await this.usersService.fetchByEmail(email);
+      //   if (user && user.password === pass) { 
+      //     const { password, ...result } = user;
+      //     return result;
+      //   }
+      //   return null;
+      // }
 
   async validateUser(phone: string, password: string): Promise<any> {
     console.log('Validating user credentials for:', phone);
     const user = await this.usersService.fetchByPhone(phone);
 
     if (!user) {
-      console.log(`User not found for email: ${phone}`);
-      throw new BadRequestException('User not found');
+        console.log(`User not found for email: ${phone}`);
+        throw new BadRequestException('User not found');
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      console.log(`Invalid password for phone: ${phone}`);
-      throw new BadRequestException('Invalid credentials');
+        console.log(`Invalid password for phone: ${phone}`);
+        throw new BadRequestException('Invalid credentials');
     }
 
     return user;
@@ -57,7 +56,7 @@ export class AuthService {
 
   async login(user: any): Promise<{ accessToken: string; refreshToken: string; user: User }> {
     const payload = { /*email: user.email, */phone: user.phone, sub: user.userId };
-
+    
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
       expiresIn: '15m',  // L'access token expire après 15 minutes
@@ -114,14 +113,14 @@ export class AuthService {
 
       // Générer un OTP de 4 chiffres
       const otp = Math.floor(1000 + Math.random() * 9000).toString();
-
+  
       const otpExpirationTime = moment().add(5, 'minutes').toDate(); // OTP expire après 5 minutes
 
       // Envoyer l'OTP via Twilio
       try {
         await this.twilioService.sendOtp(phone, otp);
       } catch (twilioError) {
-        throw new Error('Une erreur s\'est produite, veuillez réessayer ' + twilioError);
+        throw new Error('Une erreur s\'est produite, veuillez réessayer '+twilioError);
       }
 
       const datas = new OtpAccountDto();
@@ -161,7 +160,7 @@ export class AuthService {
 
       return true;
     } catch (error) {
-
+      
     }
   }
 
@@ -185,7 +184,7 @@ export class AuthService {
 
   //     return true;
   //   } catch (error) {
-
+      
   //   }
   // }
 
@@ -234,7 +233,7 @@ export class AuthService {
 
   //     return true;
   //   } catch (error) {
-
+      
   //   }
   // }
 }

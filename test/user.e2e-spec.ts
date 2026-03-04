@@ -2,9 +2,9 @@ import { INestApplication } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
 import * as request from 'supertest';
 import { TestGlobalConfig } from './test-config.spec';
-import { SexEnum } from 'user/domain/user.enum';
-import { ICreateUserDTO } from 'user/app/dto/user.input.dto';
-import { User } from 'user/domain';
+import { SexEnum } from 'src/user/domain/user.enum';
+import { ICreateUserDTO } from 'src/user/app/dto/user.input.dto';
+import { User } from 'src/user/domain';
 
 describe('USER (e2e)', () => {
   let app: INestApplication;
