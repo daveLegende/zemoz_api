@@ -1,8 +1,7 @@
-import { ATimestamp } from "framework/timestamp.abstract";
-import { BetEntity } from "src/bet/framework/schema/bet.entity";
-import { Coupon, CouponState } from "src/coupon/domain";
-import { CouponEntity } from "src/coupon/framework/schema/coupon.entity";
-import { BetStatus, CouponBet } from "src/couponBet/domain";
+import { ATimestamp } from "../../../_shared/framework/timestamp.abstract";
+import { BetEntity } from "../../../bet/framework/schema/bet.entity";
+import { CouponEntity } from "../../../coupon/framework/schema/coupon.entity";
+import { BetStatus, CouponBet } from "../../../couponBet/domain";
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 
 @Entity('coupon_bets')

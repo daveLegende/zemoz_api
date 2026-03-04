@@ -1,10 +1,9 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ATimestamp } from 'framework/timestamp.abstract';
-import { Player } from 'src/player/domain';
-import { Team } from 'src/team/domain';
-import { PlayerEntity } from 'src/player/framework/database/schema/player.entity';
-import { PouleEntity } from 'src/poule/framework/database/schema/poule.entity';
-import { MatchEntity } from 'src/match/framework/database/schema/match.entity';
+import { ATimestamp } from '../../../../_shared/framework/timestamp.abstract';
+import { Team } from '../../../../team/domain';
+import { PlayerEntity } from '../../../../player/framework/database/schema/player.entity';
+import { PouleEntity } from '../../../../poule/framework/database/schema/poule.entity';
+import { MatchEntity } from '../../../../match/framework/database/schema/match.entity';
 
 @Entity('teams')
 // @Index(['email'], { unique: true, where: `deleted_at IS NULL` })

@@ -1,7 +1,7 @@
-import { ATimestamp } from "framework/timestamp.abstract";
-import { Bet, CategoryName } from "src/bet/domain";
-import { CouponBetEntity } from "src/couponBet/framework/schema/coupon_bet.entity";
-import { MatchEntity } from "src/match/framework/database/schema/match.entity";
+import { ATimestamp } from "../../../_shared/framework/timestamp.abstract";
+import { Bet, CategoryName } from "../../../bet/domain";
+import { CouponBetEntity } from "../../../couponBet/framework/schema/coupon_bet.entity";
+import { MatchEntity } from "../../../match/framework/database/schema/match.entity";
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from "typeorm";
 
 @Entity('bets')

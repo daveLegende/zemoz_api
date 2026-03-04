@@ -1,8 +1,8 @@
-import { ATimestamp } from "framework/timestamp.abstract";
-import { BetEntity } from "src/bet/framework/schema/bet.entity";
-import { BetStatus, CouponBet } from "src/couponBet/domain";
-import { TournoiCouponEntity } from "src/tournoiCoupon/framework/schema/tournoi_coupon.entity";
-import { TournoiCouponBet } from "src/tournoiCouponBet/domain";
+import { ATimestamp } from "../../../_shared/framework/timestamp.abstract";
+import { BetEntity } from "../../../bet/framework/schema/bet.entity";
+import { BetStatus } from "../../../couponBet/domain";
+import { TournoiCouponEntity } from "../../../tournoiCoupon/framework/schema/tournoi_coupon.entity";
+import { TournoiCouponBet } from "../../../tournoiCouponBet/domain";
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 
 @Entity('tournoi_coupon_bets')

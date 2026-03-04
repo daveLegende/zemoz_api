@@ -1,13 +1,13 @@
 import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ATimestamp } from 'framework/timestamp.abstract';
-import { HalfPauseState, Match, MatchScores, MatchState, MatchType } from 'src/match/domain';
-import { PouleEntity } from 'src/poule/framework/database/schema/poule.entity';
-import { TeamEntity } from 'src/team/framework/database/schema/team.entity';
-import { ArbitreEntity } from 'src/arbitre/framework/database/schema/arbitre.entity';
-import { MatchEventEntity } from 'src/matchEvents/framework/database/schema/match.event.entity';
-import { PrononsticEntity } from 'src/prononstic/framework/database/schema/prono.entity';
-import { BetEntity } from 'src/bet/framework/schema/bet.entity';
-import { ParisEntity } from 'src/paris/framework/schema/paris.entity';
+import { ATimestamp } from '../../../../_shared/framework/timestamp.abstract';
+import { HalfPauseState, Match, MatchScores, MatchState, MatchType } from '../../../../match/domain';
+import { PouleEntity } from '../../../../poule/framework/database/schema/poule.entity';
+import { TeamEntity } from '../../../../team/framework/database/schema/team.entity';
+import { ArbitreEntity } from '../../../../arbitre/framework/database/schema/arbitre.entity';
+import { MatchEventEntity } from '../../../../matchEvents/framework/database/schema/match.event.entity';
+import { PrononsticEntity } from '../../../../prononstic/framework/database/schema/prono.entity';
+import { BetEntity } from '../../../../bet/framework/schema/bet.entity';
+import { ParisEntity } from '../../../../paris/framework/schema/paris.entity';
 
 @Entity('matchs')
 // @Index(['email'], { unique: true, where: `deleted_at IS NULL` })

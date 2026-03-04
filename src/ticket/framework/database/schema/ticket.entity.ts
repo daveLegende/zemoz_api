@@ -1,9 +1,9 @@
 import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ATimestamp } from 'framework/timestamp.abstract';
-import { TicketDuration, TicketState, TicketType } from 'src/ticket/domain/ticket.enum';
-import { UserEntity } from 'user/framework/database/schema/user.entity';
-import { MatchEntity } from 'src/match/framework/database/schema/match.entity';
-import { Ticket } from 'src/ticket/domain';
+import { ATimestamp } from '../../../../_shared/framework/timestamp.abstract';
+import { TicketDuration, TicketState, TicketType } from '../../../../ticket/domain/ticket.enum';
+import { UserEntity } from '../../../../user/framework/database/schema/user.entity';
+import { MatchEntity } from '../../../../match/framework/database/schema/match.entity';
+import { Ticket } from '../../../../ticket/domain';
 
 // @Entity('tickets')
 // // @Index(['email'], { unique: true, where: `deleted_at IS NULL` })

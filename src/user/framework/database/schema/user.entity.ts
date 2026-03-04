@@ -5,7 +5,6 @@ import { User } from '../../../domain';
 import { SexEnum } from '../../../domain';
 import { PrononsticEntity } from '../../../../prononstic/framework/database/schema/prono.entity';
 import { TicketEntity } from '../../../../ticket/framework/database/schema/ticket.entity';
-import { Coupon } from '../../../../coupon/domain';
 import { CouponEntity } from '../../../../coupon/framework/schema/coupon.entity';
 import { TransactionEntity } from '../../../../transactions/framework/database/schema/transac.entity';
 import { ParisEntity } from '../../../../paris/framework/schema/paris.entity';
