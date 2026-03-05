@@ -100,71 +100,47 @@ export class AuthService {
     }
   }
   // 
-  async sendOTP(data: SendOtpDTo): Promise<any> {
-    try {
-      const { phone } = data;
-      const user = await this.userRepository.users.findOneBy({ phone: phone });
-      const existed = await this.otpRepository.otps.findOneBy({ phone });
+  // async sendOTP(data: SendOtpDTo): Promise<any> {
+  //   try {
+  //     const { phone } = data;
+  //     const user = await this.userRepository.users.findOneBy({ phone: phone });
+  //     const existed = await this.otpRepository.otps.findOneBy({ phone });
 
-      if (user)
-        throw new ConflictException('Cet utilisateur existe déja');
-      if (existed)
-        throw new ConflictException('Otp already exist');
+  //     if (user)
+  //       throw new ConflictException('Cet utilisateur existe déja, veuillez vous connecter');
+  //     if (existed)
+  //       throw new ConflictException('Un message OTP a été envoyé');
 
-      // Générer un OTP de 4 chiffres
-      const otp = Math.floor(1000 + Math.random() * 9000).toString();
+  //     // Générer un OTP de 4 chiffres
+  //     const otp = Math.floor(1000 + Math.random() * 9000).toString();
   
-      const otpExpirationTime = moment().add(5, 'minutes').toDate(); // OTP expire après 5 minutes
+  //     const otpExpirationTime = moment().add(5, 'minutes').toDate(); // OTP expire après 5 minutes
 
-      // Envoyer l'OTP via Twilio
-      try {
-        await this.twilioService.sendOtp(phone, otp);
-      } catch (twilioError) {
-        throw new Error('Une erreur s\'est produite, veuillez réessayer '+twilioError);
-      }
+  //     // Envoyer l'OTP via Twilio
+  //     try {
+  //       await this.twilioService.sendOtp(phone, otp);
+  //     } catch (twilioError) {
+  //       throw new Error('Une erreur s\'est produite, veuillez réessayer '+twilioError);
+  //     }
 
-      const datas = new OtpAccountDto();
-      datas.code = otp;
-      datas.phone = phone;
-      datas.isVerified = false;
-      datas.expiresAt = otpExpirationTime;
-      // Enregistrer l'OTP en base de données
-      const otpEntity = await this.otpRepository.otps.create(
-        await OtpFactory.create(datas),
-      );
+  //     const datas = new OtpAccountDto();
+  //     datas.code = otp;
+  //     datas.phone = phone;
+  //     datas.isVerified = false;
+  //     datas.expiresAt = otpExpirationTime;
+  //     // Enregistrer l'OTP en base de données
+  //     const otpEntity = await this.otpRepository.otps.create(
+  //       await OtpFactory.create(datas),
+  //     );
 
-      return otpEntity;
-    } catch (error) {
-      // this.logger.error(error.message, 'ERROR::OtpService.add');
-      throw error;
-    }
-  }
+  //     return otpEntity;
+  //   } catch (error) {
+  //     // this.logger.error(error.message, 'ERROR::OtpService.add');
+  //     throw error;
+  //   }
+  // }
 
-  async verifyOtp(data: VerifyOtpDTo): Promise<boolean> {
-    try {
-      const { code, phone } = data;
-      const otp = await this.otpRepository.otps.findOne({ where: { phone: phone, code: code } });
-
-      if (!code) {
-        throw new BadRequestException('Code incorrecte');
-      }
-
-      // Vérifier si l'OTP a expiré
-      if (otp.expiresAt < new Date() || otp.isVerified) {
-        throw new BadRequestException('OTP expiré');
-      }
-
-      // Mettre à jour le statut de vérification
-      otp.isVerified = true;
-      await this.otpRepository.otps.update(otp);
-
-      return true;
-    } catch (error) {
-      
-    }
-  }
-
-  // async register(data: VerifyOtpDTo): Promise<boolean> {
+  // async verifyOtp(data: VerifyOtpDTo): Promise<boolean> {
   //   try {
   //     const { code, phone } = data;
   //     const otp = await this.otpRepository.otps.findOne({ where: { phone: phone, code: code } });
@@ -188,52 +164,158 @@ export class AuthService {
   //   }
   // }
 
-  // async register(data: UserRegisterDTO): Promise<boolean> {
+
+
+  async sendOTP(data: SendOtpDTo): Promise<any> {
+  try {
+    const { phone } = data;
+    const user = await this.userRepository.users.findOneBy({ phone: phone });
+    const existed = await this.otpRepository.otps.findOneBy({ phone });
+
+    if (user)
+      throw new ConflictException('Cet utilisateur existe déja, veuillez vous connecter');
+    if (existed)
+      throw new ConflictException('Un message OTP a été envoyé');
+
+    // Utiliser un code fixe pour le mode trial
+    const otp = '1234';
+    
+    const otpExpirationTime = moment().add(5, 'minutes').toDate(); // OTP expire après 5 minutes
+
+    // Simuler l'envoi via Twilio (sans appel réel)
+    try {
+      // Pour le mode trial, on simule simplement l'envoi
+      console.log(`[SIMULATION] OTP envoyé à ${phone}: ${otp}`);
+      
+      // Si vous voulez garder l'appel Twilio mais éviter les erreurs en mode trial :
+      // await this.twilioService.sendOtp(phone, otp).catch(e => {
+      //   console.log('Mode trial - Envoi simulé');
+      // });
+    } catch (twilioError) {
+      throw new Error('Une erreur s\'est produite, veuillez réessayer '+twilioError);
+    }
+
+    const datas = new OtpAccountDto();
+    datas.code = otp;
+    datas.phone = phone;
+    datas.isVerified = false;
+    datas.expiresAt = otpExpirationTime;
+    
+    // Enregistrer l'OTP en base de données
+    const otpEntity = await this.otpRepository.otps.create(
+      await OtpFactory.create(datas),
+    );
+
+    return otpEntity;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async verifyOtp(data: VerifyOtpDTo): Promise<boolean> {
+  try {
+    const { code, phone } = data;
+    
+    // Accepter le code 1234 en mode trial
+    if (code === '1234') {
+      return true;
+    }
+    
+    const otp = await this.otpRepository.otps.findOne({ 
+      where: { phone: phone, code: code } 
+    });
+
+    if (!otp) {
+      throw new BadRequestException('Code incorrect');
+    }
+
+    // Vérifier si l'OTP a expiré
+    if (otp.expiresAt < new Date() || otp.isVerified) {
+      throw new BadRequestException('OTP expiré');
+    }
+
+    // Mettre à jour le statut de vérification
+    otp.isVerified = true;
+    await this.otpRepository.otps.update(otp);
+
+    return true;
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+  // async sendOTP(data: SendOtpDTo): Promise<any> {
   //   try {
-  //     const { lastname, firstname, email, phone, password, confirmPass } = data;
-
-  //     // Vérification des champs vides
-  //     const requiredFields = [
-  //       { name: 'lastname', value: lastname },
-  //       { name: 'firstname', value: firstname },
-  //       { name: 'email', value: email },
-  //       { name: 'phone', value: phone },
-  //       { name: 'password', value: password },
-  //       { name: 'confirmPass', value: confirmPass },
-  //     ];
-
-  //     const emptyFields = requiredFields
-  //       .filter(field => !field.value || field.value.trim() === '')
-  //       .map(field => field.name);
-
-  //     if (emptyFields.length > 0) {
-  //       throw new BadRequestException(
-  //         `Les champs suivants sont obligatoires: ${emptyFields.join(', ')}`,
-  //       );
-  //     }
-
-  //     // Vérification supplémentaire que les mots de passe correspondent
-  //     if (password !== confirmPass) {
-  //       throw new BadRequestException('Les mots de passe ne correspondent pas');
-  //     }
+  //     const { phone } = data;
   //     const user = await this.userRepository.users.findOneBy({ phone: phone });
+  //     const existed = await this.otpRepository.otps.findOneBy({ phone });
 
-  //     if (user) {
-  //       throw new ConflictException('Cet utilisateur existe déja');
+  //     if (user)
+  //       throw new ConflictException('Cet utilisateur existe déja, veuillez vous connecter');
+  //     if (existed)
+  //       throw new ConflictException('Un message OTP a été envoyé');
+
+  //     // Générer l'OTP (fixe en mode trial, aléatoire en production)
+  //     const otp = process.env.TWILIO_MODE === 'trial' ? '1234' : 
+  //                 Math.floor(1000 + Math.random() * 9000).toString();
+      
+  //     const otpExpirationTime = moment().add(5, 'minutes').toDate();
+
+  //     // Envoi ou simulation selon le mode
+  //     if (process.env.TWILIO_MODE === 'trial') {
+  //       console.log(`[MODE TRIAL] OTP pour ${phone}: ${otp}`);
+  //     } else {
+  //       try {
+  //         await this.twilioService.sendOtp(phone, otp);
+  //       } catch (twilioError) {
+  //         throw new Error('Erreur d\'envoi SMS: ' + twilioError);
+  //       }
   //     }
 
-  //     const newUser = new User();
+  //     const datas = new OtpAccountDto();
+  //     datas.code = otp;
+  //     datas.phone = phone;
+  //     datas.isVerified = false;
+  //     datas.expiresAt = otpExpirationTime;
+      
+  //     const otpEntity = await this.otpRepository.otps.create(
+  //       await OtpFactory.create(datas),
+  //     );
 
-  //     newUser.firstname = firstname;
-  //     newUser.lastname = lastname;
-  //     newUser.email = email;
-  //     newUser.phone = phone;
-  //     newUser.firstname = firstname;
-  //     newUser.firstname = firstname;
+  //     return otpEntity;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
+
+  // async verifyOtp(data: VerifyOtpDTo): Promise<boolean> {
+  //   try {
+  //     const { code, phone } = data;
+      
+  //     // En mode trial, accepter 1234 comme code valide
+  //     if (code === '1234') {
+  //       return true;
+  //     }
+      
+  //     const otp = await this.otpRepository.otps.findOne({ 
+  //       where: { phone: phone, code: code } 
+  //     });
+
+  //     if (!otp) {
+  //       throw new BadRequestException('Code incorrect');
+  //     }
+
+  //     if (otp.expiresAt < new Date() || otp.isVerified) {
+  //       throw new BadRequestException('OTP expiré');
+  //     }
+
+  //     otp.isVerified = true;
+  //     await this.otpRepository.otps.update(otp);
 
   //     return true;
   //   } catch (error) {
-      
+  //     throw error;
   //   }
   // }
 }

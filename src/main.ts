@@ -70,6 +70,7 @@ import {
   SwaggerCustomOptions,
 } from '@nestjs/swagger';
 import helmet from 'helmet';
+// import * as fs from 'fs';
 
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './_shared/adapter/exception/http-exception.filter';
@@ -110,6 +111,7 @@ async function bootstrap() {
 
     app.useGlobalFilters(new CustomExceptionFilter());
     const document = SwaggerModule.createDocument(app, config);
+    // fs.writeFileSync('./petitpoto.json', JSON.stringify(document));
     const customOptions: SwaggerCustomOptions = {
       swaggerOptions: { persistAuthorization: true },
       customSiteTitle: 'Zemoz API',

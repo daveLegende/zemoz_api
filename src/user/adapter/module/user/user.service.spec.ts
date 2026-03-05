@@ -4,10 +4,10 @@
 
 // import { UserService } from './user.service';
 // import { TestGlobalConfig } from 'test/test-config.spec';
-// import { UserFactory } from 'user/adapter/user.factory';
-// import { ICreateUserDTO } from 'user/app/dto/user.input.dto';
-// import { IUserService } from 'user/app/module/user';
-// import { IUserRepository } from 'user/domain/data.abstract';
+// import { UserFactory } from '../../user.factory';
+// import { ICreateUserDTO } from '../../../app/dto/user.input.dto';
+// import { IUserService } from '../../../app/module/user';
+// import { IUserRepository } from '../../../domain/data.abstract';
 // import { SexEnum } from '../../../domain/user.enum';
 
 // describe('UserService', () => {
