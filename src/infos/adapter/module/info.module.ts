@@ -7,6 +7,7 @@ import { UserRepositoryModule } from '../../../user/framework/database/user.repo
 import { AuthApiModule } from '../../../user/framework/API';
 import { AdminAuthApiModule } from '../../../admin/framework/API';
 import { AdminRepositoryModule } from '../../../admin/framework/database/admin.repository.module';
+import { CloudinaryModule } from '../../../shared/infrastructure/cloudinary/cloudinary.module';
 
 
 @Module({
@@ -16,6 +17,7 @@ import { AdminRepositoryModule } from '../../../admin/framework/database/admin.r
     AuthApiModule,
     AdminRepositoryModule, 
     AdminAuthApiModule,
+    CloudinaryModule,
   ],
   controllers: [InfoController],
   providers: [{ provide: IInfoService, useClass: InfoService }],

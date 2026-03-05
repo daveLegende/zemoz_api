@@ -21,7 +21,7 @@ import {
     ApiBearerAuth,
   } from '@nestjs/swagger';
   import { FileInterceptor } from '@nestjs/platform-express';
-  import { diskStorage } from 'multer';
+  import { memoryStorage } from 'multer';
   import { Express } from 'express';
   import { IDParamDTO } from '../../../_shared/adapter/dto';
   import { BaseConfig } from '../../../_shared/config/base.config';
@@ -86,10 +86,7 @@ export class TeamController implements ITeamController {
   // @HasPermission(AccessEnum.CAN_CREATE_USER)
   @UseInterceptors(
     FileInterceptor('logo', {
-      storage: diskStorage({
-        destination: BaseConfig.setFilePath,
-        filename: BaseConfig.editFileName,
-      }),
+      storage: memoryStorage(), // <= stocke en mémoire pour Cloudinary
       fileFilter: BaseConfig.imageFileFilter,
     }),
   )
@@ -103,8 +100,7 @@ export class TeamController implements ITeamController {
     @Body() data: TeamAccoutDTO,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<Team> {
-    data.logo = file?.filename;
-    const team = await this.teamService.add(data);
+    const team = await this.teamService.add(data, file);
     if (team) return TeamFactory.getTeam(team);
   }
 
@@ -117,11 +113,8 @@ export class TeamController implements ITeamController {
   // @HasPermission(AccessEnum.CAN_UPDATE_USER)
   @UseInterceptors(
     FileInterceptor('logo', {
-      storage: diskStorage({
-        destination: BaseConfig.setFilePath,
-        filename: BaseConfig.editFileName,
-      }),
-      fileFilter: BaseConfig.fileFilter,
+      storage: memoryStorage(), // <= stocke en mémoire pour Cloudinary
+      fileFilter: BaseConfig.imageFileFilter,
     }),
   )
   @ApiConsumes('multipart/form-data', 'application/json')
@@ -132,8 +125,7 @@ export class TeamController implements ITeamController {
     @Body() data: UpdateTeamDTO,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<Team> {
-    data.logo = file?.filename;
-    return TeamFactory.getTeam(await this.teamService.edit(data));
+    return TeamFactory.getTeam(await this.teamService.edit(data, file));
   }
 
   @Patch('state/:id')

@@ -59,7 +59,7 @@ export class MatchService implements IMatchService {
         }
       });
       // Ajouter les URLs complets pour les images
-      return matches.map(match => this.addFullImageUrls(match));
+      return matches;
     } catch (error) {
       this.logger.error(error.message, 'ERROR::MatchService.fetchAll');
       throw error;
@@ -84,7 +84,7 @@ export class MatchService implements IMatchService {
         // const exterieure = await this.teamRepository.teams.findOneByID(match.away.id);
 
 
-        return this.addFullImageUrls(match);
+        return match;
       }
       throw new NotFoundException('Match not found');
     } catch (error) {

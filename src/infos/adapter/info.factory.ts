@@ -31,7 +31,7 @@ export abstract class InfoFactory {
         if (info) {
           return {
             id: info.id,
-            image: this.getFileLink(info.image),
+            image: info.image,
             title: info.title,
             desc: info.desc,
             createdAt: info.createdAt,

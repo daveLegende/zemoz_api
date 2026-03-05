@@ -33,7 +33,7 @@ export abstract class ArbitreFactory {
         return {
           id: arbitre.id,
           name: arbitre.name,
-          avatar: this.getFileLink(arbitre.avatar),
+          avatar: arbitre.avatar,
           phone: arbitre.phone,
           role: arbitre.role,
           matchs: arbitre.matchs,

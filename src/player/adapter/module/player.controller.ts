@@ -22,7 +22,7 @@ import {
     ApiQuery,
   } from '@nestjs/swagger';
   import { FileInterceptor } from '@nestjs/platform-express';
-  import { diskStorage } from 'multer';
+  import { memoryStorage } from 'multer';
   import { Express } from 'express';
   import { IDParamDTO } from '../../../_shared/adapter/dto';
   import { BaseConfig } from '../../../_shared/config/base.config';
@@ -90,10 +90,7 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
     // @HasPermission(AccessEnum.CAN_CREATE_USER)
     @UseInterceptors(
       FileInterceptor('avatar', {
-        storage: diskStorage({
-          destination: BaseConfig.setFilePath,
-          filename: BaseConfig.editFileName,
-        }),
+        storage: memoryStorage(), // <= stocke en mémoire pour Cloudinary
         fileFilter: BaseConfig.imageFileFilter,
       }),
     )
@@ -107,8 +104,7 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
       @Body() data: PlayerAccoutDTO,
       @UploadedFile() file: Express.Multer.File,
     ): Promise<Player> {
-      data.avatar = file?.filename;
-      const player = await this.playerService.add(data);
+      const player = await this.playerService.add(data, file);
       if (player) return PlayerFactory.getPlayer(player);
     }
   
@@ -122,11 +118,8 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
     // @HasPermission(AccessEnum.CAN_UPDATE_USER)
     @UseInterceptors(
       FileInterceptor('avatar', {
-        storage: diskStorage({
-          destination: BaseConfig.setFilePath,
-          filename: BaseConfig.editFileName,
-        }),
-        fileFilter: BaseConfig.fileFilter,
+        storage: memoryStorage(), // <= stocke en mémoire pour Cloudinary
+        fileFilter: BaseConfig.imageFileFilter,
       }),
     )
     @ApiConsumes('multipart/form-data', 'application/json')
@@ -137,8 +130,7 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
       @Body() data: UpdatePlayerDTO,
       @UploadedFile() file: Express.Multer.File,
     ): Promise<Player> {
-      data.avatar = file?.filename;
-      return PlayerFactory.getPlayer(await this.playerService.edit(data));
+      return PlayerFactory.getPlayer(await this.playerService.edit(data, file));
     }
   
     @Patch('state/:id')

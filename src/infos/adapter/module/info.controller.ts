@@ -21,7 +21,7 @@ import {
     ApiBearerAuth,
   } from '@nestjs/swagger';
   import { FileInterceptor } from '@nestjs/platform-express';
-  import { diskStorage } from 'multer';
+  import { memoryStorage } from 'multer';
   import { Express } from 'express';
   import { IDParamDTO } from '../../../_shared/adapter/dto';
   import { BaseConfig } from '../../../_shared/config/base.config';
@@ -85,10 +85,7 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
     // @UseGuards(UserGuard)
     @UseInterceptors(
       FileInterceptor('image', {
-        storage: diskStorage({
-          destination: BaseConfig.setFilePath,
-          filename: BaseConfig.editFileName,
-        }),
+        storage: memoryStorage(),
         fileFilter: BaseConfig.imageFileFilter,
       }),
     )
@@ -102,8 +99,7 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
       @Body() data: InfoAccountDto,
       @UploadedFile() file: Express.Multer.File,
     ): Promise<Info> {
-      data.image = file?.filename;
-      const info = await this.infoService.add(data);
+      const info = await this.infoService.add(data, file);
       if (info) return InfoFactory.getInfo(info);
     }
   
@@ -116,11 +112,8 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
     // @HasPermission(AccessEnum.CAN_UPDATE_USER)
     @UseInterceptors(
       FileInterceptor('image', {
-        storage: diskStorage({
-          destination: BaseConfig.setFilePath,
-          filename: BaseConfig.editFileName,
-        }),
-        fileFilter: BaseConfig.fileFilter,
+        storage: memoryStorage(),
+        fileFilter: BaseConfig.imageFileFilter,
       }),
     )
     @ApiConsumes('multipart/form-data', 'application/json')
@@ -131,8 +124,7 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
       @Body() data: UpdateInfoDTO,
       @UploadedFile() file: Express.Multer.File,
     ): Promise<Info> {
-      data.image = file?.filename;
-      return InfoFactory.getInfo(await this.infoService.edit(data));
+      return InfoFactory.getInfo(await this.infoService.edit(data, file));
     }
   
     @Patch('state/:id')

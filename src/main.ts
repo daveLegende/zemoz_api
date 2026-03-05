@@ -84,7 +84,12 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     
     const helmetOptions = {};
-    app.enableCors();
+    app.enableCors({
+      origin: true, // ou ['http://localhost:3001', 'http://127.0.0.1:3001']
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      credentials: true,
+      allowedHeaders: 'Content-Type, Accept, Authorization',
+    });
     app.use(helmet(helmetOptions));
     
     app.useGlobalPipes(

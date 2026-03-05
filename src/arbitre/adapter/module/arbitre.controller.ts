@@ -22,7 +22,6 @@ import {
   } from '@nestjs/swagger';
   import { Express } from 'express';
   import { FileInterceptor } from '@nestjs/platform-express';
-  import { diskStorage } from 'multer';
   import { IDParamDTO } from '../../../_shared/adapter/dto';
   import { BaseConfig } from '../../../_shared/config/base.config';
 import { IArbitreController, IArbitreService } from '../../app/module';
@@ -30,6 +29,7 @@ import { Arbitre } from '../../domain';
 import { ArbitreFactory } from '../arbitre.factory';
 import { ArbitreAccountDto, DocArbitreOutputDto, UpdateArbitreDTO } from '../dto';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
+import { memoryStorage } from 'multer';
   
   @ApiTags('Arbitres management')
   @UseGuards(AdminGuard)
@@ -83,53 +83,37 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
     @Post()
     @UseInterceptors(
       FileInterceptor('avatar', {
-        storage: diskStorage({
-          destination: BaseConfig.setFilePath,
-          filename: BaseConfig.editFileName,
-        }),
+        storage: memoryStorage(), // <= stocke en mémoire pour Cloudinary
         fileFilter: BaseConfig.imageFileFilter,
       }),
     )
     @ApiConsumes('multipart/form-data', 'application/json')
-    @ApiOperation({
-      summary: 'Create Arbitre',
-    })
-    // @ApiBody({ type: RegisterAccoutDTO })
-    // @ApiResponse({ type: DocUserOutputDTO })
+    @ApiOperation({ summary: 'Create Arbitre' })
     async create(
       @Body() data: ArbitreAccountDto,
-      @UploadedFile() file: Express.Multer.File,
+      @UploadedFile() file?: Express.Multer.File,
     ): Promise<Arbitre> {
-      data.avatar = file?.filename;
-      const arbitre = await this.arbitreService.add(data);
-      if (arbitre) return ArbitreFactory.getArbitre(arbitre);
+      const arbitre = await this.arbitreService.add(data, file); // <= passer le file
+      return ArbitreFactory.getArbitre(arbitre);
     }
-  
-    /**
-     * @method PATCH
-     */
-  
+
     @Patch()
-    // @HasPermission(AccessEnum.CAN_UPDATE_USER)
     @UseInterceptors(
       FileInterceptor('avatar', {
-        storage: diskStorage({
-          destination: BaseConfig.setFilePath,
-          filename: BaseConfig.editFileName,
-        }),
+        storage: memoryStorage(), // <= en mémoire
         fileFilter: BaseConfig.fileFilter,
       }),
     )
     @ApiConsumes('multipart/form-data', 'application/json')
-    @ApiOperation({ summary: 'Update user account' })
+    @ApiOperation({ summary: 'Update Arbitre' })
     @ApiBody({ type: UpdateArbitreDTO })
     @ApiResponse({ type: DocArbitreOutputDto })
     async update(
       @Body() data: UpdateArbitreDTO,
-      @UploadedFile() file: Express.Multer.File,
+      @UploadedFile() file?: Express.Multer.File,
     ): Promise<Arbitre> {
-      data.avatar = file?.filename;
-      return ArbitreFactory.getArbitre(await this.arbitreService.edit(data));
+      const arbitre = await this.arbitreService.edit(data, file); // <= passer le file
+      return ArbitreFactory.getArbitre(arbitre);
     }
   
     @Patch('state/:id')

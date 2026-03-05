@@ -8,6 +8,7 @@ import { AdminAuthApiModule } from '../../../admin/framework/API';
 import { AdminRepositoryModule } from '../../../admin/framework/database/admin.repository.module';
 import { AuthApiModule } from '../../../user/framework/API';
 import { UserRepositoryModule } from '../../../user/framework/database/user.repository.module';
+import { CloudinaryModule } from '../../../shared/infrastructure/cloudinary/cloudinary.module';
 
 
 @Module({
@@ -18,6 +19,7 @@ import { UserRepositoryModule } from '../../../user/framework/database/user.repo
     AuthApiModule,
     AdminRepositoryModule, 
     AdminAuthApiModule,
+    CloudinaryModule,
   ],
   controllers: [TeamController],
   providers: [{ provide: ITeamService, useClass: TeamService }],

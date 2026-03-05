@@ -44,7 +44,7 @@ export abstract class PlayerFactory {
         buts: player.buts,
         passes: player.passes,
         team: player.team,
-        avatar: this.getFileLink(player.avatar),
+        avatar: player.avatar,
         createdAt: player.createdAt,
         updatedAt: player.updatedAt,
         deletedAt: player.deletedAt
