@@ -1,6 +1,6 @@
 import { Player } from "../../domain";
 import { ICreatePlayerDTO, IUpdatePlayerDTO } from "../dto";
-import { Express } from "express";
+import { Express } from 'express';
 
 
 export abstract class IPlayerService {

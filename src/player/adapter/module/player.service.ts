@@ -1,6 +1,5 @@
 import {
     ConflictException,
-    Inject,
     Injectable,
     Logger,
     NotFoundException,
@@ -10,7 +9,7 @@ import { IPlayerRepository, Player } from '../../domain';
 import { PlayerAccoutDTO, UpdatePlayerDTO } from '../dto';
 import { PlayerFactory } from '../player.factory';
 import { ITeamRepository } from '../../../team/domain';
-import { IFileStorage } from '../../../shared/domain/file-storage.interface';
+import { Express } from 'express';
   
   @Injectable()
   export class PlayerService implements IPlayerService {
@@ -18,7 +17,6 @@ import { IFileStorage } from '../../../shared/domain/file-storage.interface';
     constructor(
       private playerRepository: IPlayerRepository,
       private teamRepository: ITeamRepository,
-      @Inject('IFileStorage') private cloudinaryService: IFileStorage,
     ) {}
   
     async fetchAll(): Promise<Player[]> {
@@ -52,46 +50,20 @@ import { IFileStorage } from '../../../shared/domain/file-storage.interface';
       return await this.playerRepository.players.findOneBy({ ...data });
     }
   
-    // async add(data: PlayerAccoutDTO): Promise<Player> {
-    //   try {
-    //     const { phone, team } = data;
-    //     const existed = await this.playerRepository.players.findOne({
-    //       where: { phone: phone },
-    //         relations: { team: true }
-    //     });
-    //     if (existed)
-    //       throw new ConflictException('Player already exist');
-
-    //     const equipe = await this.teamRepository.teams.findOneByID(team);
-        
-    //     return await this.playerRepository.players.create(
-    //       await PlayerFactory.create(data, equipe),
-    //     );
-    //   } catch (error) {
-    //     this.logger.error(error.message, 'ERROR::PlayerService.add');
-    //     throw error;
-    //   }
-    // }
-
-    async add(data: PlayerAccoutDTO, file?: Express.Multer.File): Promise<Player> {
+    async add(data: PlayerAccoutDTO): Promise<Player> {
       try {
-        // Upload image si fournie
-        let avatarUrl: string | undefined;
-        if (file) {
-          avatarUrl = await this.cloudinaryService.upload(file, 'players'); // dossier 'players' dans Cloudinary
-        }
-
         const { phone, team } = data;
         const existed = await this.playerRepository.players.findOne({
           where: { phone: phone },
-          relations: { team: true }
+            relations: { team: true }
         });
         if (existed)
           throw new ConflictException('Player already exist');
 
         const equipe = await this.teamRepository.teams.findOneByID(team);
+        
         return await this.playerRepository.players.create(
-          await PlayerFactory.create({ ...data, avatar: avatarUrl }, equipe),
+          await PlayerFactory.create(data, equipe),
         );
       } catch (error) {
         this.logger.error(error.message, 'ERROR::PlayerService.add');
@@ -99,44 +71,22 @@ import { IFileStorage } from '../../../shared/domain/file-storage.interface';
       }
     }
   
-    // async edit(data: UpdatePlayerDTO): Promise<Player> {
-    //   try {
-    //     const { id } = data;
-    //     const player = id && (await this.playerRepository.players.findOne({
-    //       where: { id: id },
-    //         relations: { team: true }
-    //     }));
-    //     if (player) {
-    //       return await this.playerRepository.players.update(
-    //         PlayerFactory.update(player, data),
-    //       );
-    //     }
-    //     throw new NotFoundException();
-    //   } catch (error) {
-    //     this.logger.error(error.message, 'ERROR::PlayerService.editPlayer');
-  
-    //     throw error;
-    //   }
-    // }
-
-    async edit(data: UpdatePlayerDTO, file?: Express.Multer.File): Promise<Player> {
+    async edit(data: UpdatePlayerDTO): Promise<Player> {
       try {
-        const player = await this.playerRepository.players.findOne({
-          where: { id: data.id },
-          relations: { team: true }
-        });
-
-        if (!player) throw new NotFoundException();
-        let avatarUrl: string | undefined;
-        if (file) {
-          avatarUrl = await this.cloudinaryService.upload(file, 'players');
+        const { id } = data;
+        const player = id && (await this.playerRepository.players.findOne({
+          where: { id: id },
+            relations: { team: true }
+        }));
+        if (player) {
+          return await this.playerRepository.players.update(
+            PlayerFactory.update(player, data),
+          );
         }
-
-        return await this.playerRepository.players.update(
-          PlayerFactory.update(player, { ...data, avatar: avatarUrl }),
-        );  
+        throw new NotFoundException();
       } catch (error) {
         this.logger.error(error.message, 'ERROR::PlayerService.editPlayer');
+  
         throw error;
       }
     }

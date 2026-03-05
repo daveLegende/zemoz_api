@@ -9,6 +9,7 @@ import { InfoAccountDto, UpdateInfoDTO } from '../dto';
 import { IInfoService } from '../../../infos/app/module';
 import { IInfoRepository, Info } from '../../../infos/domain';
 import { InfoFactory } from '../info.factory';
+import { Express } from 'express';
 import { IFileStorage } from '../../../shared/domain/file-storage.interface';
   
   @Injectable()
