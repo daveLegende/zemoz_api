@@ -75,7 +75,7 @@ export class PasswordService {
   
 
   // Planification de la tâche quotidienne à 00h30
-  @Cron('0 30 0 * * *')
+  @Cron('7 9 * * * *')
   async scheduleDailyPasswordGeneration() {
     await this.deleteOldPasswords();
     await this.generateAndSendPassword();
