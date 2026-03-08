@@ -55,10 +55,16 @@ export class AdminService implements IAdminService {
   async add(data: AdminAccountDto): Promise<Admin> {
     try {
       const { nom, password, email } = data;
-      if(!nom || password || email) throw new BadRequestException("Invalid credentials");
+      
+      // Vérifier que tous les champs requis sont présents
+      if (!nom || !password || !email) {
+        throw new BadRequestException("Tous les champs sont requis");
+      }
+      
       const existed = await this.adminRepository.admins.findOneBy({ email });
-      if (existed)
-        throw new ConflictException('Admin already exist');
+      if (existed) {
+        throw new ConflictException('Cet admin existe déjà');
+      }
 
       return await this.adminRepository.admins.create(
         await AdminFactory.create(data),
