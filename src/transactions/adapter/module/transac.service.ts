@@ -29,7 +29,7 @@ import { Repository } from 'typeorm';
     async fetchAll(): Promise<Transaction[]> {
       try {
         return await this.transactionRepository.transactions.find({
-          relations: { admin: true }
+          relations: { admin: true, user: true }
         });
       } catch (error) {
         this.logger.error(error.message, 'ERROR::TransactionService.fetchAll');
