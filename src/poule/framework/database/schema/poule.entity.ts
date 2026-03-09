@@ -5,7 +5,7 @@ import { MatchEntity } from '../../../../match/framework/database/schema/match.e
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('poules')
-export class PouleEntity extends Poule {
+export class PouleEntity extends ATimestamp implements Poule {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
