@@ -90,9 +90,14 @@ import { ITeamRepository } from '../../../team/domain';
   
     async remove(id: string): Promise<boolean> {
       try {
-        const poule = await this.pouleRepository.poules.findOneByID(id);
+        // Correction: Utiliser findOne au lieu de findOneByID
+        const poule = await this.pouleRepository.poules.findOne({ 
+          where: { id } 
+        });
+        
         if (poule) {
-          return await this.pouleRepository.poules.remove(poule).then(() => true);
+          await this.pouleRepository.poules.remove(poule);
+          return true;
         }
         return false;
       } catch (error) {

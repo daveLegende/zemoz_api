@@ -136,8 +136,8 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
       description: 'ID of the user to delete',
     })
     @ApiResponse({ type: Boolean })
-    remove(@Param() { id }: IDParamDTO): Promise<boolean> {
-      return this.pouleService.remove(id);
+    async remove(@Param() { id }: IDParamDTO): Promise<boolean> {
+      return await this.pouleService.remove(id);
     }
   }
   
