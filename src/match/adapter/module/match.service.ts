@@ -51,8 +51,8 @@ export class MatchService implements IMatchService {
     try {
       const matches = await this.matchRepository.matchs.find({
         relations: {
-          home: true,
-          away: true,
+          home: { joueurs: true },
+          away: { joueurs: true },
           arbitres: true,
           events: { joueur: true, equipe: true },
           bets: true,
@@ -71,8 +71,8 @@ export class MatchService implements IMatchService {
       const match = await this.matchRepository.matchs.findOne({
         where: { id: id },
         relations: {
-          home: true,
-          away: true,
+          home: { joueurs: true },
+          away: { joueurs: true },
           arbitres: true,
           bets: true,
           events: { joueur: true, equipe: true }
