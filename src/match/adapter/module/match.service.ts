@@ -1204,64 +1204,43 @@ export class MatchService implements IMatchService {
   private async payoutUser(coupon: Coupon): Promise<void> {
     try {
       await this.dataSource.transaction(async (manager) => {
-        // ✅ 1. Verrouiller le coupon SEUL (sans jointure)
-        const lockedCoupon = await manager
-          .createQueryBuilder(CouponEntity, 'coupon')
-          .where('coupon.id = :id', { id: coupon.id })
-          .setLock('pessimistic_write') // FOR UPDATE
-          .getOne();
+        // ✅ Récupérer le coupon avec sa relation user
+        const lockedCoupon = await manager.findOne(CouponEntity, {
+          where: { id: coupon.id },
+          relations: { user: true }, // ← Charge la relation
+          lock: { mode: 'pessimistic_write' },
+        });
 
-        if (!lockedCoupon) {
-          throw new Error('Coupon introuvable');
-        }
-
-        // ✅ 2. Vérifier si déjà payé (PENDANT le verrouillage)
+        if (!lockedCoupon) throw new Error('Coupon introuvable');
         if (lockedCoupon.isPaid) {
-          this.logger.warn(`Paiement déjà effectué pour le coupon ${lockedCoupon.id}`);
+          this.logger.warn(`Coupon déjà payé`);
           return;
         }
 
-        // ✅ 3. Recharger l'utilisateur SÉPARÉMENT avec son propre verrouillage
-        const user = await manager
-          .createQueryBuilder(UserEntity, 'user')
-          .where('user.id = :userId', { userId: lockedCoupon.user.id })
-          .setLock('pessimistic_write')
-          .getOne();
-
-        if (!user) {
+        if (!lockedCoupon.user) {
           throw new Error('Utilisateur non trouvé');
         }
 
-        const gains = lockedCoupon.gains || 0;
+        // ✅ Verrouiller l'utilisateur
+        const user = await manager.findOne(UserEntity, {
+          where: { id: lockedCoupon.user.id },
+          lock: { mode: 'pessimistic_write' },
+        });
 
-        // ✅ 4. Créditer le solde
+        if (!user) throw new Error('Utilisateur non trouvé');
+
+        const gains = lockedCoupon.gains || 0;
         user.solde += gains;
         lockedCoupon.isPaid = true;
         lockedCoupon.etat = CouponState.WIN;
 
-        // ✅ 5. Sauvegarder (toujours dans la transaction)
         await manager.save(user);
         await manager.save(lockedCoupon);
 
-        // Event websocket
-        this.matchGateway.server.emit('userPaid', {
-          userId: user.id,
-          couponId: lockedCoupon.id,
-          amount: gains,
-          timestamp: new Date(),
-        });
-
-        this.logger.log(
-          `✅ Paiement sécurisé de ${gains} à l'utilisateur ${user.id} pour le coupon ${lockedCoupon.id}`,
-        );
+        this.logger.log(`✅ Paiement de ${gains} FCFA`);
       });
     } catch (error) {
-      this.logger.error(
-        `❌ Erreur paiement coupon ${coupon.id}: ${error.message}`,
-        error.stack,
-      );
-      
-      // ⚠️ IMPORTANT: Relancer l'erreur pour que la transaction ROLLBACK
+      this.logger.error(`❌ Erreur: ${error.message}`);
       throw error;
     }
   }
