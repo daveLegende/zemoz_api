@@ -1204,11 +1204,12 @@ export class MatchService implements IMatchService {
   private async payoutUser(coupon: Coupon): Promise<void> {
     try {
       await this.dataSource.transaction(async (manager) => {
-        // ✅ Récupérer le coupon avec sa relation user
+        
+        // ✅ ÉTAPE 1 : Verrouiller le coupon SANS relation (évite le LEFT JOIN + FOR UPDATE)
         const lockedCoupon = await manager.findOne(CouponEntity, {
           where: { id: coupon.id },
-          relations: { user: true }, // ← Charge la relation
           lock: { mode: 'pessimistic_write' },
+          // ← Pas de relations ici !
         });
 
         if (!lockedCoupon) throw new Error('Coupon introuvable');
@@ -1217,13 +1218,12 @@ export class MatchService implements IMatchService {
           return;
         }
 
-        if (!lockedCoupon.user) {
-          throw new Error('Utilisateur non trouvé');
-        }
+        // ✅ ÉTAPE 2 : Verrouiller l'utilisateur séparément via userId
+        const userId = lockedCoupon.user?.id ?? coupon.user?.id;
+        if (!userId) throw new Error('userId introuvable sur le coupon');
 
-        // ✅ Verrouiller l'utilisateur
         const user = await manager.findOne(UserEntity, {
-          where: { id: lockedCoupon.user.id },
+          where: { id: userId },
           lock: { mode: 'pessimistic_write' },
         });
 
@@ -1237,7 +1237,7 @@ export class MatchService implements IMatchService {
         await manager.save(user);
         await manager.save(lockedCoupon);
 
-        this.logger.log(`✅ Paiement de ${gains} FCFA`);
+        this.logger.log(`✅ Paiement de ${gains} FCFA à l'utilisateur ${user.id}`);
       });
     } catch (error) {
       this.logger.error(`❌ Erreur: ${error.message}`);
