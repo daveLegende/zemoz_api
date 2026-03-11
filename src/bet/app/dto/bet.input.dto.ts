@@ -16,3 +16,17 @@ export interface ICreateBetDTO {
 export interface IUpdateBetDTO extends Partial<ICreateBetDTO> {
   id: string;
 }
+
+
+export interface ICreateMultipleBetsDto {
+  matchId?: string;
+
+  competitionId?: string;
+  
+  bets: ICreateBetDTO[];
+}
+
+export interface IUpdateBetDTO extends Partial<ICreateBetDTO> {
+  id: string;
+}
+

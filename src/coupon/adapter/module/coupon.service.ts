@@ -30,7 +30,7 @@ export class CouponService {
       relations: {
         user: true,
         couponBets: {
-          bet: { match: true },
+          bet: { match: { home: { joueurs: true }, away: { joueurs: true } } },
         },
       },
       order: { createdAt: 'DESC' },

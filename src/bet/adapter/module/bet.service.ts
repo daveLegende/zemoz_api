@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { IBetService } from '../../../bet/app/module';
 import { Bet, CategoryName, MarketType } from '../../../bet/domain';
-import { BetAccountDto, UpdateBetDTO } from '../dto';
+import { BetAccountDto, UpdateBetDTO, CreateMultipleBetsDto, UpdateMultipleBetsDTO } from '../dto';
 import { IBetRepository } from '../../../bet/domain/data.abstract';
 import { IMatchRepository, Match } from '../../../match/domain';
 import { BetFactory } from '../bet.factory';
@@ -51,6 +51,69 @@ export class BetService implements IBetService {
 
   async search(data: Partial<Bet>): Promise<Bet> {
     return await this.betsRepository.bets.findOneBy({ ...data });
+  }
+
+
+  // dans bet/service/bet.service.ts
+  async addMultiple(data: CreateMultipleBetsDto): Promise<Bet[]> {
+    try {
+      const { matchId, competitionId, bets } = data;
+      
+      // 1️⃣ Vérifier que le match existe (si nécessaire)
+      let match: Match = null;
+      if (matchId) {
+        match = await this.matchRepository.matchs.findOneByID(matchId);
+        if (!match) {
+          throw new NotFoundException('Match non trouvé');
+        }
+      }
+
+      // 2️⃣ Vérifier que la compétition existe (si nécessaire)
+      if (competitionId) {
+        // Logique de vérification de compétition...
+      }
+
+      const createdBets: Bet[] = [];
+
+      for (const betData of bets) {
+        // Validation métier pour chaque bet
+        this.validateBet(betData);
+
+        const config = MARKET_CONFIG[betData.category];
+
+        // Vérifier unicité du market pour ce match
+        const existed = await this.betsRepository.bets.find({
+          where: {
+            category: betData.category,
+            match: match ? { id: matchId } : null,
+            competitionId: competitionId ?? null,
+          },
+        });
+
+        if (existed) {
+          throw new ConflictException(
+            `Le marché ${betData.category} existe déjà pour ce match / compétition`
+          );
+        }
+
+        // Création du bet via la factory
+        const bet = BetFactory.create({
+          category: betData.category,
+          odds: betData.odds.odds, // Note: odds.odds à cause de la structure
+          match,
+          competitionId,
+        });
+
+        const savedBet = await this.betsRepository.bets.create(bet);
+        createdBets.push(savedBet);
+      }
+
+      return createdBets;
+
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::betservice.addMultiple');
+      throw error;
+    }
   }
 
   async add(data: BetAccountDto): Promise<Bet> {

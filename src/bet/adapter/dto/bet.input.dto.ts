@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsDefined, IsEnum, IsNotEmptyObject, IsNumber, IsObject, IsOptional, IsString, IsUUID, ValidateIf, ValidateNested } from "class-validator";
+import { IsArray, IsDefined, IsEnum, IsNotEmpty, IsNotEmptyObject, IsNumber, IsObject, IsOptional, IsString, IsUUID, ValidateIf, ValidateNested } from "class-validator";
 import { CategoryName } from "../../domain";
 
 
@@ -136,7 +136,50 @@ export class BetAccountDto {
 
 
 
+
 export class UpdateBetDTO extends PartialType(BetAccountDto) {
+  @ApiProperty({
+    type: String,
+    name: 'id',
+    description: 'ID',
+  })
+  @IsString()
+  @IsUUID()
+  id: string;
+}
+
+
+
+export class CreateMultipleBetsDto {
+  @ApiProperty({ 
+    description: 'ID du match', 
+    example: 'dc25f57f-11f7-48f3-af32-8a0b1065ae57' 
+  })
+  @IsUUID()
+  @IsOptional()
+  matchId?: string;
+
+
+  @ApiProperty({ 
+    description: 'ID de la competition', 
+    example: 'dc25f57f-11f7-48f3-af32-8a0b1065ae57' 
+  })
+  @IsOptional()
+  @IsUUID()
+  competitionId?: string;
+
+  @ApiProperty({ 
+    description: 'Liste des paris à créer', 
+    type: [BetAccountDto] 
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => BetAccountDto)
+  bets: BetAccountDto[];
+}
+
+
+export class UpdateMultipleBetsDTO extends PartialType(CreateMultipleBetsDto) {
   @ApiProperty({
     type: String,
     name: 'id',
