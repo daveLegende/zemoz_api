@@ -940,6 +940,105 @@ export class MatchService implements IMatchService {
   /**
    * Vérifie et met à jour l'état d'un coupon en fonction de ses couponBets
   */
+  // private async updateCouponStatus(couponId: string): Promise<void> {
+  //   try {
+  //     this.logger.log(`--- updateCouponStatus pour coupon ${couponId} ---`);
+
+  //     const coupon = await this.couponRepository.coupons.findOne({
+  //       where: { id: couponId },
+  //       relations: {
+  //         couponBets: { bet: { match: true } },
+  //         user: true
+  //       }
+  //     });
+
+  //     if (!coupon) {
+  //       this.logger.warn(`Coupon ${couponId} non trouvé`);
+  //       return;
+  //     }
+
+  //     this.logger.log(`État actuel du coupon: ${coupon.etat}`);
+
+  //     if (coupon.etat !== CouponState.PENDING) {
+  //       this.logger.log(`Coupon ${couponId} n'est pas en attente (${coupon.etat}), skip`);
+  //       return;
+  //     }
+
+  //     const couponBets = coupon.couponBets || [];
+  //     this.logger.log(`Nombre de couponBets: ${couponBets.length}`);
+
+  //     const stats = {
+  //       gagne: 0,
+  //       perdu: 0,
+  //       pending: 0
+  //     };
+
+  //     couponBets.forEach(couponBet => {
+  //       this.logger.log(`CouponBet ${couponBet.id}: ${couponBet.status}`);
+  //       switch (couponBet.status) {
+  //         case BetStatus.GAGNE:
+  //           stats.gagne++;
+  //           break;
+  //         case BetStatus.PERDU:
+  //           stats.perdu++;
+  //           break;
+  //         case BetStatus.PENDING:
+  //           stats.pending++;
+  //           break;
+  //       }
+  //     });
+
+  //     this.logger.log(`Stats - Gagnés: ${stats.gagne}, Perdus: ${stats.perdu}, En attente: ${stats.pending}`);
+
+  //     let newCouponState: CouponState;
+  //     let shouldPayout = false;
+
+  //     if (stats.perdu > 0) {
+  //       newCouponState = CouponState.LOOSE;
+  //       shouldPayout = false;
+  //       this.logger.log(`❌ Coupon PERDU (au moins un pari perdu)`);
+  //     } else if (stats.pending > 0) {
+  //       newCouponState = CouponState.PENDING;
+  //       shouldPayout = false;
+  //       this.logger.log(`⏳ Coupon reste EN ATTENTE`);
+  //     } else if (stats.gagne === couponBets.length) {
+  //       newCouponState = CouponState.WIN;
+  //       shouldPayout = true;
+  //       this.logger.log(`🎉 Coupon GAGNANT`);
+  //     } else {
+  //       newCouponState = CouponState.PENDING;
+  //       shouldPayout = false;
+  //     }
+
+  //     if (coupon.etat !== newCouponState) {
+  //       this.logger.log(`Mise à jour du coupon de ${coupon.etat} vers ${newCouponState}`);
+  //       coupon.etat = newCouponState;
+  //       await this.couponRepository.coupons.update(coupon);
+
+  //       this.matchGateway.server.emit('couponStatusUpdated', {
+  //         couponId: coupon.id,
+  //         userId: coupon.user?.id,
+  //         newState: newCouponState,
+  //         gains: coupon.gains,
+  //         timestamp: new Date()
+  //       });
+
+  //       if (shouldPayout && newCouponState === CouponState.WIN) {
+  //         await this.payoutUser(coupon);
+  //       }
+  //     } else {
+  //       this.logger.log(`Pas de changement d'état nécessaire`);
+  //     }
+
+  //   } catch (error) {
+  //     this.logger.error(
+  //       `Erreur lors de la mise à jour du statut du coupon ${couponId}: ${error.message}`,
+  //       error.stack
+  //     );
+  //   }
+  // }
+
+
   private async updateCouponStatus(couponId: string): Promise<void> {
     try {
       this.logger.log(`--- updateCouponStatus pour coupon ${couponId} ---`);
@@ -957,10 +1056,11 @@ export class MatchService implements IMatchService {
         return;
       }
 
-      this.logger.log(`État actuel du coupon: ${coupon.etat}`);
+      this.logger.log(`État actuel du coupon: ${coupon.etat}, isPaid: ${coupon.isPaid}`);
 
-      if (coupon.etat !== CouponState.PENDING) {
-        this.logger.log(`Coupon ${couponId} n'est pas en attente (${coupon.etat}), skip`);
+      // ✅ CORRECTION: Ne pas skip si le coupon est déjà WIN mais non payé
+      if (coupon.isPaid) {
+        this.logger.log(`Coupon ${couponId} déjà payé, skip`);
         return;
       }
 
@@ -1004,15 +1104,19 @@ export class MatchService implements IMatchService {
       } else if (stats.gagne === couponBets.length) {
         newCouponState = CouponState.WIN;
         shouldPayout = true;
-        this.logger.log(`🎉 Coupon GAGNANT`);
+        this.logger.log(`🎉 Coupon GAGNANT - Tous les paris sont gagnés`);
       } else {
         newCouponState = CouponState.PENDING;
         shouldPayout = false;
       }
 
-      if (coupon.etat !== newCouponState) {
-        this.logger.log(`Mise à jour du coupon de ${coupon.etat} vers ${newCouponState}`);
-        coupon.etat = newCouponState;
+      // ✅ CORRECTION: Mettre à jour même si l'état ne change pas (pour le paiement)
+      if (coupon.etat !== newCouponState || shouldPayout) {
+        if (coupon.etat !== newCouponState) {
+          this.logger.log(`Mise à jour du coupon de ${coupon.etat} vers ${newCouponState}`);
+          coupon.etat = newCouponState;
+        }
+
         await this.couponRepository.coupons.update(coupon);
 
         this.matchGateway.server.emit('couponStatusUpdated', {
@@ -1023,7 +1127,9 @@ export class MatchService implements IMatchService {
           timestamp: new Date()
         });
 
-        if (shouldPayout && newCouponState === CouponState.WIN) {
+        // ✅ CORRECTION: Paiement si le coupon est gagnant ET non payé
+        if (newCouponState === CouponState.WIN && !coupon.isPaid) {
+          this.logger.log(`💰 Tentative de paiement pour le coupon ${coupon.id}`);
           await this.payoutUser(coupon);
         }
       } else {
