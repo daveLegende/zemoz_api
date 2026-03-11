@@ -27,6 +27,8 @@ import { Coupon, CouponState } from '../../../coupon/domain';
 import { DataSource } from 'typeorm';
 import { CouponEntity } from '../../../coupon/framework/schema/coupon.entity';
 import { UserEntity } from '../../../user/framework/database/schema/user.entity';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class MatchService implements IMatchService {
@@ -42,6 +44,8 @@ export class MatchService implements IMatchService {
     private couponBetService: ICouponBetService,
     private couponBetRepository: ICouponBetRepository,
     private dataSource: DataSource,
+    @InjectQueue('payout-queue')
+    private payoutQueue: Queue,
     // 
     @Inject(forwardRef(() => MatchGateway)) // Injection du Gateway
     private readonly matchGateway: MatchGateway,
@@ -1131,7 +1135,10 @@ export class MatchService implements IMatchService {
         // ✅ CORRECTION: Paiement si le coupon est gagnant ET non payé
         if (newCouponState === CouponState.WIN && !coupon.isPaid) {
           this.logger.log(`💰 Tentative de paiement pour le coupon ${coupon.id}`);
-          await this.payoutUser(coupon);
+          // await this.payoutUser(coupon.id);
+          await this.payoutQueue.add('payout', {
+            couponId: coupon.id,
+          });
         }
       } else {
         this.logger.log(`Pas de changement d'état nécessaire`);
@@ -1201,35 +1208,32 @@ export class MatchService implements IMatchService {
   // }
 
 
-  private async payoutUser(coupon: Coupon): Promise<void> {
+  async payoutUser(couponId: string): Promise<void> {
     try {
+
       await this.dataSource.transaction(async (manager) => {
-        // ✅ Récupérer le coupon avec sa relation user
+
         const lockedCoupon = await manager.findOne(CouponEntity, {
-          where: { id: coupon.id },
-          relations: { user: true }, // ← Charge la relation
+          where: { id: couponId },
           lock: { mode: 'pessimistic_write' },
         });
 
         if (!lockedCoupon) throw new Error('Coupon introuvable');
+
         if (lockedCoupon.isPaid) {
           this.logger.warn(`Coupon déjà payé`);
           return;
         }
 
-        if (!lockedCoupon.user) {
-          throw new Error('Utilisateur non trouvé');
-        }
-
-        // ✅ Verrouiller l'utilisateur
         const user = await manager.findOne(UserEntity, {
-          where: { id: lockedCoupon.user.id },
+          where: { id: lockedCoupon.user?.id },
           lock: { mode: 'pessimistic_write' },
         });
 
-        if (!user) throw new Error('Utilisateur non trouvé');
+        if (!user) throw new Error('Utilisateur introuvable');
 
         const gains = lockedCoupon.gains || 0;
+
         user.solde += gains;
         lockedCoupon.isPaid = true;
         lockedCoupon.etat = CouponState.WIN;
@@ -1237,10 +1241,12 @@ export class MatchService implements IMatchService {
         await manager.save(user);
         await manager.save(lockedCoupon);
 
-        this.logger.log(`✅ Paiement de ${gains} FCFA`);
+        this.logger.log(`✅ Paiement ${gains} FCFA au user ${user.id}`);
+
       });
+
     } catch (error) {
-      this.logger.error(`❌ Erreur: ${error.message}`);
+      this.logger.error(`❌ payout error: ${error.message}`);
       throw error;
     }
   }

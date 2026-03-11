@@ -34,6 +34,8 @@ import { ForgotPassModule } from './forgotpass/adapter/module';
 import { TournoiModule } from './tournoi/adapter/module';
 import { TournoiCouponModule } from './tournoiCoupon/adapter/module';
 import { TournoiCouponBetModule } from './tournoiCouponBet/adapter/module';
+import { BullModule } from '@nestjs/bullmq';
+import { PayoutModule } from './payout/payout.module';
 // import { TasksModule } from './tasks/task.module';
 
 @Module({
@@ -61,6 +63,7 @@ import { TournoiCouponBetModule } from './tournoiCouponBet/adapter/module';
     TournoiModule,
     TournoiCouponModule,
     TournoiCouponBetModule,
+    PayoutModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -117,6 +120,16 @@ export class IAppModule {}
       synchronize: true,
       autoLoadEntities: true,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
+    }),
+
+    BullModule.forRootAsync({
+      useFactory: () => ({
+        connection: {
+          host: process.env.REDIS_HOST,
+          port: parseInt(process.env.REDIS_PORT),
+          password: process.env.REDIS_PASSWORD || undefined,
+        },
+      }),
     }),
     ScheduleModule.forRoot(),
     SeedsModule,
