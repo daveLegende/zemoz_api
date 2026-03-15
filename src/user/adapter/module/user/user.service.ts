@@ -293,7 +293,7 @@ export class UserService implements IUserService {
       if (!user) {
         throw new NotFoundException("Utilisateur non trouvé");
       }
-      console.log("wsugsdhfligywsilhvi " + user);
+      // console.log("wsugsdhfligywsilhvi " + user);
 
       const coupons = await this.couponRepository.coupons.find({
         where: {

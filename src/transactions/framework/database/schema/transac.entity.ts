@@ -2,9 +2,10 @@ import { AdminEntity } from "../../../../admin/framework/database/schema/admin.e
 import { Transaction, TransactionType } from "../../../domain";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserEntity } from "../../../../user/framework/database/schema/user.entity";
+import { ATimestamp } from "../../../../_shared/framework/timestamp.abstract";
 
 @Entity('transactions')
-export class TransactionEntity extends Transaction {
+export class TransactionEntity extends ATimestamp implements Transaction {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 

@@ -34,7 +34,7 @@ import { ForgotPassModule } from './forgotpass/adapter/module';
 import { TournoiModule } from './tournoi/adapter/module';
 import { TournoiCouponModule } from './tournoiCoupon/adapter/module';
 import { TournoiCouponBetModule } from './tournoiCouponBet/adapter/module';
-// import { TasksModule } from './tasks/task.module';
+import { MVPModule } from './mvp/adapter/module';
 
 @Module({
   imports: [
@@ -61,6 +61,7 @@ import { TournoiCouponBetModule } from './tournoiCouponBet/adapter/module';
     TournoiModule,
     TournoiCouponModule,
     TournoiCouponBetModule,
+    MVPModule,
   ],
   controllers: [AppController],
   providers: [AppService],

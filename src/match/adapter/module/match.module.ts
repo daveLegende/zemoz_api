@@ -21,7 +21,6 @@ import { EntityManager } from 'typeorm';
 import { CouponBetRepositoryModule } from '../../../couponBet/framework/coupon.module.repository';
 import { CouponBetModule } from '../../../couponBet/adapter/module';
 import { CouponModule } from '../../../coupon/adapter/module';
-import { CloudinaryModule } from '../../../shared/infrastructure/cloudinary/cloudinary.module';
 
 
 @Module({
@@ -45,7 +44,6 @@ import { CloudinaryModule } from '../../../shared/infrastructure/cloudinary/clou
     EntityManager,
     CouponBetModule,
     CouponModule,
-    // CloudinaryModule,
   ],
   controllers: [MatchController],
   providers: [MatchGateway, { provide: IMatchService, useClass: MatchService }],
