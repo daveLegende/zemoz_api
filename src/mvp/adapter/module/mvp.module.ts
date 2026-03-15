@@ -11,6 +11,7 @@ import { EntityManager } from 'typeorm';
 
 @Module({
   imports: [
+    MvpRepositoryModule,
     UserRepositoryModule,
     PlayerRepositoryModule,
     MatchRepositoryModule,
