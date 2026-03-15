@@ -1,11 +1,10 @@
 import {
   BadRequestException,
-  ConflictException,
   Injectable,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { MVPFactory } from '../MVP.factory';
+import { MVPFactory } from '../mvp.factory';
 import { IMVPService } from '../../../mvp/app/module';
 import { IMVPRepository, MVP } from '../../../mvp/domain';
 import { MvpAccountDto } from '../dto';
