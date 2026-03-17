@@ -27,8 +27,11 @@ import { MVP } from '../../../mvp/domain';
 import { MVPService } from './mvp.service';
 import { DocMvpOutputDto, MvpAccountDto } from '../dto';
 import { UserGuard } from '../../../user/adapter/guard/auth.guard';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 
 @ApiTags('Mvps management')
+@UseGuards(UserGuard)
+@UseGuards(AdminGuard)
 @Controller('mvp')
 export class MVPController implements IMVPController {
   constructor(
@@ -67,17 +70,16 @@ export class MVPController implements IMVPController {
    */
 
   @ApiBearerAuth()
-    @UseGuards(UserGuard)
-    @Post()
-    @ApiConsumes('multipart/form-data', 'application/json')
-    @ApiOperation({
-      summary: 'Create vote',
-    })
-    @ApiBody({ type: MvpAccountDto })
-    @ApiResponse({ type: DocMvpOutputDto })
-    async create(
-      @Body() data: MvpAccountDto,
-    ): Promise<MVP> {
+  @Post()
+  @ApiConsumes('multipart/form-data', 'application/json')
+  @ApiOperation({
+    summary: 'Create vote',
+  })
+  @ApiBody({ type: MvpAccountDto })
+  @ApiResponse({ type: DocMvpOutputDto })
+  async create(
+    @Body() data: MvpAccountDto,
+  ): Promise<MVP> {
     const mvp = await this.mvpService.add(data);
     if (mvp) return MVPFactory.getMvp(mvp);
   }
