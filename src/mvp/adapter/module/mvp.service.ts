@@ -107,7 +107,7 @@ export class MVPService implements IMVPService {
         where: { id: mvp.id },
         relations: {
           user: true,
-          player: true,
+          player: { team: true },
         },
       });
 
