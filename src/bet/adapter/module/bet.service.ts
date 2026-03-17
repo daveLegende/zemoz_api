@@ -12,6 +12,7 @@ import { IBetRepository } from '../../../bet/domain/data.abstract';
 import { IMatchRepository, Match } from '../../../match/domain';
 import { BetFactory } from '../bet.factory';
 import { MARKET_CONFIG } from '../../../bet/domain/bet.mapping';
+import { ITournoiRepository, Tournoi } from '../../../tournoi/domain';
 import { isUUID } from 'class-validator';
 
 @Injectable()
@@ -19,13 +20,14 @@ export class BetService implements IBetService {
   private readonly logger = new Logger();
   constructor(
     private betsRepository: IBetRepository,
-    private matchRepository: IMatchRepository
+    private matchRepository: IMatchRepository,
+    private tournoiRepository: ITournoiRepository
   ) {}
 
   async fetchAll(): Promise<Bet[]> {
     try {
       return await this.betsRepository.bets.find({
-        relations: { match: true }
+        relations: { match: true, competition: true }
       });
     } catch (error) {
       this.logger.error(error.message, 'ERROR::betsService.fetchAll');
@@ -37,7 +39,7 @@ export class BetService implements IBetService {
     try {
       const bets = await this.betsRepository.bets.findOne({
         where: { id: id },
-        relations: { match: true }
+        relations: { match: true, competition: true }
       });
       if (bets) {
         return bets;
@@ -69,8 +71,12 @@ export class BetService implements IBetService {
       }
 
       // 2️⃣ Vérifier que la compétition existe (si nécessaire)
+      let competition: Tournoi = null;
       if (competitionId) {
-        // Logique de vérification de compétition...
+        competition = await this.tournoiRepository.tournois.findOneByID(competitionId);
+        if (!competition) {
+          throw new NotFoundException('Compétition non trouvée');
+        }
       }
 
       const createdBets: Bet[] = [];
@@ -86,7 +92,7 @@ export class BetService implements IBetService {
           where: {
             category: betData.category,
             match: match ? { id: matchId } : null,
-            competitionId: competitionId ?? null,
+            competition: competition ? { id: competitionId } : null,
           },
         });
 
@@ -101,7 +107,7 @@ export class BetService implements IBetService {
           category: betData.category,
           odds: betData.odds.odds, // Note: odds.odds à cause de la structure
           match,
-          competitionId,
+          competition,
         });
 
         const savedBet = await this.betsRepository.bets.create(bet);
@@ -123,9 +129,8 @@ export class BetService implements IBetService {
 
       const config = MARKET_CONFIG[data.category];
 
-      // 2️⃣ Charger match / competition si nécessaire
+      // 2️⃣ Charger match si nécessaire
       let match: Match = null;
-
       if (config.requiresMatch) {
         match = await this.matchRepository.matchs.findOneByID(data.matchId);
         if (!match) {
@@ -133,12 +138,21 @@ export class BetService implements IBetService {
         }
       }
 
-      // 3️⃣ Vérifier unicité du market
+      // 3️⃣ Charger competition si nécessaire
+      let competition: Tournoi = null;
+      if (config.requiresCompetition) {
+        competition = await this.tournoiRepository.tournois.findOneByID(data.competitionId);
+        if (!competition) {
+          throw new NotFoundException('Compétition non trouvée');
+        }
+      }
+
+      // 4️⃣ Vérifier unicité du market
       const existed = await this.betsRepository.bets.findOne({
         where: {
           category: data.category,
           match: match ?? null,
-          competitionId: data.competitionId ?? null,
+          competition: competition ?? null,
         },
       });
 
@@ -148,12 +162,12 @@ export class BetService implements IBetService {
         );
       }
 
-      // 4️⃣ Création du bet
+      // 5️⃣ Création du bet
       const bet = BetFactory.create({
         category: data.category,
         odds: data.odds.odds,
         match,
-        competitionId: data.competitionId,
+        competition,
       });
 
       return await this.betsRepository.bets.create(bet);
@@ -172,7 +186,7 @@ export class BetService implements IBetService {
 
       const bet = await this.betsRepository.bets.findOne({
         where: { id },
-        relations: { match: true },
+        relations: { match: true, competition: true },
       });
 
       if (!bet) {
@@ -187,7 +201,7 @@ export class BetService implements IBetService {
       this.validateBet({
         category: bet.category,
         matchId: bet.match?.id,
-        competitionId: bet.competitionId,
+        competitionId: bet.competition?.id,
         odds,
       });
 

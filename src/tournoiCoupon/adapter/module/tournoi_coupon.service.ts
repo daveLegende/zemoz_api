@@ -19,6 +19,7 @@ import { IMatchRepository, MatchType } from '../../../match/domain';
 import { IPlayerRepository } from '../../../player/domain';
 import { TournoiCouponEntity } from '../../../tournoiCoupon/framework/schema/tournoi_coupon.entity';
 import { DataSource } from 'typeorm';
+import { UserEntity } from '../../../user/framework/database/schema/user.entity';
 
 @Injectable()
 export class TournoiCouponService implements ITournoiCouponService {
@@ -46,7 +47,7 @@ export class TournoiCouponService implements ITournoiCouponService {
       relations: {
         user: true,
         tournoiCouponBets: {
-          bet: { match: true },
+          bet: { match: true, competition: true },
         },
       },
       order: { createdAt: 'DESC' },
@@ -58,7 +59,7 @@ export class TournoiCouponService implements ITournoiCouponService {
       where: { id },
       relations: {
         user: true,
-        tournoiCouponBets: { bet: { match: true } },
+        tournoiCouponBets: { bet: { match: true, competition: true } },
       },
     });
     if (!coupon) throw new NotFoundException('Coupon non trouvé');
@@ -150,7 +151,7 @@ export class TournoiCouponService implements ITournoiCouponService {
       relations: {
         user: true,
         tournoiCouponBets: {
-          bet: { match: true },
+          bet: { match: true, competition: true },
         },
       },
       order: { createdAt: 'DESC' },
@@ -171,6 +172,124 @@ export class TournoiCouponService implements ITournoiCouponService {
     return true;
   }
 
+  // async checkCoupons(): Promise<void> {
+  //   const pendingCoupons = await this.tournoiCouponsRepository.tournoiCoupons.find({
+  //     where: { etat: TournoiCouponState.PENDING },
+  //     relations: {
+  //       tournoiCouponBets: { bet: true },
+  //       user: true,
+  //     },
+  //   });
+
+  //   // WINNER
+  //   const finalMatch = await this.matchRepository.matchs.findOne({
+  //     where: { type: MatchType.FINALE },
+  //     relations: { home: true, away: true },
+  //   });
+
+  //   if (!finalMatch) return;
+
+  //   const winnerTeam = (finalMatch.homePenalty !== null && finalMatch.awayPenalty !== null && 
+  //                     (finalMatch.homePenalty > 0 || finalMatch.awayPenalty > 0 || 
+  //                       finalMatch.homePenalty !== finalMatch.awayPenalty))
+  //     ? finalMatch.homePenalty > finalMatch.awayPenalty
+  //       ? finalMatch.home.id
+  //       : finalMatch.away.id
+  //     : finalMatch.scores.home > finalMatch.scores.away
+  //       ? finalMatch.home.id
+  //       : finalMatch.away.id;
+
+  //   // Meilleur buteur
+  //   const topScorer = await this.playerRepository.players.findOne({
+  //     order: { buts: 'DESC' },
+  //   });
+
+  //   // Meilleur passeur
+  //   const topAssist = await this.playerRepository.players.findOne({
+  //     order: { passes: 'DESC' },
+  //   });
+
+  //   for (const coupon of pendingCoupons) {
+  //     await this.dataSource.transaction(
+  //       async (manager) => {
+  //         // Recharger le coupon avec verrouillage
+  //         const lockedCoupon = await manager.findOne(TournoiCouponEntity, {
+  //           where: { id: coupon.id },
+  //           relations: {
+  //             tournoiCouponBets: { bet: true },
+  //             user: true,
+  //           },
+  //           lock: { mode: 'pessimistic_write' },
+  //         });
+
+  //         if (!lockedCoupon) return;
+
+  //         //  Sécurité anti double paiement
+  //         if (lockedCoupon.isPaid || lockedCoupon.etat !== TournoiCouponState.PENDING) {
+  //           return;
+  //         }
+
+  //         let hasLost = false;
+  //         let hasPending = false;
+
+  //         for (const couponBet of lockedCoupon.tournoiCouponBets) {
+  //           const bet = couponBet.bet;
+  //           const selected = Object.keys(couponBet.selectedOptions)[0];
+
+  //           let resultValue: string | null = null;
+
+  //           switch (bet.category) {
+  //             case CategoryName.COMPETITION_WINNER:
+  //               resultValue = winnerTeam;
+  //               break;
+
+  //             case CategoryName.COMPETITION_TOP_SCORER:
+  //               resultValue = topScorer?.id;
+  //               break;
+
+  //             case CategoryName.COMPETITION_TOP_ASSIST:
+  //               resultValue = topAssist?.id;
+  //               break;
+  //           }
+
+  //           // Si résultat pas encore disponible → PENDING
+  //           if (!resultValue) {
+  //             hasPending = true;
+  //             continue;
+  //           }
+
+  //           if (selected === resultValue) {
+  //             couponBet.status = BetStatus.GAGNE;
+  //           } else {
+  //             couponBet.status = BetStatus.PERDU;
+  //             hasLost = true;
+  //           }
+
+  //           await manager.save(couponBet);
+  //         }
+
+  //         // Décision finale du coupon
+  //         if (hasLost) {
+  //           lockedCoupon.etat = TournoiCouponState.LOOSE;
+  //         } 
+  //         else if (!hasPending) {
+  //           lockedCoupon.etat = TournoiCouponState.WIN;
+
+  //           // Paiement unique garanti
+  //           if (!lockedCoupon.isPaid) {
+  //             lockedCoupon.user.solde += lockedCoupon.gains;
+  //             lockedCoupon.isPaid = true;
+
+  //             await manager.save(lockedCoupon.user);
+  //           }
+  //         }
+
+  //         await manager.save(lockedCoupon);
+  //       },
+  //     );
+  //   }
+  // }
+
   async checkCoupons(): Promise<void> {
     const pendingCoupons = await this.tournoiCouponsRepository.tournoiCoupons.find({
       where: { etat: TournoiCouponState.PENDING },
@@ -188,8 +307,13 @@ export class TournoiCouponService implements ITournoiCouponService {
 
     if (!finalMatch) return;
 
-    const winnerTeam =
-      finalMatch.scores.home > finalMatch.scores.away
+    const winnerTeam = (finalMatch.homePenalty !== null && finalMatch.awayPenalty !== null && 
+                      (finalMatch.homePenalty > 0 || finalMatch.awayPenalty > 0 || 
+                        finalMatch.homePenalty !== finalMatch.awayPenalty))
+      ? finalMatch.homePenalty > finalMatch.awayPenalty
+        ? finalMatch.home.id
+        : finalMatch.away.id
+      : finalMatch.scores.home > finalMatch.scores.away
         ? finalMatch.home.id
         : finalMatch.away.id;
 
@@ -265,22 +389,74 @@ export class TournoiCouponService implements ITournoiCouponService {
           // Décision finale du coupon
           if (hasLost) {
             lockedCoupon.etat = TournoiCouponState.LOOSE;
+            await manager.save(lockedCoupon);
           } 
           else if (!hasPending) {
             lockedCoupon.etat = TournoiCouponState.WIN;
-
-            // Paiement unique garanti
-            if (!lockedCoupon.isPaid) {
-              lockedCoupon.user.solde += lockedCoupon.gains;
-              lockedCoupon.isPaid = true;
-
-              await manager.save(lockedCoupon.user);
-            }
+            await manager.save(lockedCoupon);
+            
+            // ✅ IMPORTANT: Sortir de la transaction actuelle et utiliser payoutUser
+            // pour éviter les problèmes de verrouillage imbriqués
           }
-
-          await manager.save(lockedCoupon);
         },
       );
+
+      // ✅ Payer le coupon en dehors de la transaction précédente
+      if (coupon.etat === TournoiCouponState.WIN && !coupon.isPaid) {
+        await this.payoutUser(coupon);
+      }
+    }
+  }
+
+
+  private async payoutUser(coupon: TournoiCoupon): Promise<void> {
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        
+        // ✅ ÉTAPE 1 : Verrouiller le coupon SANS relation (évite le LEFT JOIN + FOR UPDATE)
+        const lockedCoupon = await manager.findOne(TournoiCouponEntity, {
+          where: { id: coupon.id },
+          lock: { mode: 'pessimistic_write' },
+          // ← Pas de relations ici !
+        });
+
+        if (!lockedCoupon) throw new Error('Coupon introuvable');
+        if (lockedCoupon.isPaid) {
+          this.logger.warn(`Coupon déjà payé`);
+          return;
+        }
+
+        // ✅ ÉTAPE 2 : Vérifier que le coupon est bien gagnant
+        if (lockedCoupon.etat !== TournoiCouponState.WIN) {
+          this.logger.warn(`Coupon non gagnant, état actuel: ${lockedCoupon.etat}`);
+          return;
+        }
+
+        // ✅ ÉTAPE 3 : Récupérer l'ID utilisateur
+        const userId = lockedCoupon.user?.id ?? coupon.user?.id;
+        if (!userId) throw new Error('userId introuvable sur le coupon');
+
+        // ✅ ÉTAPE 4 : Verrouiller l'utilisateur séparément
+        const user = await manager.findOne(UserEntity, {
+          where: { id: userId },
+          lock: { mode: 'pessimistic_write' },
+        });
+
+        if (!user) throw new Error('Utilisateur non trouvé');
+
+        // ✅ ÉTAPE 5 : Effectuer le paiement
+        const gains = lockedCoupon.gains || 0;
+        user.solde += gains;
+        lockedCoupon.isPaid = true;
+
+        await manager.save(user);
+        await manager.save(lockedCoupon);
+
+        this.logger.log(`✅ Paiement de ${gains} FCFA à l'utilisateur ${user.id} pour le coupon ${lockedCoupon.id}`);
+      });
+    } catch (error) {
+      this.logger.error(`❌ Erreur lors du paiement: ${error.message}`);
+      throw error;
     }
   }
 }

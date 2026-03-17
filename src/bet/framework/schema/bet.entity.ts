@@ -2,7 +2,8 @@ import { ATimestamp } from "../../../_shared/framework/timestamp.abstract";
 import { Bet, CategoryName } from "../../../bet/domain";
 import { CouponBetEntity } from "../../../couponBet/framework/schema/coupon_bet.entity";
 import { MatchEntity } from "../../../match/framework/database/schema/match.entity";
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from "typeorm";
+import { TournoiEntity } from "../../../tournoi/framework/database/schema/tournoi.entity";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from "typeorm";
 
 @Entity('bets')
 export class BetEntity extends ATimestamp implements Bet {
@@ -21,8 +22,9 @@ export class BetEntity extends ATimestamp implements Bet {
     @ManyToOne(() => MatchEntity, (match) => match.bets)
     match: MatchEntity;
     
-    @Column('uuid', { nullable: true })
-    competitionId?: string;
+    @ManyToOne(() => TournoiEntity, (tournoi) => tournoi.bets, { nullable: true })
+    @JoinColumn({ name: 'competitionId' })
+    competition?: TournoiEntity;
 
     @OneToMany(() => CouponBetEntity, (couponBet) => couponBet.bet)
     couponBets: CouponBetEntity[];

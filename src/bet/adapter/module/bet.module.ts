@@ -4,12 +4,13 @@ import { BetController } from './bet.controller';
 import { BetService } from './bet.service';
 import { BetRepositoryModule } from '../../../bet/framework/bet.module.repository';
 import { MatchRepositoryModule } from '../../../match/framework/database/match.repository.module';
+import { TournoiRepositoryModule } from '../../../tournoi/framework/database/tournoi.repository.module';
 import { AdminRepositoryModule } from '../../../admin/framework/database/admin.repository.module';
 import { AdminAuthApiModule } from '../../../admin/framework/API';
 
 
 @Module({
-  imports: [BetRepositoryModule, MatchRepositoryModule, AdminRepositoryModule, AdminAuthApiModule],
+  imports: [BetRepositoryModule, MatchRepositoryModule, TournoiRepositoryModule, AdminRepositoryModule, AdminAuthApiModule],
   controllers: [BetController],
   providers: [{ provide: IBetService, useClass: BetService }],
   exports: [IBetService, BetRepositoryModule],

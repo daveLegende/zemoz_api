@@ -1,4 +1,5 @@
 import { Match } from "../../match/domain";
+import { Tournoi } from "../../tournoi/domain";
 import { Bet, CategoryName } from "../domain";
 
 export abstract class BetFactory {
@@ -6,14 +7,14 @@ export abstract class BetFactory {
       category: CategoryName;
       odds: Record<string, number>;
       match?: Match;
-      competitionId?: string;
+      competition?: Tournoi;
     }): Bet {
       const bet = new Bet();
 
       bet.category = data.category;
       bet.odds = data.odds;
       bet.match = data.match ?? null;
-      bet.competitionId = data.competitionId ?? null;
+      bet.competition = data.competition ?? null;
 
       return bet;
     }
@@ -30,6 +31,7 @@ export abstract class BetFactory {
           category: bet.category,
           odds: bet.odds,
           match: bet.match,
+          competition: bet.competition,
           couponBets: bet.couponBets,
           createdAt: bet.createdAt,
           updatedAt: bet.updatedAt,

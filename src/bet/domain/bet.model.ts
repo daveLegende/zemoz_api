@@ -2,6 +2,7 @@ import { ITimestamp } from "../../_shared/domain/interface";
 import { Match } from "../../match/domain";
 import { CategoryName } from "./bet.enum";
 import { CouponBet } from "../../couponBet/domain";
+import { Tournoi } from "../../tournoi/domain";
 
 
 export class BetCategories extends ITimestamp {
@@ -28,7 +29,6 @@ export class Bet extends ITimestamp {
     category: CategoryName;
     odds: Record<string, number>;
     match?: Match;
-    // competition?: Tournoi;
-    competitionId?: string;
+    competition?: Tournoi;
     couponBets: CouponBet[];
 }
