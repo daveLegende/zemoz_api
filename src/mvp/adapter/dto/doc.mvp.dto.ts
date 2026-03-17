@@ -11,13 +11,6 @@ export class DocMvpOutputDto {
 
     @ApiProperty({
     type: String,
-    description: "ID du match pour lequel on vote",
-    })
-    @IsUUID()
-    matchId: string;
-
-    @ApiProperty({
-    type: String,
     description: "ID du joueur pour lequel on vote",
     })
     @IsUUID()

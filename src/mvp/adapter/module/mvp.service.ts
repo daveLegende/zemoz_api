@@ -35,7 +35,6 @@ export class MVPService implements IMVPService {
           relations: {
             user: true,
             player: true,
-            match: true,
           },
         }
       );
@@ -65,14 +64,13 @@ export class MVPService implements IMVPService {
     await queryRunner.startTransaction();
 
     try {
-      const { userId, playerId, matchId } = data;
+      const { userId, playerId } = data;
 
       const user = await queryRunner.manager.findOne(UserEntity, { where: { id: userId } });
       const player = await queryRunner.manager.findOne(PlayerEntity, { where: { id: playerId } });
-      const match = await queryRunner.manager.findOne(MatchEntity, { where: { id: matchId } });
 
-      if (!user || !player || !match) {
-        throw new NotFoundException('User, player or match not found');
+      if (!user || !player) {
+        throw new NotFoundException('User or player not found');
       }
 
       if (user.solde < 100) {
@@ -84,7 +82,7 @@ export class MVPService implements IMVPService {
       await queryRunner.manager.save(user);
 
       // Création du vote
-      const mvp = await MVPFactory.create(user, player, match);
+      const mvp = await MVPFactory.create(user, player);
       await queryRunner.manager.save(MVPEntity, mvp);
 
       await queryRunner.commitTransaction();
