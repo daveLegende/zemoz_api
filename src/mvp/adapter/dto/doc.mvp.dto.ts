@@ -13,13 +13,13 @@ export class DocMvpOutputDto {
     type: String,
     description: "ID du joueur pour lequel on vote",
     })
-    @IsUUID()
+    @IsString()
     playerId: string;
 
     @ApiProperty({
     type: String,
     description: "ID de l'utilisateur qui vote",
     })
-    @IsUUID()
+    @IsString()
     userId: string;
 }
