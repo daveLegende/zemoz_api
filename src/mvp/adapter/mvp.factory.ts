@@ -1,17 +1,17 @@
 import { MVP } from "../domain";
-import { User } from "../../user/domain";
-import { Player } from "../../player/domain";
+import { PlayerEntity } from "../../player/framework/database/schema/player.entity";
+import { UserEntity } from "../../user/framework/database/schema/user.entity";
+import { MVPEntity } from "../framework/database/schema/mvp.entity";
 
 export abstract class MVPFactory {
 
     // Création d'un nouveau vote MVP
-    static async create(user: User, player: Player): Promise<MVP> {
-        const mvp = new MVP();
+    static create(user: UserEntity, player: PlayerEntity): MVPEntity {
+        const mvp = new MVPEntity();
 
         mvp.user = user;
         mvp.player = player;
 
-        // amount est déjà fixé à 100 FCFA par défaut
         return mvp;
     }
 
