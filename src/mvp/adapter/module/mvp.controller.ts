@@ -26,7 +26,7 @@ import { MVPFactory } from '../mvp.factory';
 import { MVP } from '../../../mvp/domain';
 import { MVPService } from './mvp.service';
 import { DocMvpOutputDto, MvpAccountDto } from '../dto';
-import { UserGuard } from 'user/adapter/guard/auth.guard';
+import { UserGuard } from '../../../user/adapter/guard/auth.guard';
 
 @ApiTags('Mvps management')
 @Controller('mvp')
