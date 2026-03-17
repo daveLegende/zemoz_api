@@ -66,30 +66,44 @@ export class MVPService implements IMVPService {
     try {
       const { userId, playerId } = data;
 
-      const user = await queryRunner.manager.findOne(UserEntity, { where: { id: userId } });
-      const player = await queryRunner.manager.findOne(PlayerEntity, { where: { id: playerId } });
+      console.log('Données reçues :', data);
+
+      // Utiliser le queryRunner pour toutes les opérations
+      const user = await queryRunner.manager.findOne(UserEntity, {
+        where: { id: userId }
+      });
+
+      const player = await queryRunner.manager.findOne(PlayerEntity, {
+        where: { id: playerId }
+      });
 
       if (!user || !player) {
-        throw new NotFoundException('User or player not found');
+        throw new NotFoundException('Utilisateur ou joueur introuvable');
       }
 
       if (user.solde < 100) {
-        throw new BadRequestException('Solde insuffisant pour voter');
+        throw new BadRequestException('Solde insuffisant pour voter (minimum 100 FCFA)');
       }
 
       // Débit du solde
       user.solde -= 100;
       await queryRunner.manager.save(user);
 
-      // Création du vote
-      const mvp = await MVPFactory.create(user, player);
-      await queryRunner.manager.save(MVPEntity, mvp);
+      // Création du vote MVP
+      const mvpData = MVPFactory.create(user, player);
+      const mvp = await queryRunner.manager.save(mvpData);
 
+      // Commit de la transaction
       await queryRunner.commitTransaction();
 
-      return mvp;
+      // Retourner le MVP avec ses relations
+      return await this.mvpRepository.mvps.findOne({
+        where: { id: mvp.id },
+        relations: { user: true, player: true },
+      });
 
     } catch (error) {
+      // Rollback en cas d'erreur
       await queryRunner.rollbackTransaction();
       this.logger.error(error.message, 'ERROR::MvpService.add');
       throw error;
