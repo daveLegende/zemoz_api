@@ -25,7 +25,7 @@ import { IMVPController } from '../../../mvp/app/module';
 import { MVPFactory } from '../mvp.factory';
 import { MVP } from '../../../mvp/domain';
 import { MVPService } from './mvp.service';
-import { DocMvpOutputDto } from '../dto';
+import { DocMvpOutputDto, MvpAccountDto } from '../dto';
 
 @ApiTags('Mvps management')
 @Controller('mvp')
@@ -66,16 +66,12 @@ export class MVPController implements IMVPController {
    */
 
   @Post()
-  // @ApiBearerAuth()
-  // @UseGuards(UserGuard)
   @ApiConsumes('application/json')
   @ApiOperation({
     summary: 'Create mvp',
   })
-  // @ApiBody({ type: RegisterAccoutDTO })
-  // @ApiResponse({ type: DocUserOutputDTO })
   async create(
-    @Body() data: DocMvpOutputDto
+    @Body() data: MvpAccountDto
   ): Promise<MVP> {
     const mvp = await this.mvpService.add(data);
     if (mvp) return MVPFactory.getMvp(mvp);
