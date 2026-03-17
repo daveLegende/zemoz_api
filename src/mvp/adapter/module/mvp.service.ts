@@ -59,23 +59,16 @@ export class MVPService implements IMVPService {
 
   async add(data: MvpAccountDto): Promise<MVP> {
     const queryRunner = this.dataSource.createQueryRunner();
-
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
       const { userId, playerId } = data;
-
       console.log('Données reçues :', data);
 
-      // Utiliser le queryRunner pour toutes les opérations
-      const user = await queryRunner.manager.findOne(UserEntity, {
-        where: { id: userId }
-      });
-
-      const player = await queryRunner.manager.findOne(PlayerEntity, {
-        where: { id: playerId }
-      });
+      // Utilisez les repositories au lieu du manager direct
+      const user = await this.userRepository.users.findOneByID(userId);
+      const player = await this.playerRepository.players.findOneByID(playerId);
 
       if (!user || !player) {
         throw new NotFoundException('Utilisateur ou joueur introuvable');
@@ -85,25 +78,22 @@ export class MVPService implements IMVPService {
         throw new BadRequestException('Solde insuffisant pour voter (minimum 100 FCFA)');
       }
 
-      // Débit du solde
+      // Débit avec queryRunner
       user.solde -= 100;
-      await queryRunner.manager.save(user);
+      await queryRunner.manager.save(UserEntity, user);  // Ou via repo si possible
 
-      // Création du vote MVP
+      // Création MVP
       const mvpData = MVPFactory.create(user, player);
       const mvp = await queryRunner.manager.save(mvpData);
 
-      // Commit de la transaction
       await queryRunner.commitTransaction();
 
-      // Retourner le MVP avec ses relations
       return await this.mvpRepository.mvps.findOne({
         where: { id: mvp.id },
         relations: { user: true, player: true },
       });
 
     } catch (error) {
-      // Rollback en cas d'erreur
       await queryRunner.rollbackTransaction();
       this.logger.error(error.message, 'ERROR::MvpService.add');
       throw error;
@@ -111,6 +101,7 @@ export class MVPService implements IMVPService {
       await queryRunner.release();
     }
   }
+
 
 
   
