@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsEnum, IsString, IsUUID, ValidateNested } from "class-validator";
+import { IsEnum, IsObject, IsString, IsUUID, ValidateNested } from "class-validator";
 import { OddsDto } from "../../../bet/adapter/dto";
 import { BetStatus } from "../../../couponBet/domain";
 
@@ -27,8 +27,7 @@ export class TournoiCouponBetAccountDto {
         description: 'Options sélectionnées avec leur cote',
         example: { V1: 1.85, X: 3.2 },
     })
-    @ValidateNested()
-    @Type(() => Object) // ou OddsDto si tu as un DTO global pour toutes les options
+    @IsObject()
     selectedOptions: Record<string, number>;
 
     @ApiProperty({

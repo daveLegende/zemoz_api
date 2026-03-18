@@ -5,20 +5,6 @@ import { OddsDto } from "../../../bet/adapter/dto";
 import { BetTournoiCoupon } from "../../app/dto";
 import { TournoiCouponState } from "../../domain";
 
-export class BetTournoiCouponDTO {
-    @ApiProperty({
-        type: String,
-        name: 'bet',
-        description: 'ID du pari',
-        example: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
-    })
-    @IsString()
-    bet: string;
-
-    @ApiProperty({ description: 'Les cotes avec les options', type: OddsDto })
-    @IsArray()
-    tournoiCouponBets: BetTournoiCoupon[];
-}
 
 export class TournoiCouponAccountDto {
     @ApiProperty({
