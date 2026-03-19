@@ -354,20 +354,24 @@ export class TournoiCouponService implements ITournoiCouponService {
     }
 
     // Meilleur buteur
-    const topScorer = await this.playerRepository.players.findOne({
+    const topScorerArr = await this.playerRepository.players.find({
       order: { buts: 'DESC' },
+      take: 1,
     }).catch(err => {
       this.logger.error(`Erreur lors de la recherche du topScorer: ${err.message}`);
-      return null;
+      return [];
     });
+    const topScorer = topScorerArr[0] || null;
 
     // Meilleur passeur
-    const topAssist = await this.playerRepository.players.findOne({
+    const topAssistArr = await this.playerRepository.players.find({
       order: { passes: 'DESC' },
+      take: 1,
     }).catch(err => {
       this.logger.error(`Erreur lors de la recherche du topAssist: ${err.message}`);
-      return null;
+      return [];
     });
+    const topAssist = topAssistArr[0] || null;
 
     let processedCount = 0;
     let winnersCount = 0;
