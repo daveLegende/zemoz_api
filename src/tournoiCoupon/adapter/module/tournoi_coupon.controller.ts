@@ -126,6 +126,7 @@ export class TournoiCouponController implements ITournoiCouponController {
   remove(@Param() { id }: IDParamDTO): Promise<boolean> {
     return this.tournoiCouponService.remove(id);
   }
+  
 
   @Post('check-tournoi-coupons')
   @ApiOperation({

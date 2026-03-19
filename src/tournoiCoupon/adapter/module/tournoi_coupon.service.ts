@@ -290,7 +290,14 @@ export class TournoiCouponService implements ITournoiCouponService {
   //   }
   // }
 
-  async checkCoupons(): Promise<void> {
+  async checkCoupons(): Promise<{ 
+    success: boolean; 
+    message: string; 
+    processedCount: number;
+    winnersCount: number;
+    losersCount: number;
+    paidCount: number;
+  }> {
     const pendingCoupons = await this.tournoiCouponsRepository.tournoiCoupons.find({
       where: { etat: TournoiCouponState.PENDING },
       relations: {
@@ -305,7 +312,16 @@ export class TournoiCouponService implements ITournoiCouponService {
       relations: { home: true, away: true },
     });
 
-    if (!finalMatch) return;
+    if (!finalMatch) {
+      return {
+        success: false,
+        message: 'Finale non trouvée',
+        processedCount: 0,
+        winnersCount: 0,
+        losersCount: 0,
+        paidCount: 0,
+      };
+    }
 
     const winnerTeam = (finalMatch.homePenalty !== null && finalMatch.awayPenalty !== null && 
                       (finalMatch.homePenalty > 0 || finalMatch.awayPenalty > 0 || 
@@ -326,6 +342,11 @@ export class TournoiCouponService implements ITournoiCouponService {
     const topAssist = await this.playerRepository.players.findOne({
       order: { passes: 'DESC' },
     });
+
+    let processedCount = 0;
+    let winnersCount = 0;
+    let losersCount = 0;
+    let paidCount = 0;
 
     for (const coupon of pendingCoupons) {
       await this.dataSource.transaction(
@@ -390,22 +411,36 @@ export class TournoiCouponService implements ITournoiCouponService {
           if (hasLost) {
             lockedCoupon.etat = TournoiCouponState.LOOSE;
             await manager.save(lockedCoupon);
+            losersCount++;
           } 
           else if (!hasPending) {
             lockedCoupon.etat = TournoiCouponState.WIN;
             await manager.save(lockedCoupon);
+            winnersCount++;
             
             // ✅ IMPORTANT: Sortir de la transaction actuelle et utiliser payoutUser
             // pour éviter les problèmes de verrouillage imbriqués
           }
+          
+          processedCount++;
         },
       );
 
       // ✅ Payer le coupon en dehors de la transaction précédente
       if (coupon.etat === TournoiCouponState.WIN && !coupon.isPaid) {
         await this.payoutUser(coupon);
+        paidCount++;
       }
     }
+
+    return {
+      success: true,
+      message: `${processedCount} coupons traités, ${winnersCount} gagnants, ${losersCount} perdants, ${paidCount} payés`,
+      processedCount,
+      winnersCount,
+      losersCount,
+      paidCount,
+    };
   }
 
 
