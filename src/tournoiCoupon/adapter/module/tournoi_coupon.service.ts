@@ -310,12 +310,19 @@ export class TournoiCouponService implements ITournoiCouponService {
     });
 
     // WINNER
-    const finalMatch = await this.matchRepository.matchs.findOne({
-      where: { type: MatchType.FINALE },
-      relations: { home: true, away: true },
-    });
+    let finalMatch;
+    try {
+      finalMatch = await this.matchRepository.matchs.findOne({
+        where: { type: MatchType.FINALE },
+        relations: { home: true, away: true },
+      });
+    } catch (err) {
+      this.logger.error(`Erreur lors de la recherche de la finale: ${err.message}`);
+      throw err;
+    }
 
     if (!finalMatch) {
+      this.logger.warn('Finale non trouvée, arrêt de checkCoupons');
       return {
         success: false,
         message: 'Finale non trouvée',
@@ -326,24 +333,40 @@ export class TournoiCouponService implements ITournoiCouponService {
       };
     }
 
-    const winnerTeam = (finalMatch.homePenalty !== null && finalMatch.awayPenalty !== null && 
-                      (finalMatch.homePenalty > 0 || finalMatch.awayPenalty > 0 || 
-                        finalMatch.homePenalty !== finalMatch.awayPenalty))
-      ? finalMatch.homePenalty > finalMatch.awayPenalty
-        ? finalMatch.home.id
-        : finalMatch.away.id
-      : finalMatch.scores.home > finalMatch.scores.away
-        ? finalMatch.home.id
-        : finalMatch.away.id;
+    let winnerTeam: string;
+    try {
+      const homeScore = finalMatch.scores?.home ?? 0;
+      const awayScore = finalMatch.scores?.away ?? 0;
+      const homePenalty = finalMatch.homePenalty ?? 0;
+      const awayPenalty = finalMatch.awayPenalty ?? 0;
+
+      const isPenalties = (finalMatch.homePenalty !== null && finalMatch.awayPenalty !== null && 
+                          (homePenalty > 0 || awayPenalty > 0 || homePenalty !== awayPenalty));
+
+      if (isPenalties) {
+        winnerTeam = homePenalty > awayPenalty ? finalMatch.home.id : finalMatch.away.id;
+      } else {
+        winnerTeam = homeScore > awayScore ? finalMatch.home.id : finalMatch.away.id;
+      }
+    } catch (err) {
+      this.logger.error(`Erreur lors du calcul du winnerTeam: ${err.message}`);
+      throw err;
+    }
 
     // Meilleur buteur
     const topScorer = await this.playerRepository.players.findOne({
       order: { buts: 'DESC' },
+    }).catch(err => {
+      this.logger.error(`Erreur lors de la recherche du topScorer: ${err.message}`);
+      return null;
     });
 
     // Meilleur passeur
     const topAssist = await this.playerRepository.players.findOne({
       order: { passes: 'DESC' },
+    }).catch(err => {
+      this.logger.error(`Erreur lors de la recherche du topAssist: ${err.message}`);
+      return null;
     });
 
     let processedCount = 0;
@@ -357,13 +380,9 @@ export class TournoiCouponService implements ITournoiCouponService {
         
         await this.dataSource.transaction(
           async (manager) => {
-            // Recharger le coupon avec verrouillage
+            // ✅ ÉTAPE 1 : Verrouiller le coupon SANS relation (évite l'erreur TypeORM/Postgres avec FOR UPDATE et les Joins)
             const lockedCoupon = await manager.findOne(TournoiCouponEntity, {
               where: { id: coupon.id },
-              relations: {
-                tournoiCouponBets: { bet: true },
-                user: true,
-              },
               lock: { mode: 'pessimistic_write' },
             });
 
@@ -371,10 +390,21 @@ export class TournoiCouponService implements ITournoiCouponService {
               return;
             }
 
+            // ✅ ÉTAPE 2 : Charger les relations séparément via le manager
+            const couponWithBets = await manager.findOne(TournoiCouponEntity, {
+              where: { id: coupon.id },
+              relations: {
+                tournoiCouponBets: { bet: true },
+                user: true,
+              },
+            });
+
+            if (!couponWithBets) return;
+
             let hasLost = false;
             let hasPending = false;
 
-            for (const couponBet of lockedCoupon.tournoiCouponBets) {
+            for (const couponBet of couponWithBets.tournoiCouponBets) {
               const bet = couponBet.bet;
               
               // Sécurité sur les options sélectionnées
@@ -419,30 +449,30 @@ export class TournoiCouponService implements ITournoiCouponService {
               lockedCoupon.etat = TournoiCouponState.LOOSE;
               await manager.save(lockedCoupon);
               losersCount++;
+
+              this.tournoiCouponGateway.server?.emit('couponStatusUpdated', {
+                couponId: lockedCoupon.id,
+                userId: coupon.user?.id,
+                newState: TournoiCouponState.LOOSE,
+                gains: lockedCoupon.gains,
+                timestamp: new Date()
+              });
+              this.logger.log(`📉 Coupon ${lockedCoupon.id} marqué comme PERDU`);
             } 
             else if (!hasPending) {
               lockedCoupon.etat = TournoiCouponState.WIN;
               await manager.save(lockedCoupon);
               winnersCount++;
               isWinner = true;
-            }
-            
-            if (isWinner) {
+
               this.tournoiCouponGateway.server?.emit('couponStatusUpdated', {
                 couponId: lockedCoupon.id,
-                userId: lockedCoupon.user?.id || coupon.user?.id,
+                userId: coupon.user?.id,
                 newState: TournoiCouponState.WIN,
                 gains: lockedCoupon.gains,
                 timestamp: new Date()
               });
-            } else if (hasLost) {
-                this.tournoiCouponGateway.server?.emit('couponStatusUpdated', {
-                couponId: lockedCoupon.id,
-                userId: lockedCoupon.user?.id || coupon.user?.id,
-                newState: TournoiCouponState.LOOSE,
-                gains: lockedCoupon.gains,
-                timestamp: new Date()
-              });
+              this.logger.log(`🏆 Coupon ${lockedCoupon.id} marqué comme GAGNÉ`);
             }
             
             processedCount++;
