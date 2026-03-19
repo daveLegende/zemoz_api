@@ -14,6 +14,8 @@ import { TournoiCouponService } from './tournoi_coupon.service';
 import { PlayerRepositoryModule } from '../../../player/framework/database/player.repository.module';
 
 
+import { TournoiCouponGateway } from './tournoi_coupon.gateway';
+
 @Module({
   imports: [
     TournoiCouponRepositoryModule,
@@ -29,7 +31,10 @@ import { PlayerRepositoryModule } from '../../../player/framework/database/playe
     AdminAuthApiModule,
   ],
   controllers: [TournoiCouponController],
-  providers: [{ provide: ITournoiCouponService, useClass: TournoiCouponService }],
-  exports: [ITournoiCouponService, TournoiCouponRepositoryModule],
+  providers: [
+    { provide: ITournoiCouponService, useClass: TournoiCouponService },
+    TournoiCouponGateway,
+  ],
+  exports: [ITournoiCouponService, TournoiCouponRepositoryModule, TournoiCouponGateway],
 })
 export class TournoiCouponModule { }
