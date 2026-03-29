@@ -100,13 +100,10 @@ import {
 } from 'class-validator';
 
 export class PlayerAccoutDTO {
-  @ApiProperty({ type: String, name: 'firstname' })
-  @IsString()
-  firstname: string;
 
-  @ApiProperty({ type: String, name: 'lastname' })
+  @ApiProperty({ type: String, name: 'name' })
   @IsString()
-  lastname: string;
+  name: string;
 
   @ApiProperty({ type: Number, name: 'age', required: false })
   @IsOptional()
@@ -115,8 +112,9 @@ export class PlayerAccoutDTO {
   age?: number;
 
   @ApiProperty({ type: String, name: 'phone' })
+  @IsOptional()
   @IsPhoneNumber()
-  phone: string;
+  phone?: string;
 
   @ApiProperty({ type: Number, name: 'buts' })
   @IsOptional()

@@ -98,19 +98,19 @@ import { Express } from 'express';
     // }
 
     async add(data: TeamAccoutDTO, file?: Express.Multer.File): Promise<Team> {
-      console.log('=== SERVICE ADD APPELÉ ===');
-      console.log('Data:', JSON.stringify(data, null, 2));
-      console.log('File reçu:', !!file, file?.originalname, !!file?.buffer);
+      // console.log('=== SERVICE ADD APPELÉ ===');
+      // console.log('Data:', JSON.stringify(data, null, 2));
+      // console.log('File reçu:', !!file, file?.originalname, !!file?.buffer);
       try {
         // Upload du logo si un fichier est fourni
         let logoUrl: string | undefined;
-        console.log('Fichier reçu:', file.originalname); // Debug
-        console.log('Buffer size:', file.buffer?.length); // Debug
+        // console.log('Fichier reçu:', file.originalname); // Debug
+        // console.log('Buffer size:', file.buffer?.length); // Debug
         if (file) {
-          console.log('Fichier reçu:', file.originalname); // Debug
-          console.log('Buffer size:', file.buffer?.length); // Debug
+          // console.log('Fichier reçu:', file.originalname); // Debug
+          // console.log('Buffer size:', file.buffer?.length); // Debug
           logoUrl = await this.cloudinaryService.upload(file, 'teams');
-          console.log('Uploaded logo URL:', logoUrl);
+          // console.log('Uploaded logo URL:', logoUrl);
         }
 
         const existed = await this.teamRepository.teams.findOneBy({ name: data.name });

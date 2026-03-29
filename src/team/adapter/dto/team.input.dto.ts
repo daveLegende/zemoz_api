@@ -22,6 +22,7 @@ export class TeamAccoutDTO {
     name: 'coach',
     description: 'nom du coach',
   })
+  @IsOptional()
   @IsString()
   coach: string;
 
@@ -30,6 +31,7 @@ export class TeamAccoutDTO {
     name: 'commune',
     description: 'Commune de team',
   })
+  @IsOptional()
   @IsString()
   commune: string;
 

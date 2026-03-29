@@ -52,9 +52,9 @@ import { Express } from 'express';
   
     async add(data: PlayerAccoutDTO): Promise<Player> {
       try {
-        const { phone, team } = data;
+        const { name, team } = data;
         const existed = await this.playerRepository.players.findOne({
-          where: { phone: phone },
+          where: { name: name },
             relations: { team: true }
         });
         if (existed)

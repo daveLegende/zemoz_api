@@ -10,25 +10,22 @@ export class PlayerEntity extends ATimestamp implements Player {
     id: string;
 
     @Column()
-    firstname: string;
-
-    @Column()
-    lastname: string;
+    name: string;
 
     @Column({ nullable: true, default: 18 })
     age: number;
 
-    @Column()
-    phone: string;
+    @Column({ nullable: true })
+    phone?: string;
 
     @Column({ nullable: true, default: 0 })
-    buts: number;
+    buts?: number;
 
     @Column({ nullable: true, default: 0 })
-    passes: number;
+    passes?: number;
 
     @Column({ nullable: true })
-    avatar: string;
+    avatar?: string;
 
     @ManyToOne(() => TeamEntity, (team) => team.joueurs)
     @JoinColumn({name: "team"})

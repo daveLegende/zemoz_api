@@ -5,9 +5,9 @@ export interface ICreateTeamDTO {
 
   logo?: string;
 
-  coach: string;
+  coach?: string;
 
-  commune: string;
+  commune?: string;
 
   points?: number;
 
@@ -17,7 +17,7 @@ export interface ICreateTeamDTO {
 
   butConcedes?: number;
   
-  joueurs: Player[];
+  joueurs?: Player[];
 
   // poule?: string;
 
