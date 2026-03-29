@@ -14,11 +14,11 @@ export class TeamEntity extends ATimestamp implements Team {
     @Column()
     name: string;
 
-    @Column()
-    coach: string;
+    @Column({ nullable: true })
+    coach?: string;
 
-    @Column()
-    commune: string;
+    @Column({ nullable: true })
+    commune?: string;
 
     @Column({ nullable: true, default: 0 })
     points?: number;
