@@ -15,9 +15,10 @@ export abstract class PlayerFactory {
     return player;
   }
 
-  static update(player: Player, data: IUpdatePlayerDTO): Player {
+  static update(player: Player, data: IUpdatePlayerDTO, team: Team): Player {
 
     player.age = data.age ?? player.age;
+    player.team = team ?? player.team;
     player.phone = data.phone ?? player.phone;
     player.name = data.name ?? player.name;
     player.avatar = data.avatar ?? player.avatar;

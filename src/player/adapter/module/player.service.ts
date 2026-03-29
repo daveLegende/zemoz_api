@@ -73,14 +73,17 @@ import { Express } from 'express';
   
     async edit(data: UpdatePlayerDTO): Promise<Player> {
       try {
-        const { id } = data;
+        const { id, team } = data;
         const player = id && (await this.playerRepository.players.findOne({
           where: { id: id },
             relations: { team: true }
         }));
-        if (player) {
+        const teamExisted = id && (await this.teamRepository.teams.findOne({
+          where: { id: team },
+        }));
+        if (player && teamExisted) {
           return await this.playerRepository.players.update(
-            PlayerFactory.update(player, data),
+            PlayerFactory.update(player, data, teamExisted),
           );
         }
         throw new NotFoundException();
