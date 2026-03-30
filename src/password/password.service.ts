@@ -37,10 +37,46 @@ export class PasswordService {
     });
   
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: process.env.EMAIL_FROM,
       to: 'davidawayitou5@gmail.com',
       subject: 'Mot de passe de transaction du jour',
-      text: `Votre mot de passe de transaction du jour : ${pass}`, // Envoyer le mot de passe en clair
+      html: `
+        <div style="font-family: Georgia, serif; background-color: #f0faf0; padding: 40px; max-width: 520px; margin: auto; border-radius: 12px; border: 1px solid #a8d5a2;">
+          
+          <div style="text-align: center; margin-bottom: 28px;">
+            <div style="display: inline-block; background-color: #2e7d32; border-radius: 50%; width: 56px; height: 56px; line-height: 56px; font-size: 26px; color: #ffffff;">
+              🔐
+            </div>
+          </div>
+
+          <h2 style="color: #1b5e20; text-align: center; font-size: 20px; margin-bottom: 8px;">
+            Mot de passe de transaction
+          </h2>
+
+          <p style="color: #388e3c; text-align: center; font-size: 13px; margin-bottom: 28px;">
+            Valable pour aujourd'hui uniquement
+          </p>
+
+          <div style="background-color: #ffffff; border: 2px solid #43a047; border-radius: 10px; padding: 20px; text-align: center;">
+            <p style="color: #4caf50; font-size: 12px; letter-spacing: 2px;">
+              VOTRE MOT DE PASSE DU JOUR
+            </p>
+
+            <p style="color: #1b5e20; font-size: 32px; font-weight: bold; letter-spacing: 6px; font-family: monospace;">
+              ${pass}
+            </p>
+          </div>
+
+          <p style="color: #2e7d32; font-size: 12px; text-align: center; margin-top: 16px;">
+            📱 Appuyez longuement sur le mot de passe pour le copier
+          </p>
+
+          <p style="color: #81c784; font-size: 11px; text-align: center; margin-top: 12px;">
+            Ne partagez pas ce mot de passe. Il est strictement personnel.
+          </p>
+
+        </div>
+      `,
     };
   
     // Envoyer l'email

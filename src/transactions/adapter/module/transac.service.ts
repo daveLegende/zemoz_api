@@ -65,7 +65,7 @@ import { Repository } from 'typeorm';
 
         const adminE = await this.adminRepository.admins.findOneByID(admin);
         const userE = await this.userRepository.users.findOneBy({phone});
-        // const pwd = await this.passwordRepository.find();
+        const pwd = await this.passwordRepository.find();
         
         if(!userE) throw new NotFoundException("User non trouvé");
         
@@ -73,9 +73,9 @@ import { Repository } from 'typeorm';
 
         if (amount < 500) throw new BadRequestException("Le montant doit être super ou égal à 500frs");
         
-        // const verifyPass = await HashFactory.isRightPwd(pass.pass, pwd[0].pass);
+        const verifyPass = await HashFactory.isRightPwd(pass.pass, pwd[0].pass);
 
-        // if (!verifyPass) throw new BadRequestException("Mot de pass incorrecte");
+        if (!verifyPass) throw new BadRequestException("Mot de pass incorrecte");
 
         const pourcentage = amount * (2/100);
 
