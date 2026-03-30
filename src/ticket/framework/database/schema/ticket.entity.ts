@@ -1,6 +1,6 @@
 import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ATimestamp } from '../../../../_shared/framework/timestamp.abstract';
-import { TicketDuration, TicketState, TicketType } from '../../../../ticket/domain/ticket.enum';
+import { TicketDuration, TicketPosition, TicketState, TicketType } from '../../../../ticket/domain/ticket.enum';
 import { UserEntity } from '../../../../user/framework/database/schema/user.entity';
 import { MatchEntity } from '../../../../match/framework/database/schema/match.entity';
 import { Ticket } from '../../../../ticket/domain';
@@ -60,6 +60,9 @@ export class TicketEntity extends ATimestamp implements Ticket {
 
   @Column({ type: 'enum', enum: TicketState, default: TicketState.VALIDE })
   etat: TicketState;
+
+  @Column({ type: 'enum', enum: TicketPosition, default: TicketPosition.SORTIE })
+  position: TicketPosition;
 
   @ManyToOne(() => UserEntity, (user) => user.tickets, { nullable: false })
   user: UserEntity;

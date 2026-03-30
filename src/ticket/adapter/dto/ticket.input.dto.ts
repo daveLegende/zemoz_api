@@ -10,7 +10,7 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import { TicketDuration, TicketState, TicketType } from '../../domain/ticket.enum';
+import { TicketDuration, TicketPosition, TicketState, TicketType } from '../../domain/ticket.enum';
 
 export class TicketAccoutDTO {
   @ApiProperty({ description: 'VIP ou STANDARD', enum: TicketType })
@@ -24,6 +24,10 @@ export class TicketAccoutDTO {
   @ApiProperty({ description: 'VALIDE ou UTILISER ou SUPPRIMER', enum: TicketState })
   @IsEnum(TicketState)
   etat: TicketState;
+
+  @ApiProperty({ description: 'ENTREE ou SORTIE', enum: TicketPosition })
+  @IsEnum(TicketPosition)
+  position: TicketPosition;
 
   @ApiProperty({
     type: String,

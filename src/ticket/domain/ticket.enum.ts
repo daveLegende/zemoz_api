@@ -7,10 +7,16 @@ export enum TicketDuration {
 export enum TicketType {
     STANDARD = "STANDARD",
     VIP = "VIP",
+    RECRUTEUR = "RECRUTEUR",
 }
 
 export enum TicketState {
     VALIDE = "VALIDE",
     UTILISER = "UTILISER",
     SUPPRIMER = "SUPPRIMER",
+}
+
+export enum TicketPosition {
+    ENTREE = "ENTREE",
+    SORTIE = "SORTIE",
 }

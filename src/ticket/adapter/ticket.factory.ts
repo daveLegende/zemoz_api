@@ -8,6 +8,7 @@ export abstract class TicketFactory {
     const ticket = new Ticket();
     ticket.type = data.type;
     ticket.duree = data.duree;
+    ticket.position = data.position;
     ticket.qrCode = data.qrCode;
     ticket.code = data.code;
     ticket.etat = data.etat;

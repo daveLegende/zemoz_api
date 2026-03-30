@@ -1,5 +1,5 @@
 
-import { TicketType, TicketDuration, TicketState } from "../../domain/ticket.enum";
+import { TicketType, TicketDuration, TicketState, TicketPosition } from "../../domain/ticket.enum";
 
 export interface ICreateTicketDTO {
   type: TicketType;
@@ -7,6 +7,8 @@ export interface ICreateTicketDTO {
   duree: TicketDuration;
 
   etat: TicketState;
+
+  position?: TicketPosition;
 
   user: string;
 
