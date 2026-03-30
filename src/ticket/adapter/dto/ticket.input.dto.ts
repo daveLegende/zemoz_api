@@ -27,7 +27,8 @@ export class TicketAccoutDTO {
 
   @ApiProperty({ description: 'ENTREE ou SORTIE', enum: TicketPosition })
   @IsEnum(TicketPosition)
-  position: TicketPosition;
+  @IsOptional()
+  position?: TicketPosition;
 
   @ApiProperty({
     type: String,
@@ -50,7 +51,8 @@ export class TicketAccoutDTO {
   @ApiProperty({ description: 'Date d\'achat du ticket', type: Date, example: '2024-08-25T14:00:00Z' })
   @IsDate()
   @Type(() => Date)
-  date: Date;
+  @IsOptional()
+  date?: Date;
 
   @ApiProperty({ description: 'Date du dernier scan', type: Date, nullable: true })
   @IsOptional()

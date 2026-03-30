@@ -128,7 +128,7 @@ export class TicketService implements ITicketService {
 
 
   async add(data: TicketAccoutDTO): Promise<Ticket> {
-    const { amount, user, matchs, date } = data;  // date = date des matchs
+    const { amount, user, matchs } = data;  // date = date des matchs
 
     const userExist = await this.userRepository.users.findOneByID(user);
     if (!userExist) {
