@@ -14,7 +14,7 @@ export interface ICreateTicketDTO {
 
   amount: number;
 
-  date: Date;
+  date?: Date;
 
   lastScanDate?: Date;
 
