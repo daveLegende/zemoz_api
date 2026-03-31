@@ -62,7 +62,7 @@ export class TwilioService {
 
   async sendWhatsAppOtp(phone: string, otp: string): Promise<void> {
     await this.client.messages.create({
-      from: `whatsapp:${+14784436649}`,
+      from: `whatsapp:${+15559493875}`,
       to: `whatsapp:${phone}`,
       body: `*Petitpoto.pro* \nVotre code de vérification est: *${otp}*\nExpire dans 5 minutes.`,
     });
