@@ -9,9 +9,12 @@ import { TwilioService } from '../../../../twilio/twilio.service';
 import { OtpFactory } from '../../../../otp/adapter/otp.factory';
 import { OtpAccountDto, SendOtpDTo, VerifyOtpDTo } from '../../../../otp/adapter/dto';
 import { IUserRepository, User } from '../../../domain';
+import * as Twilio from 'twilio';
+
 
 @Injectable()
 export class AuthService {
+    private twilioClient: Twilio.Twilio;
     constructor(
       private usersService: IUserService,
       private userRepository: IUserRepository,
@@ -179,7 +182,9 @@ export class AuthService {
 
       // 👉 OPTION : supprimer ancien OTP au lieu de bloquer
       if (existed) {
+        console.log(`Suppression en cours`);
         await this.otpRepository.otps.remove(existed);
+        console.log(`✅ OTP supprimé pour le numéro: ${phone}`);
       }
 
       // ✅ OTP 4 chiffres
@@ -189,7 +194,11 @@ export class AuthService {
 
       // ✅ ENVOI WHATSAPP VIA TWILIO
       try {
-        await this.twilioService.sendWhatsAppOtp(phone, otp);
+        await this.twilioClient.messages.create({
+          from: `whatsapp:${+15559493875}`,
+          to: `whatsapp:${phone}`,
+          body: `Votre code de vérification est: ${otp}\nExpire dans 5 minutes.`,
+        });
         console.log(`✅ OTP WhatsApp envoyé à ${phone}: ${otp}`);
       } catch (error) {
         console.error('❌ Twilio error:', error);
