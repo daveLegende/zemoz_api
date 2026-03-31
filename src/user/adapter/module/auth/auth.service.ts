@@ -21,7 +21,12 @@ export class AuthService {
       private otpRepository: IOtpRepository,
       private twilioService: TwilioService,
       private jwtService: JwtService,
-    ) {}
+    ) {
+      this.twilioClient = Twilio(
+        "ACaab292a400368b3d485298278b4e405c",
+        "f0986bf192238941bc68cf7935ad3463",
+      );
+    }
     
       // async validateUser(email: string, pass: string): Promise<any> {
       //   const user = await this.usersService.fetchByEmail(email);
