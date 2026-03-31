@@ -55,14 +55,14 @@ export class TwilioService {
 
   constructor() {
     this.client = Twilio(
-      process.env.TWILIO_ACCOUNT_SID,
-      process.env.TWILIO_AUTH_TOKEN,
+      "ACaab292a400368b3d485298278b4e405c",
+      "f0986bf192238941bc68cf7935ad3463",
     );
   }
 
   async sendWhatsAppOtp(phone: string, otp: string): Promise<void> {
     await this.client.messages.create({
-      from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
+      from: `whatsapp:${+14784436649}`,
       to: `whatsapp:${phone}`,
       body: `*Petitpoto.pro* \nVotre code de vérification est: *${otp}*\nExpire dans 5 minutes.`,
     });
