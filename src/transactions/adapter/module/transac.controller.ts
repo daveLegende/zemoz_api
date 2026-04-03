@@ -90,9 +90,8 @@ export class TransactionController implements ITransactionController {
   // @ApiResponse({ type: DocUserOutputDTO })
   async create(
     @Body() data: TransactionAccountDto,
-    @Body() pass: PassAccountDto,
   ): Promise<Transaction> {
-    const transaction = await this.transactionService.add(data, pass);
+    const transaction = await this.transactionService.add(data);
     if (transaction) return TransactionFactory.getTransaction(transaction);
   }
 

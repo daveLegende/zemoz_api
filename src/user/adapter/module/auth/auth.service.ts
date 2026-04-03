@@ -30,7 +30,7 @@ export class AuthService {
         "f0986bf192238941bc68cf7935ad3463",
       );
 
-      this.whatsappFrom = 'whatsapp:+15559493875';
+      // this.whatsappFrom = 'whatsapp:+15559493875';
       this.smsFrom = '+14784436649';
     }
     
@@ -154,90 +154,11 @@ export class AuthService {
   //   }
   // }
 
-  // async verifyOtp(data: VerifyOtpDTo): Promise<boolean> {
-  //   try {
-  //     const { code, phone } = data;
-  //     const otp = await this.otpRepository.otps.findOne({ where: { phone: phone, code: code } });
-
-  //     if (!code) {
-  //       throw new BadRequestException('Code incorrecte');
-  //     }
-
-  //     // Vérifier si l'OTP a expiré
-  //     if (otp.expiresAt < new Date() || otp.isVerified) {
-  //       throw new BadRequestException('OTP expiré');
-  //     }
-
-  //     // Mettre à jour le statut de vérification
-  //     otp.isVerified = true;
-  //     await this.otpRepository.otps.update(otp);
-
-  //     return true;
-  //   } catch (error) {
-      
-  //   }
-  // }
-
-
-
-  // async sendOTP(data: SendOtpDTo): Promise<any> {
+  // async sendOTP(data: { phone: string }): Promise<any> {
   //   try {
   //     const { phone } = data;
 
-  //     const user = await this.userRepository.users.findOneBy({ phone });
-  //     if (user) {
-  //       throw new ConflictException('Cet utilisateur existe déjà, veuillez vous connecter');
-  //     }
-
-  //     const existed = await this.otpRepository.otps.findOneBy({ phone });
-
-  //     // 👉 OPTION : supprimer ancien OTP au lieu de bloquer
-  //     if (existed) {
-  //       console.log(`Suppression en cours`);
-  //       await this.otpRepository.otps.remove(existed);
-  //       console.log(`✅ OTP supprimé pour le numéro: ${phone}`);
-  //     }
-
-  //     // ✅ OTP 4 chiffres
-  //     const otp = Math.floor(1000 + Math.random() * 9000).toString();
-
-  //     const otpExpirationTime = moment().add(5, 'minutes').toDate();
-
-  //     // ✅ ENVOI WHATSAPP VIA TWILIO
-  //     try {
-  //       await this.twilioClient.messages.create({
-  //         from: 'whatsapp:+14784436649',
-  //         to: `whatsapp:${phone}`,
-  //         body: `Votre code de vérification est: ${otp}\nExpire dans 5 minutes.`,
-  //       });
-  //       console.log(`✅ OTP WhatsApp envoyé à ${phone}: ${otp}`);
-  //     } catch (error) {
-  //       console.error('❌ Twilio error:', error);
-  //       throw new BadRequestException("Erreur lors de l'envoi du OTP");
-  //     }
-
-  //     // ✅ SAVE EN DB
-  //     const datas = new OtpAccountDto();
-  //     datas.code = otp;
-  //     datas.phone = phone;
-  //     datas.isVerified = false;
-  //     datas.expiresAt = otpExpirationTime;
-
-  //     const otpEntity = await this.otpRepository.otps.create(
-  //       await OtpFactory.create(datas),
-  //     );
-
-  //     return otpEntity;
-
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
-
-  // async sendOTP(data: SendOtpDTo): Promise<any> {
-  //   try {
-  //     const { phone } = data;
-
+  //     // Vérifie si user existe
   //     const user = await this.userRepository.users.findOneBy({ phone });
   //     if (user) {
   //       throw new ConflictException(
@@ -245,44 +166,55 @@ export class AuthService {
   //       );
   //     }
 
+  //     // Vérifie OTP existant
   //     const existed = await this.otpRepository.otps.findOneBy({ phone });
-
-  //     // Vérifier si un OTP existe encore valide
   //     if (existed) {
-  //       console.log(`Un OTP existe déjà pour le numéro ${phone}. Vérification de l'expiration...`);
   //       const now = new Date();
-
   //       if (existed.expiresAt > now) {
   //         throw new BadRequestException(
   //           "Un code a déjà été envoyé. Veuillez attendre 30 minutes avant de réessayer.",
   //         );
   //       }
-
-  //       // ❌ OTP expiré → on peut supprimer
   //       await this.otpRepository.otps.remove(existed);
   //     }
 
-  //     // ✅ OTP 4 chiffres
+  //     // Génère OTP 4 chiffres
   //     const otp = Math.floor(1000 + Math.random() * 9000).toString();
-
-  //     // 🔥 Maintenant expiration = 30 minutes
   //     const otpExpirationTime = moment().add(30, 'minutes').toDate();
 
-  //     // ✅ ENVOI SMS (plus WhatsApp)
+  //     // Message OTP
+  //     const message = `Votre code de vérification est: ${otp}\nExpire dans 30 minutes.`;
+
+  //     // Envoi WhatsApp d'abord
+  //     let sentViaWhatsApp = false;
   //     try {
   //       await this.twilioClient.messages.create({
-  //         from: "+14784436649",
-  //         to: phone,
-  //         body: `Votre code de vérification est: ${otp}\nExpire dans 30 minutes.`,
+  //         from: this.whatsappFrom,
+  //         to: `whatsapp:${phone}`,
+  //         body: message,
   //       });
-
-  //       console.log(`✅ OTP SMS envoyé à ${phone}: ${otp}`);
+  //       console.log(`✅ OTP envoyé via WhatsApp à ${phone}: ${otp}`);
+  //       sentViaWhatsApp = true;
   //     } catch (error) {
-  //       console.error('❌ Twilio error:', error);
-  //       throw new BadRequestException("Erreur lors de l'envoi du OTP");
+  //       console.warn(`⚠️ WhatsApp non disponible pour ${phone}, fallback SMS.`, error.message);
   //     }
 
-  //     // ✅ SAVE EN DB
+  //     // Si WhatsApp échoue, envoi SMS
+  //     if (!sentViaWhatsApp) {
+  //       try {
+  //         await this.twilioClient.messages.create({
+  //           from: this.smsFrom,
+  //           to: phone,
+  //           body: message,
+  //         });
+  //         console.log(`✅ OTP envoyé via SMS à ${phone}: ${otp}`);
+  //       } catch (error) {
+  //         console.error('❌ Erreur envoi SMS fallback:', error);
+  //         throw new BadRequestException('Impossible d’envoyer l’OTP par WhatsApp ni SMS');
+  //       }
+  //     }
+
+  //     // Sauvegarde OTP en DB
   //     const datas = new OtpAccountDto();
   //     datas.code = otp;
   //     datas.phone = phone;
@@ -330,33 +262,17 @@ export class AuthService {
       // Message OTP
       const message = `Votre code de vérification est: ${otp}\nExpire dans 30 minutes.`;
 
-      // Envoi WhatsApp d'abord
-      let sentViaWhatsApp = false;
+      // Envoi SMS uniquement
       try {
         await this.twilioClient.messages.create({
-          from: this.whatsappFrom,
-          to: `whatsapp:${phone}`,
+          from: this.smsFrom,
+          to: phone,
           body: message,
         });
-        console.log(`✅ OTP envoyé via WhatsApp à ${phone}: ${otp}`);
-        sentViaWhatsApp = true;
+        console.log(`✅ OTP envoyé via SMS à ${phone}: ${otp}`);
       } catch (error) {
-        console.warn(`⚠️ WhatsApp non disponible pour ${phone}, fallback SMS.`, error.message);
-      }
-
-      // Si WhatsApp échoue, envoi SMS
-      if (!sentViaWhatsApp) {
-        try {
-          await this.twilioClient.messages.create({
-            from: this.smsFrom,
-            to: phone,
-            body: message,
-          });
-          console.log(`✅ OTP envoyé via SMS à ${phone}: ${otp}`);
-        } catch (error) {
-          console.error('❌ Erreur envoi SMS fallback:', error);
-          throw new BadRequestException('Impossible d’envoyer l’OTP par WhatsApp ni SMS');
-        }
+        console.error('❌ Erreur envoi SMS:', error);
+        throw new BadRequestException('Impossible d’envoyer l’OTP par SMS');
       }
 
       // Sauvegarde OTP en DB

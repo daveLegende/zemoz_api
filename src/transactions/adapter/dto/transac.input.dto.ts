@@ -41,6 +41,10 @@ export class TransactionAccountDto {
     @IsOptional()
     @IsString()
     user?: string;
+
+    @ApiProperty({ description: 'mot de passe de l\'admin', type: String })
+    @IsString()
+    pass: string;
 }
 
 export class UpdateTransactionDTO extends PartialType(TransactionAccountDto) {

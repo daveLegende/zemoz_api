@@ -11,9 +11,7 @@ import { PassAccountDto, TransactionAccountDto, UpdateTransactionDTO } from '../
 import { IUserRepository } from '../../../user/domain';
 import { IAdminRepository } from '../../../admin/domain';
 import { HashFactory } from '../../../admin/adapter/guard/hash.factory';
-import { InjectRepository } from '@nestjs/typeorm';
-import { PasswordEntity } from '../../../password/entity/pwd.entity';
-import { Repository } from 'typeorm';
+  
   
   @Injectable()
   export class TransactionService implements ITransactionService {
@@ -22,8 +20,6 @@ import { Repository } from 'typeorm';
       private transactionRepository: ITransactionRepository,
       private userRepository: IUserRepository,
       private adminRepository: IAdminRepository,
-      @InjectRepository(PasswordEntity)
-      private passwordRepository: Repository<PasswordEntity>,
     ) {}
   
     async fetchAll(): Promise<Transaction[]> {
@@ -58,9 +54,9 @@ import { Repository } from 'typeorm';
       return await this.transactionRepository.transactions.findOneBy({ ...data });
     }
   
-    async add(data: TransactionAccountDto, pass: PassAccountDto): Promise<Transaction> {
+    async add(data: TransactionAccountDto): Promise<Transaction> {
       try {
-        const { type, phone, admin, amount } = data;
+        const { type, phone, admin, amount, pass } = data;
         if (!type || !phone || !amount) throw new BadRequestException("Invalid crédentials");
 
         const adminE = await this.adminRepository.admins.findOneByID(admin);
@@ -73,9 +69,8 @@ import { Repository } from 'typeorm';
 
         if (amount < 500) throw new BadRequestException("Le montant doit être super ou égal à 500frs");
         
-        // const verifyPass = await HashFactory.isRightPwd(pass.pass, pwd[0].pass);
-
-        // if (!verifyPass) throw new BadRequestException("Mot de pass incorrecte");
+        const verifyPass = await HashFactory.isRightPwd(pass, adminE.password);
+        if (!verifyPass) throw new BadRequestException("Mot de passe admin incorrect");
 
         const pourcentage = amount * (2/100);
 

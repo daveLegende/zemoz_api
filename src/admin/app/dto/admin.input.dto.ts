@@ -11,3 +11,9 @@ export interface ICreateAdminDTO {
 export interface IUpdateAdminDTO extends Partial<ICreateAdminDTO> {
   id: string;
 }
+
+export interface IChangeAdminPasswordDTO {
+  id: string;
+  oldPassword?: string;
+  newPassword: string;
+}

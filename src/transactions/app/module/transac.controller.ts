@@ -7,7 +7,7 @@ export abstract class ITransactionController {
 
   abstract show(param: IIDParamDTO): Promise<Transaction>;
 
-  abstract create(data: ICreateTransactionDTO, pass: ICreatePassDTO, file?: any): Promise<Transaction>;
+  abstract create(data: ICreateTransactionDTO, file?: any): Promise<Transaction>;
 
   abstract search(data: Partial<Transaction>, file?: any): Promise<Transaction>;
 

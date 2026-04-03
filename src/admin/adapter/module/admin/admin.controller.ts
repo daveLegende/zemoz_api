@@ -24,7 +24,7 @@ import { IDParamDTO } from '../../../../_shared/adapter/dto';
 import { IAdminController, IAdminService } from '../../../app/module';
 import { Admin } from '../../../domain';
 import { AdminFactory } from '../../admin.factory';
-import { DocAdminOutputDto, AdminAccountDto, UpdateAdminDTO } from '../../dto';
+import { DocAdminOutputDto, AdminAccountDto, UpdateAdminDTO, ChangeAdminPasswordDTO } from '../../dto';
 import { AdminGuard } from '../../guard/auth.guard';
 import { Coupon } from '../../../../coupon/domain';
 import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
@@ -119,6 +119,16 @@ export class AdminController implements IAdminController {
     @Body() data: UpdateAdminDTO,
   ): Promise<Admin> {
     return AdminFactory.getAdmin(await this.adminService.edit(data));
+  }
+
+  @Patch('change-password')
+  @ApiOperation({ summary: 'Change admin password' })
+  @ApiBody({ type: ChangeAdminPasswordDTO })
+  @ApiResponse({ type: Boolean })
+  async changePassword(
+    @Body() data: ChangeAdminPasswordDTO,
+  ): Promise<boolean> {
+    return await this.adminService.changePassword(data);
   }
 
   @Patch('state/:id')

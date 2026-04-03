@@ -2,7 +2,7 @@ import { Transaction } from "../../domain";
 import { ICreatePassDTO, ICreateTransactionDTO, IUpdateTransactionDTO } from "../dto";
 
 export abstract class ITransactionService {
-  abstract add(data: ICreateTransactionDTO, pass: ICreatePassDTO): Promise<Transaction>;
+  abstract add(data: ICreateTransactionDTO): Promise<Transaction>;
 
   abstract fetchAll(): Promise<Transaction[]>;
 

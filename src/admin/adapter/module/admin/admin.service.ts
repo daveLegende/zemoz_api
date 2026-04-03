@@ -8,7 +8,8 @@ import {
 import { IAdminService } from '../../../app/module';
 import { Admin, IAdminRepository } from '../../../domain';
 import { AdminFactory } from '../../admin.factory';
-import { AdminAccountDto, UpdateAdminDTO } from '../../dto';
+import { AdminAccountDto, UpdateAdminDTO, ChangeAdminPasswordDTO } from '../../dto';
+import { HashFactory } from '../../guard/hash.factory';
 import { ICouponRepository } from '../../../../coupon/domain/data.abstract';
 import { ITournoiCouponRepository } from '../../../../tournoiCoupon/domain/data.abstract';
 import { ITransactionRepository, TransactionType } from '../../../../transactions/domain';
@@ -88,6 +89,32 @@ export class AdminService implements IAdminService {
     } catch (error) {
       this.logger.error(error.message, 'ERROR::AdminService.editAdmin');
 
+      throw error;
+    }
+  }
+
+  async changePassword(data: ChangeAdminPasswordDTO): Promise<boolean> {
+    try {
+      const { id, oldPassword, newPassword } = data;
+      const admin = await this.adminRepository.admins.findOneByID(id);
+
+      if (!admin) {
+        throw new NotFoundException('Admin non trouvé');
+      }
+
+      if (oldPassword) {
+        const isMatch = await HashFactory.isRightPwd(oldPassword, admin.password);
+        if (!isMatch) {
+          throw new BadRequestException('Ancien mot de passe incorrect');
+        }
+      }
+
+      admin.password = await HashFactory.hashPwd(newPassword);
+      await this.adminRepository.admins.update(admin);
+      
+      return true;
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::AdminService.changePassword');
       throw error;
     }
   }
