@@ -179,93 +179,93 @@
 // //   }
 // // }
 
-import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer } from '@nestjs/websockets';
-import { Server } from 'socket.io';
-import { UpdateHalfTimeDto, UpdateMatchScoreEventDto, UpdateStateDto } from '../dto';
-import { IMatchService } from '../../../match/app/module';
-
-@WebSocketGateway(81, { transports: ['websocket'] })
-export class MatchGateway {
-  @WebSocketServer()
-  public server: Server;
-
-  constructor(
-    private readonly matchService: IMatchService,
-  ) { }
-
-  @SubscribeMessage('updateScore')
-  async handleScoreUpdate(@MessageBody() dto: UpdateMatchScoreEventDto) {
-    try {
-      const updatedMatch = await this.matchService.updateScore(dto);
-
-      this.server.emit('scoreUpdated', updatedMatch);
-
-    } catch (error) {
-      this.server.emit('error', { message: error.message });
-    }
-  }
-
-  @SubscribeMessage('updateState')
-  async handleStateUpdate(@MessageBody() dto: UpdateStateDto) {
-    try {
-      const updatedMatch = await this.matchService.updateState(dto);
-
-      this.server.emit('stateUpdated', updatedMatch);
-
-    } catch (error) {
-      this.server.emit('error', { message: error.message });
-    }
-  }
-
-  @SubscribeMessage('updateHalfTimeState')
-  async handleHalfTimeStateUpdate(@MessageBody() dto: UpdateHalfTimeDto) {
-    try {
-      const updatedMatch = await this.matchService.updateHalfTimeState(dto.id, dto.halfPauseState);
-
-      this.server.emit('halfTimeStateUpdated', updatedMatch);
-
-    } catch (error) {
-      this.server.emit('error', { message: error.message });
-    }
-  }
-}
-
-
 // import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer } from '@nestjs/websockets';
 // import { Server } from 'socket.io';
 // import { UpdateHalfTimeDto, UpdateMatchScoreEventDto, UpdateStateDto } from '../dto';
 // import { IMatchService } from '../../../match/app/module';
 
-// @WebSocketGateway({
-//   transports: ['websocket'],
-//   cors: {
-//     origin: '*',
-//   },
-// })
+// @WebSocketGateway(81, { transports: ['websocket'] })
 // export class MatchGateway {
-
 //   @WebSocketServer()
-//   server: Server;
+//   public server: Server;
 
 //   constructor(
 //     private readonly matchService: IMatchService,
-//   ) {}
+//   ) { }
 
 //   @SubscribeMessage('updateScore')
 //   async handleScoreUpdate(@MessageBody() dto: UpdateMatchScoreEventDto) {
-//     const updatedMatch = await this.matchService.updateScore(dto);
-//     this.server.emit('scoreUpdated', updatedMatch);
+//     try {
+//       const updatedMatch = await this.matchService.updateScore(dto);
+
+//       this.server.emit('scoreUpdated', updatedMatch);
+
+//     } catch (error) {
+//       this.server.emit('error', { message: error.message });
+//     }
 //   }
 
 //   @SubscribeMessage('updateState')
 //   async handleStateUpdate(@MessageBody() dto: UpdateStateDto) {
-//     const updatedMatch = await this.matchService.updateState(dto);
-//     this.server.emit('stateUpdated', updatedMatch);
+//     try {
+//       const updatedMatch = await this.matchService.updateState(dto);
+
+//       this.server.emit('stateUpdated', updatedMatch);
+
+//     } catch (error) {
+//       this.server.emit('error', { message: error.message });
+//     }
 //   }
 
 //   @SubscribeMessage('updateHalfTimeState')
 //   async handleHalfTimeStateUpdate(@MessageBody() dto: UpdateHalfTimeDto) {
-//     const updatedMatch = await this.matchService.updateHalfTimeState(dto.id, dto.halfPauseState);
-//     this.server.emit('halfTimeStateUpdated', updatedMatch);
+//     try {
+//       const updatedMatch = await this.matchService.updateHalfTimeState(dto.id, dto.halfPauseState);
+
+//       this.server.emit('halfTimeStateUpdated', updatedMatch);
+
+//     } catch (error) {
+//       this.server.emit('error', { message: error.message });
+//     }
 //   }
 // }
+
+
+import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer } from '@nestjs/websockets';
+import { Server } from 'socket.io';
+import { UpdateHalfTimeDto, UpdateMatchScoreEventDto, UpdateStateDto } from '../dto';
+import { IMatchService } from '../../../match/app/module';
+
+@WebSocketGateway({
+  transports: ['websocket'],
+  cors: {
+    origin: '*',
+  },
+})
+export class MatchGateway {
+
+  @WebSocketServer()
+  server: Server;
+
+  constructor(
+    private readonly matchService: IMatchService,
+  ) {}
+
+  @SubscribeMessage('updateScore')
+  async handleScoreUpdate(@MessageBody() dto: UpdateMatchScoreEventDto) {
+    const updatedMatch = await this.matchService.updateScore(dto);
+    this.server.emit('scoreUpdated', updatedMatch);
+  }
+
+  @SubscribeMessage('updateState')
+  async handleStateUpdate(@MessageBody() dto: UpdateStateDto) {
+    const updatedMatch = await this.matchService.updateState(dto);
+    this.server.emit('stateUpdated', updatedMatch);
+  }
+
+  @SubscribeMessage('updateHalfTimeState')
+  async handleHalfTimeStateUpdate(@MessageBody() dto: UpdateHalfTimeDto) {
+    const updatedMatch = await this.matchService.updateHalfTimeState(dto.id, dto.halfPauseState);
+    this.server.emit('halfTimeStateUpdated', updatedMatch);
+  }
+}
