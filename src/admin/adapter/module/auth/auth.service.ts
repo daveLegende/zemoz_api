@@ -4,7 +4,7 @@ import { IAdminService } from '../../../app/module';
 import { Admin, IAdminRepository } from '../../../domain';
 import { AdminFactory } from '../../admin.factory';
 import { AdminAccountDto } from '../../dto';
-import * as bcrypt from 'bcrypt';
+import { HashFactory } from '../../guard/hash.factory';
 
 @Injectable()
 export class AdminAuthService {
@@ -26,7 +26,7 @@ export class AdminAuthService {
     console.log('--------------------------'+admin.password);
     
 
-    const isPasswordValid = await bcrypt.compare(password, admin.password);
+    const isPasswordValid = await HashFactory.isRightPwd(password, admin.password);
     if (!isPasswordValid) {
         // console.log(`Invalid password for admin: ${email}`);
         throw new UnauthorizedException('Mot de passe incorrect');
@@ -93,7 +93,7 @@ export class AdminAuthService {
         await AdminFactory.create(data),
       );
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::AdminService.register');
+      this.logger.error(error.message, 'ERROR::AdminAuthService.register');
       throw error;
     }
   }

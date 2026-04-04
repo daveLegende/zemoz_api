@@ -20,7 +20,8 @@ import {
 import { AuthService } from '../auth/auth.service';
 import { IUserService } from '../../../app/module/user';
 import { User } from '../../../domain';
-import { IUserRepository } from '../../../domain/data.abstract'; import { HashFactory } from '../../guard/hash.factory';
+import { IUserRepository } from '../../../domain/data.abstract';
+import { HashFactory } from '../../guard/hash.factory';
 import { ITicketRepository, Ticket } from '../../../../ticket/domain';
 import { Coupon } from '../../../../coupon/domain';
 import { ICouponRepository } from '../../../../coupon/domain/data.abstract';
@@ -145,7 +146,7 @@ export class UserService implements IUserService {
       return user;
     } catch (error) {
       this.logger.error(error.message, 'ERROR::UserService.fetchByEmail');
-      return error;
+      throw error;
     }
   }
 
@@ -162,7 +163,7 @@ export class UserService implements IUserService {
       return user;
     } catch (error) {
       this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      throw error;
     }
   }
 
@@ -192,8 +193,8 @@ export class UserService implements IUserService {
 
       return user;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      this.logger.error(error.message, 'ERROR::UserService.reinitialisePass');
+      throw error;
     }
   }
 
@@ -228,8 +229,8 @@ export class UserService implements IUserService {
 
       return userE;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      this.logger.error(error.message, 'ERROR::UserService.changePass');
+      throw error;
     }
   }
 
@@ -253,8 +254,8 @@ export class UserService implements IUserService {
 
       return tickets;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      this.logger.error(error.message, 'ERROR::UserService.getUserTickets');
+      throw error;
     }
   }
 
@@ -315,8 +316,8 @@ export class UserService implements IUserService {
 
       return coupons;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      this.logger.error(error.message, 'ERROR::UserService.getUserBets');
+      throw error;
     }
   }
 
@@ -340,8 +341,8 @@ export class UserService implements IUserService {
 
       return paris;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      this.logger.error(error.message, 'ERROR::UserService.getUserParis');
+      throw error;
     }
   }
 
@@ -364,8 +365,8 @@ export class UserService implements IUserService {
 
       return tournoiCoupons;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      this.logger.error(error.message, 'ERROR::UserService.getUserTournoiCoupons');
+      throw error;
     }
   }
 
@@ -414,8 +415,8 @@ export class UserService implements IUserService {
 
       return user;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      this.logger.error(error.message, 'ERROR::UserService.getCurrentUser');
+      throw error;
     }
   }
 }

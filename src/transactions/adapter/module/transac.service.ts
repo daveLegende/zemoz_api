@@ -85,6 +85,7 @@ import { HashFactory } from '../../../admin/adapter/guard/hash.factory';
         } else {
           if (userE.solde < amount) throw new BadRequestException("Solde insuffisant");
           userE.solde -= amount;
+          data.frais = 0;
           const transac = await this.transactionRepository.transactions.create(
             await TransactionFactory.create(data, adminE, userE),
           );

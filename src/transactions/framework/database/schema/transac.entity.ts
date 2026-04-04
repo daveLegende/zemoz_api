@@ -20,7 +20,7 @@ export class TransactionEntity extends ATimestamp implements Transaction {
     })
     type: TransactionType;
 
-    @Column('float')
+    @Column({ type: 'float', default: 0 })
     frais?: number;
 
     @Column()

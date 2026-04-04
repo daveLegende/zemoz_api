@@ -2,7 +2,7 @@ import { BadRequestException, ConflictException, Injectable, NotFoundException, 
 import { JwtService } from '@nestjs/jwt';
 import { IUserService } from '../../../app/module/user';
 
-import * as bcrypt from 'bcrypt';
+import { HashFactory } from '../../guard/hash.factory';
 import * as moment from 'moment';
 import { IOtpRepository } from '../../../../otp/domain';
 import { TwilioService } from '../../../../twilio/twilio.service';
@@ -52,7 +52,7 @@ export class AuthService {
         throw new BadRequestException('User not found');
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await HashFactory.isRightPwd(password, user.password);
     if (!isPasswordValid) {
         console.log(`Invalid password for phone: ${phone}`);
         throw new BadRequestException('Invalid credentials');
