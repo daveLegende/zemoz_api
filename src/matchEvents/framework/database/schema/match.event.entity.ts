@@ -23,7 +23,9 @@ export class MatchEventEntity extends MatchEvent {
   @Column('int')
   minute: number;
 
-  @ManyToOne(() => MatchEntity, (match) => match.events)
+  @ManyToOne(() => MatchEntity, (match) => match.events, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'matchId' })
   match: MatchEntity;
 }

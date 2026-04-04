@@ -55,7 +55,7 @@ export class MatchEntity extends ATimestamp implements Match {
     @Column('jsonb', { nullable: true, default: { "home": 0, "away": 0 } },)
     scores?: MatchScores;
 
-    @OneToMany(() => MatchEventEntity, (event) => event.match, { cascade: true })
+    @OneToMany(() => MatchEventEntity, (event) => event.match, { cascade: true, onDelete: 'CASCADE' })
     events?: MatchEventEntity[];
 
     @ManyToOne(() => PouleEntity, (poule) => poule.matches, { nullable: true })

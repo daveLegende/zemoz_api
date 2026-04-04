@@ -243,6 +243,7 @@ import { IMatchService } from '../../../match/app/module';
       // 'http://localhost:5173',
       'https://www.petitpoto.pro',
     ],
+    credentials: true,
   },
 })
 export class MatchGateway {
