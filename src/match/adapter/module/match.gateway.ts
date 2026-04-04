@@ -239,7 +239,10 @@ import { IMatchService } from '../../../match/app/module';
 @WebSocketGateway({
   transports: ['websocket'],
   cors: {
-    origin: '*',
+    origin: [
+      // 'http://localhost:5173',
+      'https://www.petitpoto.pro',
+    ],
   },
 })
 export class MatchGateway {
