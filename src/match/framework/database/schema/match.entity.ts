@@ -1,15 +1,13 @@
 import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ATimestamp } from 'framework/timestamp.abstract';
-import { Match, MatchScores, MatchState, MatchType } from 'src/match/domain';
-import { PouleEntity } from 'src/poule/framework/database/schema/poule.entity';
-import { TeamEntity } from 'src/team/framework/database/schema/team.entity';
-import { ArbitreEntity } from 'src/arbitre/framework/database/schema/arbitre.entity';
-import { MatchEventEntity } from 'src/matchEvents/framework/database/schema/match.event.entity';
-import { PrononsticEntity } from 'src/prononstic/framework/database/schema/prono.entity';
-import { BetEntity } from 'src/bet/framework/schema/bet.entity';
-import { TicketEntity } from 'src/ticket/framework/database/schema/ticket.entity';
-import { OddsDTO } from 'src/match/adapter/dto/odds.dto';
-import { ParisEntity } from 'src/paris/framework/schema/paris.entity';
+import { ATimestamp } from '../../../../_shared/framework/timestamp.abstract';
+import { HalfPauseState, Match, MatchScores, MatchState, MatchType } from '../../../../match/domain';
+import { PouleEntity } from '../../../../poule/framework/database/schema/poule.entity';
+import { TeamEntity } from '../../../../team/framework/database/schema/team.entity';
+import { ArbitreEntity } from '../../../../arbitre/framework/database/schema/arbitre.entity';
+import { MatchEventEntity } from '../../../../matchEvents/framework/database/schema/match.event.entity';
+import { PrononsticEntity } from '../../../../prononstic/framework/database/schema/prono.entity';
+import { BetEntity } from '../../../../bet/framework/schema/bet.entity';
+import { ParisEntity } from '../../../../paris/framework/schema/paris.entity';
 
 @Entity('matchs')
 // @Index(['email'], { unique: true, where: `deleted_at IS NULL` })
@@ -57,7 +55,7 @@ export class MatchEntity extends ATimestamp implements Match {
     @Column('jsonb', { nullable: true, default: { "home": 0, "away": 0 } },)
     scores?: MatchScores;
 
-    @OneToMany(() => MatchEventEntity, (event) => event.match, { cascade: true })
+    @OneToMany(() => MatchEventEntity, (event) => event.match, { cascade: true, onDelete: 'CASCADE' })
     events?: MatchEventEntity[];
 
     @ManyToOne(() => PouleEntity, (poule) => poule.matches, { nullable: true })
@@ -69,7 +67,7 @@ export class MatchEntity extends ATimestamp implements Match {
     arbitres: ArbitreEntity[]
 
     @OneToMany(() => PrononsticEntity, pronostic => pronostic.match)
-    pronostics: PrononsticEntity[];
+    pronostics?: PrononsticEntity[];
 
     @OneToMany(() => BetEntity, (bet) => bet.match)
     bets?: BetEntity[];
@@ -80,18 +78,26 @@ export class MatchEntity extends ATimestamp implements Match {
     @Column({ nullable: true, default: false })
     isProlongation?: boolean;
 
+    @Column({ nullable: true, default: false })
+    isTirAuxButs?: boolean;
+
+    @Column({ nullable: true, default: 0 })
+    homePenalty?: number;
+
+    @Column({ nullable: true, default: 0 })
+    awayPenalty?: number;
+
     @Column({ nullable: true })
     teamQualify?: string;
 
-    // @Column({ nullable: true })
-    // odds?: OddsDTO;
-    @Column('jsonb', { 
+    // @Column({ default: false })
+    // isHalfTime: boolean;
+
+    @Column({
+        type: 'enum',
+        enum: HalfPauseState,
         nullable: true,
-        default: { V1: 1.0, X: 1.0, V2: 1.0 } 
+        default: HalfPauseState.FIRST_HALF
     })
-    odds: {
-        V1: number;
-        X: number;
-        V2: number;
-    };
+    halfPauseState?: HalfPauseState;
 }

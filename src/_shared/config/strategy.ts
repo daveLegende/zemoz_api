@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/co
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy, ExtractJwt } from "passport-jwt";
-import { IUserRepository } from "user/domain/data.abstract";
+import { IUserRepository } from "../../user/domain/data.abstract";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -18,7 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    
+
     console.log('Validating JWT...', payload);
     console.log('User found:',);
     // Rechercher l'utilisateur dans la base de données en fonction de son ID

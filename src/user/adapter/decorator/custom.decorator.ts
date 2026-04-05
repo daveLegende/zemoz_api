@@ -1,5 +1,5 @@
 import { createParamDecorator, UnauthorizedException } from '@nestjs/common';
-import { User } from 'user/domain';
+import { User } from '../../domain';
 
 export const GetAccount = createParamDecorator((data, context): User => {
     const req = context.switchToHttp().getRequest();

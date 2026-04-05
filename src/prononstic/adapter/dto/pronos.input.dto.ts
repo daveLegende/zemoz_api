@@ -10,13 +10,14 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import { PronoState } from 'src/prononstic/domain';
+import { PronoState } from '../../domain';
 
 export class PrononsticAccoutDTO {
   @ApiProperty({
     type: String,
     name: 'user',
-    description: 'id de l\'user',
+    description: 'ID de l\'utilisateur',
+    example: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
   })
   @IsString()
   user: string;
@@ -24,7 +25,8 @@ export class PrononsticAccoutDTO {
   @ApiProperty({
     type: String,
     name: 'match',
-    description: 'id de l\'user',
+    description: 'ID du match',
+    example: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
   })
   @IsString()
   match: string;

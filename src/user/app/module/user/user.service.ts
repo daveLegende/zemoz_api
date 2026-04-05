@@ -1,15 +1,18 @@
-import { Coupon } from 'src/coupon/domain';
-import { Paris } from 'src/paris/domain';
-import { Ticket } from 'src/ticket/domain';
-import { IChangePasswordDTO, ICreateUserDTO, IDeleteUserBetOrTicketDTO, IReinitialisePassDTO, IUpdateUserDTO } from 'user/app/dto';
-import { User } from 'user/domain';
+import { Coupon } from '../../../../coupon/domain';
+import { Paris } from '../../../../paris/domain';
+import { Ticket } from '../../../../ticket/domain';
+import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
+import { IChangePasswordDTO, ICreateUserDTO, IDeleteUserBetOrTicketDTO, IReinitialisePassDTO, IUpdateUserDTO } from '../../dto';
+import { User } from '../../../domain';
+import { PaginationOptionsDto } from "../../../../_shared/adapter/dto/pagination-options.dto";
+import { PaginationResultDto } from "../../../../_shared/adapter/dto/pagination-result.dto";
 
 export abstract class IUserService {
   abstract getCurrentUser(id: string): Promise<User>
 
   abstract add(data: ICreateUserDTO): Promise<User>;
 
-  abstract fetchAll(): Promise<User[]>;
+  abstract fetchAll(options: PaginationOptionsDto): Promise<PaginationResultDto<User>>;
 
   abstract fetchOne(id: string): Promise<User>;
 
@@ -36,6 +39,8 @@ export abstract class IUserService {
   abstract getUserParis(id: string): Promise<Paris[]>;
 
   abstract deleteUserBet(data: IDeleteUserBetOrTicketDTO): Promise<boolean>;
+
+  abstract getUserTournoiCoupons(id: string): Promise<TournoiCoupon[]>;
 
   abstract deleteUserTicket(data: IDeleteUserBetOrTicketDTO): Promise<boolean>;
 

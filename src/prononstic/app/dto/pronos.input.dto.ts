@@ -1,4 +1,4 @@
-import { PronoState } from "src/prononstic/domain";
+import { PronoState } from "../../domain";
 
 export interface ICreatePronosDTO {
     user: string;

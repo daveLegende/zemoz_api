@@ -6,9 +6,9 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
-import { IAdminRepository } from 'src/admin/domain';
-import { AuthAPIService } from 'src/admin/framework/API/auth.api.service';
-import { AccessEnum } from 'user/domain/user.enum';
+import { IAdminRepository } from '../../domain';
+import { AuthAPIService } from '../../framework/API/auth.api.service';
+import { AccessEnum } from '../../../user/domain/user.enum';
 
 export const _extractTokenFromHeader = (
   request: Request,

@@ -1,7 +1,6 @@
-import { ITimestamp } from "domain/interface";
-import { Match } from "src/match/domain";
-import { User } from "user/domain";
-import { SelectedOption } from "./paris.enum";
+import { ITimestamp } from "../../_shared/domain/interface";
+import { Match } from "../../match/domain";
+import { User } from "../../user/domain";
 
 
 // export class ParisCategories extends ITimestamp {

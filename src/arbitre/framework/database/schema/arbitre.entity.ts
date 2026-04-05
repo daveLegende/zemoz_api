@@ -1,5 +1,5 @@
-import { Arbitre, RoleArbitre } from "src/arbitre/domain";
-import { MatchEntity } from "src/match/framework/database/schema/match.entity";
+import { Arbitre, RoleArbitre } from "../../../domain";
+import { MatchEntity } from "../../../../match/framework/database/schema/match.entity";
 import { Column, DeleteDateColumn, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('arbitres')

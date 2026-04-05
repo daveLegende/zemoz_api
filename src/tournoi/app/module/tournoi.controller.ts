@@ -2,11 +2,13 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
 import { IIDParamDTO } from 'app/dto';
-import { Tournoi } from 'src/tournoi/domain';
+import { Tournoi } from '../../domain';
 import { ICreateTournoiDTO, IUpdateTournoiDTO } from '../dto';
+import { PaginationOptionsDto } from "../../../_shared/adapter/dto/pagination-options.dto";
+import { PaginationResultDto } from "../../../_shared/adapter/dto/pagination-result.dto";
 
 export abstract class ITournoiController {
-  abstract all(): Promise<Tournoi[]>;
+  abstract all(options: PaginationOptionsDto): Promise<PaginationResultDto<Tournoi>>;
 
   abstract show(param: IIDParamDTO): Promise<Tournoi>;
 

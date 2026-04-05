@@ -2,9 +2,9 @@ import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { DBGenericRepository } from 'framework/database.repository';
-import { IGenericRepository } from 'src/igeneric.interface';
-import { ITicketRepository, Ticket } from 'src/ticket/domain';
+import { DBGenericRepository } from '../../../_shared/framework/database.repository';
+import { IGenericRepository } from '../../../igeneric.interface';
+import { ITicketRepository, Ticket } from '../../domain';
 import { TicketEntity } from './schema/ticket.entity';
 
 

@@ -7,7 +7,7 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import { Player } from 'src/player/domain';
+import { Player } from '../../../player/domain';
 
 export class TournoiAccoutDTO {
   @ApiProperty({

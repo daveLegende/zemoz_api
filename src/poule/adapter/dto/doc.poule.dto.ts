@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsArray, IsString } from "class-validator";
-import { Team } from "src/team/domain";
+import { Team } from "../../../team/domain";
 
 export class DocPouleOutputDto {
     @ApiProperty({

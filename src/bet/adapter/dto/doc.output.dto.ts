@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
 import { IsEnum, IsOptional, IsString, IsUUID } from "class-validator";
-import { CategoryName } from "src/bet/domain";
+import { CategoryName } from "../../domain";
 
 export class DocBetOutputDto {
     @ApiProperty({

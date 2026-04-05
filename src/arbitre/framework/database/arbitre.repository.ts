@@ -1,8 +1,8 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DBGenericRepository } from 'framework/database.repository';
-import { Arbitre, IArbitreRepository } from 'src/arbitre/domain';
-import { IGenericRepository } from 'src/igeneric.interface';
+import { DBGenericRepository } from '../../../_shared/framework/database.repository';
+import { Arbitre, IArbitreRepository } from '../../domain';
+import { IGenericRepository } from '../../../igeneric.interface';
 import { ArbitreEntity } from './schema/arbitre.entity';
 import { Repository } from 'typeorm';
 

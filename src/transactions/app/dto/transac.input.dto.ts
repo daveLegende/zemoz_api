@@ -1,6 +1,4 @@
-import { TransactionType } from "src/transactions/domain/transaction.enum";
-import { Admin } from "typeorm";
-import { User } from "user/domain";
+import { TransactionType } from "../../../transactions/domain/transaction.enum";
 
 export interface ICreateTransactionDTO {
   

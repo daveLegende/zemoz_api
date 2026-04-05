@@ -10,7 +10,7 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import { TicketDuration, TicketState, TicketType } from 'src/ticket/domain/ticket.enum';
+import { TicketDuration, TicketPosition, TicketState, TicketType } from '../../domain/ticket.enum';
 
 export class TicketAccoutDTO {
   @ApiProperty({ description: 'VIP ou STANDARD', enum: TicketType })
@@ -25,10 +25,16 @@ export class TicketAccoutDTO {
   @IsEnum(TicketState)
   etat: TicketState;
 
+  @ApiProperty({ description: 'ENTREE ou SORTIE', enum: TicketPosition })
+  @IsEnum(TicketPosition)
+  @IsOptional()
+  position?: TicketPosition;
+
   @ApiProperty({
     type: String,
     name: 'user',
-    description: 'id de user',
+    description: 'ID de l\'utilisateur',
+    example: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
   })
   @IsString()
   user: string;
@@ -41,11 +47,12 @@ export class TicketAccoutDTO {
   })
   @IsInt()
   amount: number;
-  
+
   @ApiProperty({ description: 'Date d\'achat du ticket', type: Date, example: '2024-08-25T14:00:00Z' })
   @IsDate()
   @Type(() => Date)
-  date: Date;
+  @IsOptional()
+  date?: Date;
 
   @ApiProperty({ description: 'Date du dernier scan', type: Date, nullable: true })
   @IsOptional()
@@ -54,16 +61,17 @@ export class TicketAccoutDTO {
   lastScanDate?: Date;
 
   @ApiProperty({
-    type: Array,
+    type: [String],
     name: 'matchs',
-    description: 'id des matchs',
+    description: 'Liste des IDs des matchs',
+    example: ['d290f1ee-6c54-4b01-90e6-d701748f0851', 'a123f1ee-6c54-4b01-90e6-d701748f0852'],
     default: []
   })
   @IsOptional()
   @IsArray()
   matchs?: string[];
 
-  
+
 
   @ApiProperty({
     type: Boolean,

@@ -1,6 +1,6 @@
-import { ITimestamp } from "domain/interface";
-import { Match } from "src/match/domain";
-import { User } from "user/domain";
+import { ITimestamp } from "../../_shared/domain/interface";
+import { Match } from "../../match/domain";
+import { User } from "../../user/domain";
 import { PronoState } from "./pronos.enum";
 
 export class Prononstic extends ITimestamp {

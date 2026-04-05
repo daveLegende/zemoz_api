@@ -1,11 +1,13 @@
-import { Ticket } from "src/ticket/domain";
+import { Ticket } from "../../domain";
 import { ICreateTicketDTO, IUpdateTicketDTO } from "../dto";
+import { PaginationOptionsDto } from "../../../_shared/adapter/dto/pagination-options.dto";
+import { PaginationResultDto } from "../../../_shared/adapter/dto/pagination-result.dto";
 
 
 export abstract class ITicketService {
   abstract add(data: ICreateTicketDTO): Promise<Ticket>;
 
-  abstract fetchAll(): Promise<Ticket[]>;
+  abstract fetchAll(options: PaginationOptionsDto): Promise<PaginationResultDto<Ticket>>;
 
   abstract fetchOne(id: string): Promise<Ticket>;
 
@@ -16,4 +18,6 @@ export abstract class ITicketService {
   abstract search(data: Partial<Ticket>): Promise<Ticket>;
 
   abstract remove(id: string): Promise<boolean>;
+
+  abstract scanTicket(qrCode: string): Promise<Ticket>;
 }

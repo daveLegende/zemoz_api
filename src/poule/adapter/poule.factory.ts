@@ -1,4 +1,4 @@
-import { Team } from "src/team/domain";
+import { Team } from "../../team/domain";
 import { ICreatePouleDTO, IUpdatePouleDTO } from "../app/dto";
 import { Poule } from "../domain";
 

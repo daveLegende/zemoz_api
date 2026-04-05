@@ -1,4 +1,4 @@
-import { PartialDeep, PartialDeepBool, PartialOrder } from 'domain/types';
+import { PartialDeep, PartialDeepBool, PartialOrder } from '../types';
 
 export interface RepoParam<T> {
   relations?: PartialDeepBool<T>;
@@ -14,6 +14,8 @@ export abstract class IFindGeneric<T> {
   abstract findBy(options: PartialDeep<T>): Promise<T[]>;
 
   abstract find(options?: RepoParam<T>): Promise<T[]>;
+
+  abstract findAndCount(options?: RepoParam<T>): Promise<[T[], number]>;
 
   abstract findByIds(ids: string[], options?: PartialDeep<T>): Promise<T[]>;
 }

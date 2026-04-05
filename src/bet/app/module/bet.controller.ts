@@ -1,9 +1,11 @@
-import { IIDParamDTO } from 'app/dto';
-import { Bet } from 'src/bet/domain';
+import { IIDParamDTO } from '../../../_shared/app/dto';
+import { Bet } from '../../../bet/domain';
 import { ICreateBetDTO, IUpdateBetDTO } from '../dto';
+import { PaginationOptionsDto } from "../../../_shared/adapter/dto/pagination-options.dto";
+import { PaginationResultDto } from "../../../_shared/adapter/dto/pagination-result.dto";
 
 export abstract class IBetController {
-  abstract all(): Promise<Bet[]>;
+  abstract all(options: PaginationOptionsDto): Promise<PaginationResultDto<Bet>>;
 
   abstract show(param: IIDParamDTO): Promise<Bet>;
 

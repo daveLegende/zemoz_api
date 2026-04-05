@@ -1,20 +1,19 @@
 import {
   BadRequestException,
-    ConflictException,
-    Injectable,
-    Logger,
-    NotFoundException,
-  } from '@nestjs/common';
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { TransactionFactory } from '../transac.factory';
-import { ITransactionService } from 'src/transactions/app/module';
-import { ITransactionRepository, Transaction, TransactionType } from 'src/transactions/domain';
+import { ITransactionService } from '../../../transactions/app/module';
+import { ITransactionRepository, Transaction, TransactionType } from '../../../transactions/domain';
 import { PassAccountDto, TransactionAccountDto, UpdateTransactionDTO } from '../dto';
-import { IUserRepository } from 'user/domain';
-import { IAdminRepository } from 'src/admin/domain';
-import { HashFactory } from 'src/admin/adapter/guard/hash.factory';
-import { InjectRepository } from '@nestjs/typeorm';
-import { PasswordEntity } from 'src/password/entity/pwd.entity';
-import { Repository } from 'typeorm';
+import { IUserRepository } from '../../../user/domain';
+import { IAdminRepository } from '../../../admin/domain';
+import { HashFactory } from '../../../admin/adapter/guard/hash.factory';
+import { PaginationOptionsDto } from '../../../_shared/adapter/dto/pagination-options.dto';
+import { PaginationResultDto } from '../../../_shared/adapter/dto/pagination-result.dto';
+  
   
   @Injectable()
   export class TransactionService implements ITransactionService {
@@ -23,15 +22,17 @@ import { Repository } from 'typeorm';
       private transactionRepository: ITransactionRepository,
       private userRepository: IUserRepository,
       private adminRepository: IAdminRepository,
-      @InjectRepository(PasswordEntity)
-      private passwordRepository: Repository<PasswordEntity>,
     ) {}
   
-    async fetchAll(): Promise<Transaction[]> {
+    async fetchAll(options: PaginationOptionsDto): Promise<PaginationResultDto<Transaction>> {
       try {
-        return await this.transactionRepository.transactions.find({
-          relations: { admin: true }
+        const [transactions, total] = await this.transactionRepository.transactions.findAndCount({
+          skip: options.skip,
+          take: options.limit,
+          relations: { admin: true, user: true },
+          order: { createdAt: 'DESC' }
         });
+        return new PaginationResultDto(transactions, total, options.page, options.limit);
       } catch (error) {
         this.logger.error(error.message, 'ERROR::TransactionService.fetchAll');
         throw error;
@@ -59,14 +60,14 @@ import { Repository } from 'typeorm';
       return await this.transactionRepository.transactions.findOneBy({ ...data });
     }
   
-    async add(data: TransactionAccountDto, pass: PassAccountDto): Promise<Transaction> {
+    async add(data: TransactionAccountDto): Promise<Transaction> {
       try {
-        const { type, phone, admin, amount } = data;
+        const { type, phone, admin, amount, pass } = data;
         if (!type || !phone || !amount) throw new BadRequestException("Invalid crédentials");
 
         const adminE = await this.adminRepository.admins.findOneByID(admin);
         const userE = await this.userRepository.users.findOneBy({phone});
-        const pwd = await this.passwordRepository.find();
+        // const pwd = await this.passwordRepository.find();
         
         if(!userE) throw new NotFoundException("User non trouvé");
         
@@ -74,9 +75,8 @@ import { Repository } from 'typeorm';
 
         if (amount < 500) throw new BadRequestException("Le montant doit être super ou égal à 500frs");
         
-        const verifyPass = await HashFactory.isRightPwd(pass.pass, pwd[0].pass);
-
-        if (!verifyPass) throw new BadRequestException("Mot de pass incorrecte");
+        const verifyPass = await HashFactory.isRightPwd(pass, adminE.password);
+        if (!verifyPass) throw new BadRequestException("Mot de passe admin incorrect");
 
         const pourcentage = amount * (2/100);
 
@@ -91,6 +91,7 @@ import { Repository } from 'typeorm';
         } else {
           if (userE.solde < amount) throw new BadRequestException("Solde insuffisant");
           userE.solde -= amount;
+          data.frais = 0;
           const transac = await this.transactionRepository.transactions.create(
             await TransactionFactory.create(data, adminE, userE),
           );

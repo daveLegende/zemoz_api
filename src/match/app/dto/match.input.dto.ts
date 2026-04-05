@@ -1,5 +1,5 @@
-import { MatchScores, MatchState, MatchType } from "src/match/domain";
-import { MatchEvent } from "src/matchEvents/domain";
+import { MatchScores, MatchState, MatchType } from "../../../match/domain";
+import { MatchEvent } from "../../../matchEvents/domain";
 
 export interface ICreateMatchDTO {
   lieu: string;
@@ -26,6 +26,12 @@ export interface ICreateMatchDTO {
 
   isProlongation?: boolean;
 
+  isTirAuxButs?: boolean;
+
+  homePenalty?: number;
+
+  awayPenalty?: number;
+  
   teamQualify?: string;
   
   // Ajoutez les cotes (optionnelles si vous voulez les rendre obligatoires plus tard)

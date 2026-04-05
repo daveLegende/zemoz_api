@@ -1,11 +1,13 @@
-import { Tournoi } from "src/tournoi/domain";
+import { Tournoi } from "../../domain";
 import { ICreateTournoiDTO, IUpdateTournoiDTO } from "../dto";
+import { PaginationOptionsDto } from "../../../_shared/adapter/dto/pagination-options.dto";
+import { PaginationResultDto } from "../../../_shared/adapter/dto/pagination-result.dto";
 
 
 export abstract class ITournoiService {
   abstract add(data: ICreateTournoiDTO): Promise<Tournoi>;
 
-  abstract fetchAll(): Promise<Tournoi[]>;
+  abstract fetchAll(options: PaginationOptionsDto): Promise<PaginationResultDto<Tournoi>>;
 
   abstract fetchOne(id: string): Promise<Tournoi>;
 

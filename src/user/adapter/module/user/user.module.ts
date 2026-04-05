@@ -2,18 +2,18 @@ import { Module } from '@nestjs/common';
 
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
-import { AuthApiModule } from 'user/framework/API';
-import { IUserService } from 'user/app/module/user';
-import { UserRepositoryModule } from 'user/framework/database/user.repository.module';
-import { AdminRepositoryModule } from 'src/admin/framework/database/admin.repository.module';
-import { AdminAuthApiModule } from 'src/admin/framework/API';
-import { ForgotPassRepositoryModule } from 'src/forgotpass/framework/database/fgp.repository.module';
-import { TicketRepositoryModule } from 'src/ticket/framework/database/ticket.repository.module';
-import { JwtModule, JwtService } from '@nestjs/jwt';
-import { UserGuard } from 'user/adapter/guard/auth.guard';
+import { AuthApiModule } from '../../../framework/API';
+import { IUserService } from '../../../app/module/user';
+import { UserRepositoryModule } from '../../../framework/database/user.repository.module';
+import { AdminRepositoryModule } from '../../../../admin/framework/database/admin.repository.module';
+import { AdminAuthApiModule } from '../../../../admin/framework/API';
+import { ForgotPassRepositoryModule } from '../../../../forgotpass/framework/database/fgp.repository.module';
+import { TicketRepositoryModule } from '../../../../ticket/framework/database/ticket.repository.module';
+import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { CouponRepositoryModule } from 'src/coupon/framework/coupon.module.repository';
-import { ParisRepositoryModule } from 'src/paris/framework/paris.module.repository';
+import { CouponRepositoryModule } from '../../../../coupon/framework/coupon.module.repository';
+import { ParisRepositoryModule } from '../../../../paris/framework/paris.module.repository';
+import { TournoiCouponRepositoryModule } from '../../../../tournoiCoupon/framework/tournoi_coupon.module.repository';
 
 @Module({
   imports: [
@@ -34,6 +34,7 @@ import { ParisRepositoryModule } from 'src/paris/framework/paris.module.reposito
     TicketRepositoryModule,
     CouponRepositoryModule,
     ParisRepositoryModule,
+    TournoiCouponRepositoryModule,
   ],
   controllers: [UserController],
   providers: [{ provide: IUserService, useClass: UserService }],

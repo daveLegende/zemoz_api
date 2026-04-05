@@ -1,9 +1,11 @@
-import { IIDParamDTO } from 'app/dto';
-import { Arbitre } from 'src/arbitre/domain';
+import { IIDParamDTO } from '../../../_shared/app/dto';
+import { Arbitre } from '../../domain';
 import { ICreateArbitreDTO, IUpdateArbitreDTO } from '../dto';
+import { PaginationOptionsDto } from "../../../_shared/adapter/dto/pagination-options.dto";
+import { PaginationResultDto } from "../../../_shared/adapter/dto/pagination-result.dto";
 
 export abstract class IArbitreController {
-  abstract all(): Promise<Arbitre[]>;
+  abstract all(options: PaginationOptionsDto): Promise<PaginationResultDto<Arbitre>>;
 
   abstract show(param: IIDParamDTO): Promise<Arbitre>;
 

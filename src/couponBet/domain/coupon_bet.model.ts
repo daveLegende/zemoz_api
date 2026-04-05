@@ -1,6 +1,6 @@
-import { ITimestamp } from "domain/interface";
-import { Bet } from "src/bet/domain";
-import { Coupon } from "src/coupon/domain";
+import { ITimestamp } from "../../_shared/domain/interface";
+import { Bet } from "../../bet/domain";
+import { Coupon } from "../../coupon/domain";
 import { BetStatus } from "./coupon.bet.enum";
 
 export class CouponBet extends ITimestamp {

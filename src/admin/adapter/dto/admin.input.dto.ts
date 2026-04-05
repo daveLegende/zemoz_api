@@ -33,3 +33,19 @@ export class UpdateAdminDTO extends PartialType(AdminAccountDto) {
     @IsUUID()
     id: string;
 }
+
+export class ChangeAdminPasswordDTO {
+  @ApiProperty({ type: String, name: 'id', description: "ID de l'admin" })
+  @IsString()
+  @IsUUID()
+  id: string;
+
+  @ApiProperty({ type: String, name: 'oldPassword', description: "Ancien mot de passe (optionnel pour reset)", required: false })
+  @IsString()
+  @IsOptional()
+  oldPassword?: string;
+
+  @ApiProperty({ type: String, name: 'newPassword', description: "Nouveau mot de passe" })
+  @IsString()
+  newPassword: string;
+}

@@ -1,4 +1,4 @@
-import { IGenericRepository } from "src/igeneric.interface";
+import { IGenericRepository } from "../../igeneric.interface";
 import { Admin } from "./admin.model";
 
 export abstract class IAdminRepository {

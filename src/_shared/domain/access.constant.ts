@@ -1,4 +1,4 @@
-import { AccessEnum } from 'user/domain';
+import { AccessEnum } from '../../user/domain';
 
 export const RULES = [
   {

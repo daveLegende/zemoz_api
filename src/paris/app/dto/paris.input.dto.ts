@@ -1,5 +1,3 @@
-import { SelectedOption } from "src/paris/domain";
-
 export interface ICreateParisDTO {
   // id: string;
   odd: number;

@@ -1,5 +1,5 @@
-import { ISigninUserDTO, IForgotPasswordDTO } from 'user/app/dto';
-import { User } from 'user/domain';
+import { ISigninUserDTO, IForgotPasswordDTO } from '../../dto';
+import { User } from '../../../domain';
 
 export abstract class IAuthService {
   abstract signin(

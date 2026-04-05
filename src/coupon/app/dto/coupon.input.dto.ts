@@ -1,6 +1,6 @@
-import { OddsClass } from "src/bet/domain";
-import { CouponState } from "src/coupon/domain";
-import { CouponBet } from "src/couponBet/domain";
+import { OddsClass } from "../../../bet/domain";
+import { CouponState } from "../../../coupon/domain";
+import { CouponBet } from "../../../couponBet/domain";
 
 export class BetCoupon {
   bet: string;
@@ -22,6 +22,8 @@ export interface ICreateCouponDTO {
   couponBets: CouponBet[];
 
   isDeleted?: boolean;
+
+  isPaid?: boolean;
 
 }
 

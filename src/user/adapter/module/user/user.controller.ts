@@ -22,16 +22,12 @@ import {
   ApiConsumes,
   ApiQuery,
 } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { IDParamDTO } from 'adapter/dto';
-import { AccessEnum } from 'user/domain';
-import { IUserController, IUserService } from 'user/app/module/user';
-import { User } from 'user/domain/user.model';
-import { HasPermission } from 'adapter/decorator';
-import { UserGuard } from 'user/adapter/guard/auth.guard';
-import { BaseConfig } from 'config/base.config';
-import { GetAccount } from 'user/adapter/decorator';
+import { IDParamDTO } from '../../../../_shared/adapter/dto/param.dto';
+import { AccessEnum } from '../../../../user/domain';
+import { IUserController, IUserService } from '../../../../user/app/module/user';
+import { User } from '../../../../user/domain/user.model';
+import { HasPermission } from '../../../../_shared/adapter/decorator';
+import { GetAccount } from '../../../../user/adapter/decorator';
 import {
   DocUserOutputDTO,
   DocSignedUserDTO,
@@ -43,13 +39,14 @@ import {
   DeleteUserBetDTO,
   DeleteUserTicketDTO,
   UserRegisterDTO,
-} from 'user/adapter/dto';
-import { UserFactory } from 'user/adapter/user.factory';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
-import { Ticket } from 'src/ticket/domain';
-import { AuthGuard } from '@nestjs/passport';
-import { Coupon } from 'src/coupon/domain';
-import { Paris } from 'src/paris/domain';
+} from '../../dto';
+import { UserFactory } from '../../user.factory';
+import { Ticket } from '../../../../ticket/domain';
+import { Coupon } from '../../../../coupon/domain';
+import { Paris } from '../../../../paris/domain';
+import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
+import { PaginationOptionsDto } from '../../../../_shared/adapter/dto/pagination-options.dto';
+import { PaginationResultDto } from '../../../../_shared/adapter/dto/pagination-result.dto';
 
 @ApiTags('Users management')
 // @ApiBearerAuth()
@@ -58,7 +55,12 @@ import { Paris } from 'src/paris/domain';
 export class UserController implements IUserController {
   constructor(
     private readonly userService: IUserService,
-  ) {}
+  ) { }
+
+  @Get('tournoi-coupon/:id')
+  getUserTournoiCoupons(@Param() { id }: IDParamDTO): Promise<TournoiCoupon[]> {
+    return this.userService.getUserTournoiCoupons(id);
+  }
 
   @Get("current/:id")
   async getCurrentUser(@Param() { id }: IDParamDTO): Promise<User> {
@@ -68,7 +70,7 @@ export class UserController implements IUserController {
   @Get("profile")
   async getProfile(@Req() req): Promise<User> {
     console.log(req);
-    
+
     return await this.userService.getCurrentUser(req.user);
   }
 
@@ -80,9 +82,10 @@ export class UserController implements IUserController {
     description: 'Fetch all users in the DB',
   })
   @ApiResponse({ type: [DocUserOutputDTO] })
-  async all(): Promise<User[]> {
-    const users = await this.userService.fetchAll();
-    return users?.map((user) => UserFactory.getUser(user));
+  async all(@Query() options: PaginationOptionsDto): Promise<PaginationResultDto<User>> {
+    const result = await this.userService.fetchAll(options);
+    const mappedItems = result.items.map((user) => UserFactory.getUser(user));
+    return new PaginationResultDto(mappedItems, result.total, result.page, result.limit);
   }
 
   @Get('token.signin')
@@ -233,7 +236,7 @@ export class UserController implements IUserController {
     return user;
   }
 
-  
+
   /**
    *
    * @method POST

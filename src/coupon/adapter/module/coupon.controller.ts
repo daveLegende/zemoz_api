@@ -11,6 +11,8 @@ import {
   UploadedFile,
   UseGuards,
 } from '@nestjs/common';
+import { PaginationOptionsDto } from '../../../_shared/adapter/dto/pagination-options.dto';
+import { PaginationResultDto } from '../../../_shared/adapter/dto/pagination-result.dto';
 import {
   ApiTags,
   ApiOperation,
@@ -20,15 +22,15 @@ import {
   ApiConsumes,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { IDParamDTO } from 'adapter/dto';
-import { ICouponController, ICouponService } from 'src/coupon/app/module';
-import { Coupon } from 'src/coupon/domain';
+import { IDParamDTO } from '../../../_shared/adapter/dto';
+import { ICouponController, ICouponService } from '../../../coupon/app/module';
+import { Coupon } from '../../../coupon/domain';
 import { CouponFactory } from '../coupon.factory';
 import { CouponAccountDto, UpdateCouponDTO } from '../dto';
 import { DocCouponOutputDto } from '../dto/doc.output.dto';
-import { UpdateMatchDTO } from 'src/match/adapter/dto';
-import { UserGuard } from 'user/adapter/guard/auth.guard';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { UpdateMatchDTO } from '../../../match/adapter/dto';
+import { UserGuard } from '../../../user/adapter/guard/auth.guard';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 
 @ApiTags('Coupon management')
 @ApiBearerAuth()
@@ -45,8 +47,23 @@ export class CouponController implements ICouponController {
     description: 'Fetch all Coupons in the DB',
   })
   // @ApiResponse({ type: [CouponAccountDTO] })
-  async all(): Promise<Coupon[]> {
-    const coupons = await this.couponService.fetchAll();
+  async all(@Query() options: PaginationOptionsDto): Promise<PaginationResultDto<Coupon>> {
+    const result = await this.couponService.fetchAll(options);
+    const mappedItems = result.items.map((coupon) => CouponFactory.getCoupon(coupon));
+    return new PaginationResultDto(mappedItems, result.total, result.page, result.limit);
+  }
+
+
+  @Get("pending-coupons")
+  // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
+  @ApiConsumes('application/json')
+  @ApiOperation({
+    summary: 'Pending coupons list',
+    description: 'Fetch all pending Coupons in the DB',
+  })
+  // @ApiResponse({ type: [CouponAccountDTO] })
+  async getPendingCoupons(): Promise<Coupon[]> {
+    const coupons = await this.couponService.getPendingCoupons();
     return coupons?.map((coupon) => CouponFactory.getCoupon(coupon));
   }
 

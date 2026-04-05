@@ -1,4 +1,4 @@
-import { IGenericRepository } from "src/igeneric.interface";
+import { IGenericRepository } from "../../igeneric.interface";
 import { Transaction } from "./transaction.model";
 
 export abstract class ITransactionRepository {

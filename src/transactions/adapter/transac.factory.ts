@@ -1,7 +1,7 @@
 import { Transaction } from "../domain";
 import { ICreateTransactionDTO, IUpdateTransactionDTO } from "../app/dto";
-import { User } from "user/domain";
-import { Admin } from "src/admin/domain";
+import { User } from "../../user/domain";
+import { Admin } from "../../admin/domain";
 
 export abstract class TransactionFactory {
     static async create(data: ICreateTransactionDTO, admin: Admin, user: User): Promise<Transaction> {

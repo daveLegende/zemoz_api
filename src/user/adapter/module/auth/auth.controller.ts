@@ -1,11 +1,8 @@
 import { BadRequestException, Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SigninAccoutDTO } from 'user/adapter/dto';
-import { ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { OtpAccountDto, SendOtpDTo, VerifyOtpDTo } from 'src/otp/adapter/dto';
-import { OtpFactory } from 'src/otp/adapter/otp.factory';
-import { Otp } from 'src/otp/domain';
-import { User } from 'user/domain';
+import { SigninAccoutDTO } from '../../dto';
+import { SendOtpDTo, VerifyOtpDTo } from '../../../../otp/adapter/dto';
+import { User } from '../../../domain';
 
 @Controller('auth')
 export class AuthController {

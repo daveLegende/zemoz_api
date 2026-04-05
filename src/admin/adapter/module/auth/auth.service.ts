@@ -1,11 +1,10 @@
 import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { IAdminService } from 'src/admin/app/module';
-import { Admin, IAdminRepository } from 'src/admin/domain';
-import { HashFactory } from '../../guard/hash.factory';
+import { IAdminService } from '../../../app/module';
+import { Admin, IAdminRepository } from '../../../domain';
 import { AdminFactory } from '../../admin.factory';
 import { AdminAccountDto } from '../../dto';
-import * as bcrypt from 'bcrypt';
+import { HashFactory } from '../../guard/hash.factory';
 
 @Injectable()
 export class AdminAuthService {
@@ -22,15 +21,15 @@ export class AdminAuthService {
       where: {email: email}
     });
     if (!admin) {
-      throw new NotFoundException("Aucun admin trouvé");
+      throw new UnauthorizedException("Email incorrect");
     }
     console.log('--------------------------'+admin.password);
     
 
-    const isPasswordValid = await bcrypt.compare(password, admin.password);
+    const isPasswordValid = await HashFactory.isRightPwd(password, admin.password);
     if (!isPasswordValid) {
-        console.log(`Invalid password for admin: ${email}`);
-        throw new UnauthorizedException('Invalid credentials');
+        // console.log(`Invalid password for admin: ${email}`);
+        throw new UnauthorizedException('Mot de passe incorrect');
     }
 
     return admin;
@@ -94,7 +93,7 @@ export class AdminAuthService {
         await AdminFactory.create(data),
       );
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::AdminService.register');
+      this.logger.error(error.message, 'ERROR::AdminAuthService.register');
       throw error;
     }
   }

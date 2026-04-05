@@ -11,8 +11,8 @@ import {
 import {
   IForgotPasswordDTO,
   ISigninUserDTO,
-} from 'user/app/dto/auth.input.dto';
-import { SexEnum } from 'user/domain/user.enum';
+} from '../../app/dto/auth.input.dto';
+import { SexEnum } from '../../domain/user.enum';
 
 export class UserAccoutDTO {
   @ApiProperty({
@@ -341,8 +341,9 @@ export class DeleteUserBetDTO {
 
   @ApiProperty({
     type: String,
-    name: 'id',
-    description: 'id of user',
+    name: 'userId',
+    description: 'ID de l\'utilisateur',
+    example: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
   })
   @IsString()
   userId: string;
@@ -354,7 +355,8 @@ export class DeleteUserTicketDTO {
   @ApiProperty({
     type: String,
     name: 'id',
-    description: 'id of ticket',
+    description: 'ID du ticket',
+    example: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
   })
   // @IsUUID()
   @IsString()
@@ -362,8 +364,9 @@ export class DeleteUserTicketDTO {
 
   @ApiProperty({
     type: String,
-    name: 'id',
-    description: 'id of user',
+    name: 'userId',
+    description: 'ID de l\'utilisateur',
+    example: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
   })
   @IsString()
   userId: string;

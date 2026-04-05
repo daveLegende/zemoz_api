@@ -1,6 +1,6 @@
-import { ITimestamp } from "domain/interface";
+import { ITimestamp } from "../../_shared/domain/interface";
 import { RoleArbitre } from "./arbitre.enum";
-import { Match } from "src/match/domain";
+import { Match } from "../../match/domain";
 
 export class Arbitre extends ITimestamp {
     id: string;

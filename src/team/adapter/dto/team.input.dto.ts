@@ -6,7 +6,7 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import { Player } from 'src/player/domain';
+import { Player } from '../../../player/domain';
 
 export class TeamAccoutDTO {
   @ApiProperty({
@@ -22,6 +22,7 @@ export class TeamAccoutDTO {
     name: 'coach',
     description: 'nom du coach',
   })
+  @IsOptional()
   @IsString()
   coach: string;
 
@@ -30,6 +31,7 @@ export class TeamAccoutDTO {
     name: 'commune',
     description: 'Commune de team',
   })
+  @IsOptional()
   @IsString()
   commune: string;
 
@@ -74,11 +76,12 @@ export class TeamAccoutDTO {
   butConcedes?: number;
 
   @ApiProperty({
-    type: Player,
-    isArray: true,
+    type: [Object],
     name: 'joueurs',
     description: 'Les joueurs de l\'équipe',
+    required: false
   })
+  @IsOptional()
   @IsArray()
   joueurs: Player[];
 

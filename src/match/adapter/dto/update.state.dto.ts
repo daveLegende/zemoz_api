@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsUUID, IsEnum, IsNumber, ValidateNested, IsOptional } from 'class-validator';
-import { EventType, MatchState } from 'src/match/domain';
+import { EventType, MatchState } from '../../../match/domain';
 import { OddsDTO } from './odds.dto';
 import { Type } from 'class-transformer';
 
@@ -72,6 +72,43 @@ export class UpdateStateDto {
     })
     @IsNumber()
     awayScore: number;
+}
+
+
+export class UpdateMatchPenaltyStateDto {
+    @ApiProperty({
+        type: String,
+        name: 'id',
+        description: 'ID de Match',
+    })
+    @IsString()
+    @IsUUID()
+    id: string;
+}
+
+export class UpdateMatchPenaltyScoreDto {
+    @ApiProperty({
+        type: String,
+        name: 'id',
+        description: 'ID de Match',
+    })
+    @IsString()
+    @IsUUID()
+    id: string;
+
+    @ApiProperty({
+        type: Number,
+        name: 'homePenalty',
+    })
+    @IsNumber()
+    homePenalty: number;
+
+    @ApiProperty({
+        type: Number,
+        name: 'awayPenalty',
+    })
+    @IsNumber()
+    awayPenalty: number;
 }
 
 

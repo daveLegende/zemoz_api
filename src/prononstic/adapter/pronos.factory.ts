@@ -1,7 +1,7 @@
-import { Match } from "src/match/domain";
+import { Match } from "../../match/domain";
 import { ICreatePronosDTO, IUpdatePronosDTO } from "../app/dto";
 import { Prononstic } from '../domain'
-import { User } from "user/domain";
+import { User } from "../../user/domain";
 
 
 export abstract class PrononsticFactory {

@@ -20,10 +20,10 @@ import {
   ApiConsumes,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { IDParamDTO } from 'adapter/dto';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
-import { IParisController, IParisService } from 'src/paris/app/module';
-import { Paris } from 'src/paris/domain';
+import { IDParamDTO } from '../../../_shared/adapter/dto/param.dto';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
+import { IParisController, IParisService } from '../../../paris/app/module';
+import { Paris } from '../../../paris/domain';
 import { ParisAccountDto, UpdateParisDTO } from '../dto';
 import { ParisFactory } from '../paris.factory';
 import { DocParisOutputDto } from '../dto/doc.output.dto';

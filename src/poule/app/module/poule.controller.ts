@@ -1,9 +1,11 @@
 import { IIDParamDTO } from 'app/dto';
-import { Poule } from 'src/poule/domain';
+import { Poule } from '../../domain';
 import { ICreatePouleDTO, IUpdatePouleDTO } from '../dto';
+import { PaginationOptionsDto } from "../../../_shared/adapter/dto/pagination-options.dto";
+import { PaginationResultDto } from "../../../_shared/adapter/dto/pagination-result.dto";
 
 export abstract class IPouleController {
-  abstract all(): Promise<Poule[]>;
+  abstract all(options: PaginationOptionsDto): Promise<PaginationResultDto<Poule>>;
 
   abstract show(param: IIDParamDTO): Promise<Poule>;
 

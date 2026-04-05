@@ -1,15 +1,32 @@
-import { CategoryName, OddsClass } from "src/bet/domain";
+import { OddsDto } from "../../../bet/adapter/dto";
+import { CategoryName, OddsClass } from "../../../bet/domain";
 
 export interface ICreateBetDTO {
     
   category: CategoryName;
 
-  odds: OddsClass;
+  odds: OddsDto;
 
-  match: string;
+  match?: string;
+
+  competitionId?: string;
 
 }
 
 export interface IUpdateBetDTO extends Partial<ICreateBetDTO> {
   id: string;
 }
+
+
+export interface ICreateMultipleBetsDto {
+  matchId?: string;
+
+  competitionId?: string;
+  
+  bets: ICreateBetDTO[];
+}
+
+export interface IUpdateBetDTO extends Partial<ICreateBetDTO> {
+  id: string;
+}
+

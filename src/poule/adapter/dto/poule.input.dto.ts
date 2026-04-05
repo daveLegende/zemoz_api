@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
 import { IsArray, IsString, IsUUID } from "class-validator";
-import { Team } from "src/team/domain";
+import { Team } from "../../../team/domain";
 
 export class PouleAccountDto {
     @ApiProperty({
@@ -13,10 +13,10 @@ export class PouleAccountDto {
     name: string;
 
     @ApiProperty({
-        type: String,
-        isArray: true,
+        type: [String],
         name: 'equipes',
-        description: 'Quatre équipes',
+        description: 'Liste des IDs des 4 équipes',
+        example: ['d290f1ee-6c54-4b01-90e6-d701748f0851', 'a123f1ee-6c54-4b01-90e6-d701748f0852'],
     })
     @IsArray()
     equipes: string[];
@@ -24,11 +24,11 @@ export class PouleAccountDto {
 
 export class UpdatePouleDTO extends PartialType(PouleAccountDto) {
     @ApiProperty({
-      type: String,
-      name: 'id',
-      description: 'ID de team',
+        type: String,
+        name: 'id',
+        description: 'ID de team',
     })
     @IsString()
     @IsUUID()
     id: string;
-  }
+}

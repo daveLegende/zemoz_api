@@ -6,10 +6,10 @@ import {
     NotFoundException,
   } from '@nestjs/common';
 import { OtpAccountDto, UpdateOtpDTO } from '../dto';
-import { IOtpService } from 'src/otp/app/module';
-import { IOtpRepository, Otp } from 'src/otp/domain';
+import { IOtpService } from '../../../otp/app/module';
+import { IOtpRepository, Otp } from '../../../otp/domain';
 import { OtpFactory } from '../otp.factory';
-import { TwilioService } from 'src/twilio/twilio.service';
+import { TwilioService } from '../../../twilio/twilio.service';
   
   @Injectable()
   export class OtpService implements IOtpService {

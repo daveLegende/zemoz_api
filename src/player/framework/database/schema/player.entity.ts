@@ -1,8 +1,7 @@
 import { Column, Entity, Index, JoinColumn, JoinTable, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { ATimestamp } from 'framework/timestamp.abstract';
-import { Player } from 'src/player/domain';
-import { Team } from 'src/team/domain';
-import { TeamEntity } from 'src/team/framework/database/schema/team.entity';
+import { ATimestamp } from '../../../../_shared/framework/timestamp.abstract';
+import { Player } from '../../../../player/domain';
+import { TeamEntity } from '../../../../team/framework/database/schema/team.entity';
 
 @Entity('players')
 // @Index(['email'], { unique: true, where: `deleted_at IS NULL` })
@@ -11,25 +10,22 @@ export class PlayerEntity extends ATimestamp implements Player {
     id: string;
 
     @Column()
-    firstname: string;
-
-    @Column()
-    lastname: string;
+    name: string;
 
     @Column({ nullable: true, default: 18 })
     age: number;
 
-    @Column()
-    phone: string;
+    @Column({ nullable: true })
+    phone?: string;
 
     @Column({ nullable: true, default: 0 })
-    buts: number;
+    buts?: number;
 
     @Column({ nullable: true, default: 0 })
-    passes: number;
+    passes?: number;
 
     @Column({ nullable: true })
-    avatar: string;
+    avatar?: string;
 
     @ManyToOne(() => TeamEntity, (team) => team.joueurs)
     @JoinColumn({name: "team"})

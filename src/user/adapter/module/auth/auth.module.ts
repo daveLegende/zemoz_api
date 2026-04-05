@@ -4,11 +4,11 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from './auth.controller';
-import { JwtStrategy } from 'config/strategy';
-import { UserRepositoryModule } from 'user/framework/database/user.repository.module';
+import { JwtStrategy } from '../../../../_shared/config/strategy';
+import { UserRepositoryModule } from '../../../framework/database/user.repository.module';
 import { UserModule } from '../user';
-import { OtpRepositoryModule } from 'src/otp/framework/database/otp.repository.module';
-import { TwilioModule } from 'src/twilio/twilio.module';
+import { OtpRepositoryModule } from '../../../../otp/framework/database/otp.repository.module';
+import { TwilioModule } from '../../../../twilio/twilio.module';
 
 @Module({
   imports: [

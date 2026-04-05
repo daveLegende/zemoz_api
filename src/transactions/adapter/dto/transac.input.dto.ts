@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
 import { IsArray, IsDate, IsEnum, IsInt, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
-import { TransactionType } from "src/transactions/domain/";
+import { TransactionType } from "../../domain";
 
 export class TransactionAccountDto {
 
@@ -41,6 +41,10 @@ export class TransactionAccountDto {
     @IsOptional()
     @IsString()
     user?: string;
+
+    @ApiProperty({ description: 'mot de passe de l\'admin', type: String })
+    @IsString()
+    pass: string;
 }
 
 export class UpdateTransactionDTO extends PartialType(TransactionAccountDto) {

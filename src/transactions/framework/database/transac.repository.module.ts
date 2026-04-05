@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ITransactionRepository } from 'src/transactions/domain';
+import { ITransactionRepository } from '../../domain';
 import { TransactionEntity } from './schema/transac.entity';
 import { TransactionRepository } from './transac.repository';
 

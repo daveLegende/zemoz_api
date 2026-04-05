@@ -5,7 +5,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { UserFactory } from 'user/adapter/user.factory';
+import { UserFactory } from '../../user.factory';
 import {
   ChangePassAccountDTO,
   DeleteUserBetDTO,
@@ -16,22 +16,22 @@ import {
   UpdateUserDTO,
   UserAccoutDTO,
   UserRegisterDTO,
-} from 'user/adapter/dto/user.input.dto';
-import { IUserService } from 'user/app/module/user';
-import { User } from 'user/domain';
-import { IUserRepository } from 'user/domain/data.abstract';
-import { ForgotPass, IForgotPassRepository } from 'src/forgotpass/domain';
-import { ForgotPassAccountDto } from 'src/forgotpass/adapter/dto';
-import { ForgotPassFactory } from 'src/forgotpass/adapter/fgp.factory';
-import { IReinitialisePassDTO, IChangePasswordDTO } from 'user/app/dto';
-import { HashFactory } from 'user/adapter/guard/hash.factory';
-import { ITicketRepository, Ticket } from 'src/ticket/domain';
-import { DocUserOutputDTO } from 'user/adapter/dto';
-import { Coupon } from 'src/coupon/domain';
-import { ICouponRepository } from 'src/coupon/domain/data.abstract';
-import { CouponFactory } from 'src/coupon/adapter/coupon.factory';
-import { Paris } from 'src/paris/domain';
-import { IParisRepository } from 'src/paris/domain/data.abstract';
+} from '../../dto/user.input.dto';
+import { AuthService } from '../auth/auth.service';
+import { IUserService } from '../../../app/module/user';
+import { User } from '../../../domain';
+import { PaginationOptionsDto } from '../../../../_shared/adapter/dto/pagination-options.dto';
+import { PaginationResultDto } from '../../../../_shared/adapter/dto/pagination-result.dto';
+import { IUserRepository } from '../../../domain/data.abstract';
+import { HashFactory } from '../../guard/hash.factory';
+import { ITicketRepository, Ticket } from '../../../../ticket/domain';
+import { Coupon } from '../../../../coupon/domain';
+import { ICouponRepository } from '../../../../coupon/domain/data.abstract';
+import { CouponFactory } from '../../../../coupon/adapter/coupon.factory';
+import { Paris } from '../../../../paris/domain';
+import { IParisRepository } from '../../../../paris/domain/data.abstract';
+import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
+import { ITournoiCouponRepository } from '../../../../tournoiCoupon/domain/data.abstract';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -41,11 +41,17 @@ export class UserService implements IUserService {
     private parisRepository: IParisRepository,
     private ticketRepository: ITicketRepository,
     private couponRepository: ICouponRepository,
-  ) {}
+    private tournoiCouponRepository: ITournoiCouponRepository,
+  ) { }
 
-  async fetchAll(): Promise<User[]> {
+  async fetchAll(options: PaginationOptionsDto): Promise<PaginationResultDto<User>> {
     try {
-      return await this.userRepository.users.find();
+      const [users, total] = await this.userRepository.users.findAndCount({
+        skip: options.skip,
+        take: options.limit,
+        order: { createdAt: 'DESC' }
+      });
+      return new PaginationResultDto(users, total, options.page, options.limit);
     } catch (error) {
       this.logger.error(error.message, 'ERROR::UserService.fetchAll');
       throw error;
@@ -133,7 +139,7 @@ export class UserService implements IUserService {
     }
   }
 
-  
+
   async fetchByEmail(email: string): Promise<User> {
     try {
       const user = await this.userRepository.users.findOne({
@@ -147,7 +153,7 @@ export class UserService implements IUserService {
       return user;
     } catch (error) {
       this.logger.error(error.message, 'ERROR::UserService.fetchByEmail');
-      return error;
+      throw error;
     }
   }
 
@@ -164,16 +170,16 @@ export class UserService implements IUserService {
       return user;
     } catch (error) {
       this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      throw error;
     }
   }
 
-  
+
   async reinitialisePass(data: ReinitialisePassAccountDTO): Promise<User> {
     try {
-      const { email, password, confirm  } = data;
+      const { email, password, confirm } = data;
 
-      const user = await this.userRepository.users.findOneBy({email});
+      const user = await this.userRepository.users.findOneBy({ email });
 
       if (password.length < 6 || !password || !confirm || !email) {
         throw new BadRequestException("Données invalides")
@@ -194,19 +200,19 @@ export class UserService implements IUserService {
 
       return user;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      this.logger.error(error.message, 'ERROR::UserService.reinitialisePass');
+      throw error;
     }
   }
 
 
   async changePass(data: ChangePassAccountDTO): Promise<User> {
     try {
-      const { id, oldpass, newpass, confirm  } = data;
+      const { id, oldpass, newpass, confirm } = data;
 
       const userE = await this.userRepository.users.findOneByID(id);
 
-      if (newpass.length < 6 || !oldpass|| !newpass || !confirm) {
+      if (newpass.length < 6 || !oldpass || !newpass || !confirm) {
         throw new BadRequestException("Données invalides")
       }
       if (!userE) {
@@ -230,8 +236,8 @@ export class UserService implements IUserService {
 
       return userE;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      this.logger.error(error.message, 'ERROR::UserService.changePass');
+      throw error;
     }
   }
 
@@ -243,20 +249,20 @@ export class UserService implements IUserService {
       if (!user) {
         throw new NotFoundException("Utilisateur non trouvé");
       }
-      console.log("wsugsdhfligywsilhvi "+user);
-      
+      console.log("wsugsdhfligywsilhvi " + user);
+
       const tickets = await this.ticketRepository.tickets.find({
-        where: { 
+        where: {
           user: { id: user.id },
           isDeleted: false,
-       },
+        },
         relations: { user: true }
       });
 
       return tickets;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      this.logger.error(error.message, 'ERROR::UserService.getUserTickets');
+      throw error;
     }
   }
 
@@ -270,10 +276,10 @@ export class UserService implements IUserService {
       }
       const ticket = await this.ticketRepository.tickets.findOne(
         {
-          where: { 
+          where: {
             id: id,
             user: { id: user.id },
-        },
+          },
           relations: { user: true }
         }
       );
@@ -295,15 +301,15 @@ export class UserService implements IUserService {
       if (!user) {
         throw new NotFoundException("Utilisateur non trouvé");
       }
-      console.log("wsugsdhfligywsilhvi "+user);
-      
+      // console.log("wsugsdhfligywsilhvi " + user);
+
       const coupons = await this.couponRepository.coupons.find({
-        where: { 
+        where: {
           user: { id: user.id },
           isDeleted: false,
-       },
-        relations: { 
-          user: true, 
+        },
+        relations: {
+          user: true,
           couponBets: {
             bet: {
               match: {
@@ -317,8 +323,8 @@ export class UserService implements IUserService {
 
       return coupons;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      this.logger.error(error.message, 'ERROR::UserService.getUserBets');
+      throw error;
     }
   }
 
@@ -329,21 +335,45 @@ export class UserService implements IUserService {
       if (!user) {
         throw new NotFoundException("Utilisateur non trouvé");
       }
-      
+
       const paris = await this.parisRepository.paris.find({
-        where: { 
+        where: {
           user: { id: user.id } as User,
           // isDeleted: false,
-       },
-        relations: { 
+        },
+        relations: {
           user: true,
         }
       });
 
       return paris;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      this.logger.error(error.message, 'ERROR::UserService.getUserParis');
+      throw error;
+    }
+  }
+
+  async getUserTournoiCoupons(id: string): Promise<TournoiCoupon[]> {
+    try {
+      const user = await this.userRepository.users.findOneByID(id);
+
+      if (!user) {
+        throw new NotFoundException("Utilisateur non trouvé");
+      }
+
+      const tournoiCoupons = await this.tournoiCouponRepository.tournoiCoupons.find({
+        where: {
+          user: { id: user.id } as User,
+        },
+        relations: {
+          user: true,
+        }
+      });
+
+      return tournoiCoupons;
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::UserService.getUserTournoiCoupons');
+      throw error;
     }
   }
 
@@ -357,10 +387,10 @@ export class UserService implements IUserService {
       }
       const coupon = await this.couponRepository.coupons.findOne(
         {
-          where: { 
+          where: {
             id: id,
             user: { id: user.id },
-        },
+          },
           relations: { user: true }
         }
       );
@@ -392,8 +422,8 @@ export class UserService implements IUserService {
 
       return user;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      this.logger.error(error.message, 'ERROR::UserService.getCurrentUser');
+      throw error;
     }
   }
 }

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { IArbitreRepository } from 'src/arbitre/domain';
+import { IArbitreRepository } from '../../domain';
 import { ArbitreRepository } from './arbitre.repository';
 import { ArbitreEntity } from './schema/arbitre.entity';
 

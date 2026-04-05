@@ -1,7 +1,5 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
-import { Type } from "class-transformer";
 import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString, IsUUID, Min, ValidateNested } from "class-validator";
-import { CategoryName } from "src/paris/domain";
 
 
 // export class OddsDto {

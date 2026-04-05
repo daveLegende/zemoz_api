@@ -1,6 +1,6 @@
-import { IIDParamDTO } from 'app/dto';
+import { IIDParamDTO } from '../../../_shared/app/dto';
 import { ICreateForgotPassDTO, IUpdateForgotPassDTO } from '../dto';
-import { ForgotPass } from 'src/forgotpass/domain';
+import { ForgotPass } from '../../../forgotpass/domain';
 
 export abstract class IForgotPassController {
   abstract all(): Promise<ForgotPass[]>;

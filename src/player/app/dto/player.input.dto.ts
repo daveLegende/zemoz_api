@@ -1,11 +1,9 @@
 export interface ICreatePlayerDTO {
-  firstname: string;
-
-  lastname: string;
+  name: string;
 
   age?: number;
 
-  phone: string;
+  phone?: string;
   
   avatar?: string;
 

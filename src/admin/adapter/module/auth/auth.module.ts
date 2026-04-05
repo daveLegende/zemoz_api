@@ -2,13 +2,13 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { JwtStrategy } from 'config/strategy';
-import { AdminRepositoryModule } from 'src/admin/framework/database/admin.repository.module';
-import { TwilioModule } from 'src/twilio/twilio.module';
+import { JwtStrategy } from '../../../../_shared/config/strategy';
+import { AdminRepositoryModule } from '../../../framework/database/admin.repository.module';
+import { TwilioModule } from '../../../../twilio/twilio.module';
 import { AdminModule } from '../admin';
 import { AuthController } from './auth.controller';
 import { AdminAuthService } from './auth.service';
-import { UserRepositoryModule } from 'user/framework/database/user.repository.module';
+import { UserRepositoryModule } from '../../../../user/framework/database/user.repository.module';
 
 @Module({
   imports: [

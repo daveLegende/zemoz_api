@@ -4,11 +4,14 @@ import {
     Logger,
     NotFoundException,
   } from '@nestjs/common';
-import { IPlayerService } from 'src/player/app/module';
-import { IPlayerRepository, Player } from 'src/player/domain';
+import { IPlayerService } from '../../app/module';
+import { IPlayerRepository, Player } from '../../domain';
 import { PlayerAccoutDTO, UpdatePlayerDTO } from '../dto';
 import { PlayerFactory } from '../player.factory';
-import { ITeamRepository } from 'src/team/domain';
+import { ITeamRepository } from '../../../team/domain';
+import { PaginationOptionsDto } from '../../../_shared/adapter/dto/pagination-options.dto';
+import { PaginationResultDto } from '../../../_shared/adapter/dto/pagination-result.dto';
+import { Express } from 'express';
   
   @Injectable()
   export class PlayerService implements IPlayerService {
@@ -18,11 +21,15 @@ import { ITeamRepository } from 'src/team/domain';
       private teamRepository: ITeamRepository,
     ) {}
   
-    async fetchAll(): Promise<Player[]> {
+    async fetchAll(options: PaginationOptionsDto): Promise<PaginationResultDto<Player>> {
       try {
-        return await this.playerRepository.players.find({
-          relations: { team: true }
+        const [players, total] = await this.playerRepository.players.findAndCount({
+          skip: options.skip,
+          take: options.limit,
+          relations: { team: true },
+          order: { name: 'ASC' }
         });
+        return new PaginationResultDto(players, total, options.page, options.limit);
       } catch (error) {
         this.logger.error(error.message, 'ERROR::playerService.fetchAll');
         throw error;
@@ -51,9 +58,9 @@ import { ITeamRepository } from 'src/team/domain';
   
     async add(data: PlayerAccoutDTO): Promise<Player> {
       try {
-        const { phone, team } = data;
+        const { name, team } = data;
         const existed = await this.playerRepository.players.findOne({
-          where: { phone: phone },
+          where: { name: name },
             relations: { team: true }
         });
         if (existed)
@@ -72,14 +79,17 @@ import { ITeamRepository } from 'src/team/domain';
   
     async edit(data: UpdatePlayerDTO): Promise<Player> {
       try {
-        const { id } = data;
+        const { id, team } = data;
         const player = id && (await this.playerRepository.players.findOne({
           where: { id: id },
             relations: { team: true }
         }));
-        if (player) {
+        const teamExisted = id && (await this.teamRepository.teams.findOne({
+          where: { id: team },
+        }));
+        if (player && teamExisted) {
           return await this.playerRepository.players.update(
-            PlayerFactory.update(player, data),
+            PlayerFactory.update(player, data, teamExisted),
           );
         }
         throw new NotFoundException();

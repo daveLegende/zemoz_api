@@ -1,5 +1,5 @@
-import { Otp } from "src/otp/domain";
-import { ICreateOtpDTO, IUpdateOtpDTO } from "../dto";
+import { Otp } from "../../../otp/domain";
+import { ICreateOtpDTO } from "../dto";
 
 export abstract class IOtpService {
   abstract add(data: ICreateOtpDTO): Promise<Otp>;

@@ -10,6 +10,12 @@ yarn-error.log*
 
 # Environment variables
 .env
+.dev.env
+.prod.env
+.test.env
+
+# upload images
+upload/
 
 # Debugging output
 npm-debug.log*

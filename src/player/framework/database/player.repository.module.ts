@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PlayerEntity } from './schema/player.entity';
-import { IPlayerRepository } from 'src/player/domain';
+import { IPlayerRepository } from '../../domain';
 import { PlayerRepository } from './player.repository';
 
 

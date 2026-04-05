@@ -11,6 +11,8 @@ import {
   UploadedFile,
   UseGuards,
 } from '@nestjs/common';
+import { PaginationOptionsDto } from '../../../_shared/adapter/dto/pagination-options.dto';
+import { PaginationResultDto } from '../../../_shared/adapter/dto/pagination-result.dto';
 import {
   ApiTags,
   ApiOperation,
@@ -20,32 +22,27 @@ import {
   ApiConsumes,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { IDParamDTO } from 'adapter/dto';
-import { IBetController, IBetService } from 'src/bet/app/module';
-import { Bet } from 'src/bet/domain';
+import { IDParamDTO } from '../../../_shared/adapter/dto';
+import { IBetController, IBetService } from '../../../bet/app/module';
+import { Bet } from '../../../bet/domain';
 import { BetFactory } from '../bet.factory';
 import { BetAccountDto, UpdateBetDTO } from '../dto';
 import { DocBetOutputDto } from '../dto/doc.output.dto';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 
 @ApiTags('Bet management')
 @UseGuards(AdminGuard)
 @ApiBearerAuth()
 @Controller('bets')
 export class BetController implements IBetController {
-  constructor(private readonly betService: IBetService) {}
+  constructor(private readonly betService: IBetService) { }
 
-  @Get()
-  // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
-  @ApiConsumes('multipart/form-data', 'application/json')
-  @ApiOperation({
-    summary: 'Bets list',
-    description: 'Fetch all Bets in the DB',
-  })
-  // @ApiResponse({ type: [BetAccountDTO] })
-  async all(): Promise<Bet[]> {
-    const bets = await this.betService.fetchAll();
-    return bets?.map((bet) => BetFactory.getBet(bet));
+  async all(@Query() options: PaginationOptionsDto): Promise<PaginationResultDto<Bet>> {
+    const result = await this.betService.fetchAll(options);
+    
+    const mappedItems = result.items?.map((bet) => BetFactory.getBet(bet));
+    
+    return new PaginationResultDto(mappedItems, result.total, result.page, result.limit);
   }
 
 

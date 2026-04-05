@@ -1,4 +1,4 @@
-import { Otp } from "src/otp/domain";
+import { Otp } from "../../../domain";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('otp')

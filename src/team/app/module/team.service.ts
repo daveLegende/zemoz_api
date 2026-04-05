@@ -1,16 +1,18 @@
-import { Team } from "src/team/domain";
+import { Team } from "../../domain";
 import { ICreateTeamDTO, IUpdateTeamDTO } from "../dto";
-import { ICreatePlayerDTO } from "src/player/app/dto";
+import { Express } from "express";
+import { PaginationOptionsDto } from "../../../_shared/adapter/dto/pagination-options.dto";
+import { PaginationResultDto } from "../../../_shared/adapter/dto/pagination-result.dto";
 
 
 export abstract class ITeamService {
-  abstract add(data: ICreateTeamDTO): Promise<Team>;
+  abstract add(data: ICreateTeamDTO, file?: Express.Multer.File): Promise<Team>;
 
-  abstract fetchAll(): Promise<Team[]>;
+  abstract fetchAll(options: PaginationOptionsDto): Promise<PaginationResultDto<Team>>;
 
   abstract fetchOne(id: string): Promise<Team>;
 
-  abstract edit(data: IUpdateTeamDTO): Promise<Team>;
+  abstract edit(data: IUpdateTeamDTO, file?: Express.Multer.File): Promise<Team>;
 
   abstract setState(id: string): Promise<boolean>;
 

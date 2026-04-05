@@ -8,21 +8,14 @@ import {
 export class DocPlayerOutputDTO {
     @ApiProperty({ type: String, name: 'id' })
     id: string;
-    @ApiProperty({
-        type: String,
-        name: 'firstname',
-        description: 'Le nom de famille',
-    })
-    @IsString()
-    firstname: string;
 
     @ApiProperty({
         type: String,
-        name: 'lastname',
-        description: 'Prenom du joueur',
+        name: 'name',
+        description: 'nom complet du joueur',
     })
     @IsString()
-    lastname: string;
+    name: string;
 
     @ApiProperty({
         type: Number,

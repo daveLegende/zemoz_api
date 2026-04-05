@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
-import { IsArray, IsEnum, IsNumber, IsString, IsUUID } from "class-validator";
-import { CouponState } from "src/coupon/domain";
+import { IsArray, IsBoolean, IsEnum, IsNumber, IsString, IsUUID } from "class-validator";
+import { CouponState } from "../../../coupon/domain";
 
 export class DocCouponOutputDto {
     @ApiProperty({
@@ -51,4 +51,11 @@ export class DocCouponOutputDto {
     })
     @IsEnum(CouponState)
     etat: CouponState;
+
+    @ApiProperty({
+        type: Boolean,
+        name: 'isPaid',
+    })
+    @IsBoolean()
+    isPaid: boolean;
 }

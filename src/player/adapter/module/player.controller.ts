@@ -11,6 +11,8 @@ import {
     UseInterceptors,
     UploadedFile,
   } from '@nestjs/common';
+import { PaginationOptionsDto } from '../../../_shared/adapter/dto/pagination-options.dto';
+import { PaginationResultDto } from '../../../_shared/adapter/dto/pagination-result.dto';
   import {
     ApiTags,
     ApiBearerAuth,
@@ -22,19 +24,20 @@ import {
     ApiQuery,
   } from '@nestjs/swagger';
   import { FileInterceptor } from '@nestjs/platform-express';
-  import { diskStorage } from 'multer';
-  import { IDParamDTO } from 'adapter/dto';
-  import { BaseConfig } from 'config/base.config';
+  import { memoryStorage } from 'multer';
+  import { Express } from 'express';
+  import { IDParamDTO } from '../../../_shared/adapter/dto';
+  import { BaseConfig } from '../../../_shared/config/base.config';
   import {
     DocUserOutputDTO,
     RegisterAccoutDTO,
-  } from 'user/adapter/dto';
-import { IPlayerController, IPlayerService } from 'src/player/app/module';
-import { Player } from 'src/player/domain';
+  } from '../../../user/adapter/dto';
+import { IPlayerController, IPlayerService } from '../../app/module';
+import { Player } from '../../domain';
 import { PlayerAccoutDTO, UpdatePlayerDTO } from '../dto';
 import { PlayerFactory } from '../player.factory';
 import { DocPlayerOutputDTO } from '../dto/doc.player.dto';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
   
   @ApiTags('players management')
   @ApiBearerAuth()
@@ -42,17 +45,12 @@ import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
   export class PlayerController implements IPlayerController {
     constructor(private readonly playerService: IPlayerService) {}
   
-    @Get()
-    // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
-    @ApiConsumes('multipart/form-data', 'application/json')
-    @ApiOperation({
-      summary: 'players list',
-      description: 'Fetch all players in the DB',
-    })
-    @ApiResponse({ type: [PlayerAccoutDTO] })
-    async all(): Promise<Player[]> {
-      const players = await this.playerService.fetchAll();
-      return players?.map((player) => PlayerFactory.getPlayer(player));
+    async all(@Query() options: PaginationOptionsDto): Promise<PaginationResultDto<Player>> {
+      const result = await this.playerService.fetchAll(options);
+      
+      const mappedItems = result.items?.map((player) => PlayerFactory.getPlayer(player));
+      
+      return new PaginationResultDto(mappedItems, result.total, result.page, result.limit);
     }
 
   
@@ -89,10 +87,7 @@ import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
     // @HasPermission(AccessEnum.CAN_CREATE_USER)
     @UseInterceptors(
       FileInterceptor('avatar', {
-        storage: diskStorage({
-          destination: BaseConfig.setFilePath,
-          filename: BaseConfig.editFileName,
-        }),
+        storage: memoryStorage(), // <= stocke en mémoire pour Cloudinary
         fileFilter: BaseConfig.imageFileFilter,
       }),
     )
@@ -106,8 +101,7 @@ import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
       @Body() data: PlayerAccoutDTO,
       @UploadedFile() file: Express.Multer.File,
     ): Promise<Player> {
-      data.avatar = file?.filename;
-      const player = await this.playerService.add(data);
+      const player = await this.playerService.add(data, file);
       if (player) return PlayerFactory.getPlayer(player);
     }
   
@@ -121,11 +115,8 @@ import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
     // @HasPermission(AccessEnum.CAN_UPDATE_USER)
     @UseInterceptors(
       FileInterceptor('avatar', {
-        storage: diskStorage({
-          destination: BaseConfig.setFilePath,
-          filename: BaseConfig.editFileName,
-        }),
-        fileFilter: BaseConfig.fileFilter,
+        storage: memoryStorage(), // <= stocke en mémoire pour Cloudinary
+        fileFilter: BaseConfig.imageFileFilter,
       }),
     )
     @ApiConsumes('multipart/form-data', 'application/json')
@@ -136,8 +127,7 @@ import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
       @Body() data: UpdatePlayerDTO,
       @UploadedFile() file: Express.Multer.File,
     ): Promise<Player> {
-      data.avatar = file?.filename;
-      return PlayerFactory.getPlayer(await this.playerService.edit(data));
+      return PlayerFactory.getPlayer(await this.playerService.edit(data, file));
     }
   
     @Patch('state/:id')

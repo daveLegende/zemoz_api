@@ -11,6 +11,8 @@ import {
     UseInterceptors,
     UploadedFile,
   } from '@nestjs/common';
+import { PaginationOptionsDto } from '../../../_shared/adapter/dto/pagination-options.dto';
+import { PaginationResultDto } from '../../../_shared/adapter/dto/pagination-result.dto';
   import {
     ApiTags,
     ApiOperation,
@@ -22,31 +24,26 @@ import {
   } from '@nestjs/swagger';
   import { FileInterceptor } from '@nestjs/platform-express';
   import { diskStorage } from 'multer';
-  import { IDParamDTO } from 'adapter/dto';
-  import { BaseConfig } from 'config/base.config';
+  import { IDParamDTO } from '../../../_shared/adapter/dto';
+  import { Express } from 'express';
 import { PouleFactory } from '../poule.factory';
-import { IPouleController, IPouleService } from 'src/poule/app/module';
-import { Poule } from 'src/poule/domain';
-import { UpdatePouleDTO } from 'src/poule/adapter/dto';
+import { IPouleController, IPouleService } from '../../app/module';
+import { Poule } from '../../domain';
+import { UpdatePouleDTO } from '../dto';
 import { DocPouleOutputDto, PouleAccountDto } from '../dto';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
   
   @ApiTags('poules management')
   @Controller('poules')
   export class PouleController implements IPouleController {
     constructor(private readonly pouleService: IPouleService) {}
   
-    @Get()
-    // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
-    @ApiConsumes('multipart/form-data', 'application/json')
-    @ApiOperation({
-      summary: 'poules list',
-      description: 'Fetch all poules in the DB',
-    })
-    // @ApiResponse({ type: [pouleAccountDTO] })
-    async all(): Promise<Poule[]> {
-      const poules = await this.pouleService.fetchAll();
-      return poules?.map((poule) => PouleFactory.getPoule(poule));
+    async all(@Query() options: PaginationOptionsDto): Promise<PaginationResultDto<Poule>> {
+      const result = await this.pouleService.fetchAll(options);
+      
+      const mappedItems = result.items?.map((poule) => PouleFactory.getPoule(poule));
+      
+      return new PaginationResultDto(mappedItems, result.total, result.page, result.limit);
     }
 
   
@@ -136,8 +133,8 @@ import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
       description: 'ID of the user to delete',
     })
     @ApiResponse({ type: Boolean })
-    remove(@Param() { id }: IDParamDTO): Promise<boolean> {
-      return this.pouleService.remove(id);
+    async remove(@Param() { id }: IDParamDTO): Promise<boolean> {
+      return await this.pouleService.remove(id);
     }
   }
   

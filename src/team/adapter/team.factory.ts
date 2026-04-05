@@ -51,7 +51,7 @@ export abstract class TeamFactory {
         butConcedes: team.butConcedes,
         matchJoues: team.matchJoues,
         joueurs: team.joueurs,
-        logo: this.getFileLink(team.logo),
+        logo: team.logo,
         poule: team.poule,
         createdAt: team.createdAt,
         updatedAt: team.updatedAt,

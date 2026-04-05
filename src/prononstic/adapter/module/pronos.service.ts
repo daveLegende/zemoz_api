@@ -4,12 +4,14 @@ import {
     Logger,
     NotFoundException,
   } from '@nestjs/common';
-import { IPrononsticService } from 'src/prononstic/app/module';
-import { IPronosRepository, Prononstic } from 'src/prononstic/domain';
+import { IPrononsticService } from '../../../prononstic/app/module';
+import { IPronosRepository, Prononstic } from '../../../prononstic/domain';
 import { PrononsticAccoutDTO, UpdatePrononsticDTO } from '../dto';
-import { IUserRepository } from 'user/domain';
-import { IMatchRepository } from 'src/match/domain';
+import { IUserRepository } from '../../../user/domain';
+import { IMatchRepository } from '../../../match/domain';
 import { PrononsticFactory } from '../pronos.factory';
+import { PaginationOptionsDto } from '../../../_shared/adapter/dto/pagination-options.dto';
+import { PaginationResultDto } from '../../../_shared/adapter/dto/pagination-result.dto';
   
   @Injectable()
   export class PrononsticService implements IPrononsticService {
@@ -21,11 +23,15 @@ import { PrononsticFactory } from '../pronos.factory';
 
     ) {}
   
-    async fetchAll(): Promise<Prononstic[]> {
+    async fetchAll(options: PaginationOptionsDto): Promise<PaginationResultDto<Prononstic>> {
       try {
-        return await this.pronosRepository.pronos.find({
-          relations: { match: true, user: true }
+        const [pronos, total] = await this.pronosRepository.pronos.findAndCount({
+          skip: options.skip,
+          take: options.limit,
+          relations: { match: true, user: true },
+          order: { createdAt: 'DESC' }
         });
+        return new PaginationResultDto(pronos, total, options.page, options.limit);
       } catch (error) {
         this.logger.error(error.message, 'ERROR::PronosService.fetchAll');
         throw error;

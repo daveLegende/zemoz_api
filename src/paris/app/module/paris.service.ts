@@ -1,4 +1,4 @@
-import { Paris } from "src/paris/domain";
+import { Paris } from "../../domain";
 import { ICreateParisDTO, IUpdateParisDTO } from "../dto";
 
 

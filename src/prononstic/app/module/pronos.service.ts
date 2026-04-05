@@ -1,11 +1,13 @@
-import { Prononstic } from "src/prononstic/domain";
+import { Prononstic } from "../../domain";
 import { ICreatePronosDTO, IUpdatePronosDTO } from "../dto";
+import { PaginationOptionsDto } from "../../../_shared/adapter/dto/pagination-options.dto";
+import { PaginationResultDto } from "../../../_shared/adapter/dto/pagination-result.dto";
 
 
 export abstract class IPrononsticService {
   abstract add(data: ICreatePronosDTO): Promise<Prononstic>;
 
-  abstract fetchAll(): Promise<Prononstic[]>;
+  abstract fetchAll(options: PaginationOptionsDto): Promise<PaginationResultDto<Prononstic>>;
 
   abstract fetchOne(id: string): Promise<Prononstic>;
 

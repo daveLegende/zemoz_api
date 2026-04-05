@@ -1,5 +1,5 @@
-import { IIDParamDTO } from 'app/dto';
-import { Paris } from 'src/paris/domain';
+import { IIDParamDTO } from '../../../_shared/app/dto';
+import { Paris } from '../../domain';
 import { ICreateParisDTO, IUpdateParisDTO } from '../dto';
 
 export abstract class IParisController {

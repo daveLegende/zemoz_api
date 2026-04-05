@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ITeamRepository } from 'src/team/domain';
+import { ITeamRepository } from '../../domain';
 import { TeamEntity } from './schema/team.entity';
 import { TeamRepository } from './team.repository';
 

@@ -17,7 +17,7 @@ export abstract class AdminFactory {
 
         admin.nom = data.nom ?? admin.nom;
         admin.email = data.email ?? admin.email;
-        admin.password = data.password ?? admin.password;
+        // admin.password = data.password ?? admin.password;
     
         return admin;
       }

@@ -1,16 +1,18 @@
 import {
-    Controller,
-    Get,
-    Post,
-    Body,
-    Patch,
-    Param,
-    Query,
-    Delete,
-    UseGuards,
-    UseInterceptors,
-    UploadedFile,
-  } from '@nestjs/common';
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  Delete,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
+import { PaginationOptionsDto } from '../../../_shared/adapter/dto/pagination-options.dto';
+import { PaginationResultDto } from '../../../_shared/adapter/dto/pagination-result.dto';
   import {
     ApiTags,
     ApiOperation,
@@ -21,15 +23,15 @@ import {
     ApiBearerAuth,
   } from '@nestjs/swagger';
   import { FileInterceptor } from '@nestjs/platform-express';
-  import { diskStorage } from 'multer';
-  import { IDParamDTO } from 'adapter/dto';
-  import { BaseConfig } from 'config/base.config';
-import { IInfoController, IInfoService } from 'src/infos/app/module';
+  import { memoryStorage } from 'multer';
+  import { Express } from 'express';
+  import { IDParamDTO } from '../../../_shared/adapter/dto';
+  import { BaseConfig } from '../../../_shared/config/base.config';
+import { IInfoController, IInfoService } from '../../../infos/app/module';
 import { InfoFactory } from '../info.factory';
-import { Info } from 'src/infos/domain';
+import { Info } from '../../../infos/domain';
 import { DocInfoOutputDto, InfoAccountDto, UpdateInfoDTO } from '../dto';
-import {  } from 'user/adapter/guard/auth.guard';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
   
   @ApiTags('infos management')
   @Controller('infos')
@@ -37,16 +39,17 @@ import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
     constructor(private readonly infoService: IInfoService) {}
   
     @Get()
-    // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
-    @ApiConsumes('multipart/form-data', 'application/json')
-    @ApiOperation({
-      summary: 'Infos list',
-      description: 'Fetch all Infos in the DB',
-    })
-    // @ApiResponse({ type: [InfoAccountDTO] })
-    async all(): Promise<Info[]> {
-      const infos = await this.infoService.fetchAll();
-      return infos?.map((info) => InfoFactory.getInfo(info));
+  @ApiConsumes('multipart/form-data', 'application/json')
+  @ApiOperation({
+    summary: 'Infos list',
+    description: 'Fetch all Infos in the DB',
+  })
+  async all(@Query() options: PaginationOptionsDto): Promise<PaginationResultDto<Info>> {
+      const result = await this.infoService.fetchAll(options);
+      
+      const mappedItems = result.items?.map((info) => InfoFactory.getInfo(info));
+      
+      return new PaginationResultDto(mappedItems, result.total, result.page, result.limit);
     }
 
     
@@ -85,10 +88,7 @@ import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
     // @UseGuards(UserGuard)
     @UseInterceptors(
       FileInterceptor('image', {
-        storage: diskStorage({
-          destination: BaseConfig.setFilePath,
-          filename: BaseConfig.editFileName,
-        }),
+        storage: memoryStorage(),
         fileFilter: BaseConfig.imageFileFilter,
       }),
     )
@@ -102,8 +102,7 @@ import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
       @Body() data: InfoAccountDto,
       @UploadedFile() file: Express.Multer.File,
     ): Promise<Info> {
-      data.image = file?.filename;
-      const info = await this.infoService.add(data);
+      const info = await this.infoService.add(data, file);
       if (info) return InfoFactory.getInfo(info);
     }
   
@@ -116,11 +115,8 @@ import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
     // @HasPermission(AccessEnum.CAN_UPDATE_USER)
     @UseInterceptors(
       FileInterceptor('image', {
-        storage: diskStorage({
-          destination: BaseConfig.setFilePath,
-          filename: BaseConfig.editFileName,
-        }),
-        fileFilter: BaseConfig.fileFilter,
+        storage: memoryStorage(),
+        fileFilter: BaseConfig.imageFileFilter,
       }),
     )
     @ApiConsumes('multipart/form-data', 'application/json')
@@ -131,8 +127,7 @@ import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
       @Body() data: UpdateInfoDTO,
       @UploadedFile() file: Express.Multer.File,
     ): Promise<Info> {
-      data.image = file?.filename;
-      return InfoFactory.getInfo(await this.infoService.edit(data));
+      return InfoFactory.getInfo(await this.infoService.edit(data, file));
     }
   
     @Patch('state/:id')

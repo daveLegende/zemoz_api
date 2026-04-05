@@ -1,17 +1,26 @@
-import { AdminEntity } from "src/admin/framework/database/schema/admin.entity";
-import { Transaction } from "src/transactions/domain";
+import { AdminEntity } from "../../../../admin/framework/database/schema/admin.entity";
+import { Transaction, TransactionType } from "../../../domain";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { UserEntity } from "user/framework/database/schema/user.entity";
+import { UserEntity } from "../../../../user/framework/database/schema/user.entity";
+import { ATimestamp } from "../../../../_shared/framework/timestamp.abstract";
 
 @Entity('transactions')
-export class TransactionEntity extends Transaction {
+export class TransactionEntity extends ATimestamp implements Transaction {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
     @Column('decimal')
     amount: number;
 
-    @Column('float')
+    @Column({
+        type: 'enum',
+        enum: TransactionType,
+        nullable: true,
+        default: TransactionType.DEPOT
+    })
+    type: TransactionType;
+
+    @Column({ type: 'float', default: 0 })
     frais?: number;
 
     @Column()

@@ -11,6 +11,8 @@ import {
     UseInterceptors,
     UploadedFile,
   } from '@nestjs/common';
+import { PaginationOptionsDto } from '../../../_shared/adapter/dto/pagination-options.dto';
+import { PaginationResultDto } from '../../../_shared/adapter/dto/pagination-result.dto';
   import {
     ApiTags,
     ApiOperation,
@@ -22,33 +24,29 @@ import {
   } from '@nestjs/swagger';
   import { FileInterceptor } from '@nestjs/platform-express';
   import { diskStorage } from 'multer';
-  import { IDParamDTO } from 'adapter/dto';
-  import { BaseConfig } from 'config/base.config';
-import { UpdateTournoiDTO } from 'src/tournoi/adapter/dto';
-import { Tournoi } from 'src/tournoi/domain';
-import { RegisterAccoutDTO, DocUserOutputDTO } from 'user/adapter/dto';
+  import { Express } from 'express';
+  import { IDParamDTO } from '../../../_shared/adapter/dto';
+  import { BaseConfig } from '../../../_shared/config/base.config';
+import { UpdateTournoiDTO } from '../dto';
+import { Tournoi } from '../../domain';
+import { RegisterAccoutDTO, DocUserOutputDTO } from '../../../user/adapter/dto';
 import { TournoiFactory } from '../tournoi.factory';
-import { ITournoiController, ITournoiService } from 'src/tournoi/app/module';
+import { ITournoiController, ITournoiService } from '../../app/module';
 import { TournoiAccoutDTO } from '../dto';
 import { DocTournoiOutputDTO } from '../dto/doc.tournoi.dto';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
   
 @ApiTags('Tournois management')
 @Controller('tournois')
 export class TournoiController implements ITournoiController {
   constructor(private readonly tournoiService: ITournoiService) {}
 
-  @Get()
-  // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
-  @ApiConsumes('multipart/form-data', 'application/json')
-  @ApiOperation({
-    summary: 'Tournois list',
-    description: 'Fetch all Tournois in the DB',
-  })
-  // @ApiResponse({ type: [TournoiAccountDTO] })
-  async all(): Promise<Tournoi[]> {
-    const tournois = await this.tournoiService.fetchAll();
-    return tournois?.map((tournoi) => TournoiFactory.getTournoi(tournoi));
+  async all(@Query() options: PaginationOptionsDto): Promise<PaginationResultDto<Tournoi>> {
+    const result = await this.tournoiService.fetchAll(options);
+    
+    const mappedItems = result.items?.map((tournoi) => TournoiFactory.getTournoi(tournoi));
+    
+    return new PaginationResultDto(mappedItems, result.total, result.page, result.limit);
   }
 
 

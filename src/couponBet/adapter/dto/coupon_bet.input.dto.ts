@@ -1,28 +1,34 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsEnum, IsString, IsUUID, ValidateNested } from "class-validator";
-import { OddsDto } from "src/bet/adapter/dto";
-import { BetStatus } from "src/couponBet/domain";
+import { BetStatus } from "../../../couponBet/domain";
 
 export class CouponBetAccountDto {
     @ApiProperty({
         type: String,
-        name: 'bet id',
+        name: 'bet',
+        description: 'ID du bet',
+        example: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
     })
     @IsString()
     bet: string;
 
     @ApiProperty({
         type: String,
-        name: 'coupon id',
+        name: 'coupon',
+        description: 'ID du coupon',
+        example: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
     })
     @IsString()
     coupon: string;
-    
-    @ApiProperty({ description: 'Les cotes avec les options', type: OddsDto })
+
+    @ApiProperty({
+        description: 'Options sélectionnées avec leur cote',
+        example: { V1: 1.85, X: 3.2 }, // ou { HOME: 1.85, AWAY: 2.1 }
+    })
     @ValidateNested()
-    @Type(() => OddsDto)
-    selectedOptions: OddsDto;
+    @Type(() => Object) // ou OddsDto si tu as un DTO global pour toutes les options
+    selectedOptions: Record<string, number>;
 
     @ApiProperty({
         enum: BetStatus,
@@ -37,11 +43,11 @@ export class CouponBetAccountDto {
 
 export class UpdateCouponBetDTO extends PartialType(CouponBetAccountDto) {
     @ApiProperty({
-      type: String,
-      name: 'id',
-      description: 'ID',
+        type: String,
+        name: 'id',
+        description: 'ID',
     })
     @IsString()
     @IsUUID()
     id: string;
-  }
+}

@@ -4,14 +4,13 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { IMatchRepository } from 'src/match/domain';
-import { IParisService } from 'src/paris/app/module';
-import { Paris } from 'src/paris/domain';
-import { IParisRepository } from 'src/paris/domain/data.abstract';
+import { IMatchRepository } from '../../../match/domain';
+import { IParisService } from '../../../paris/app/module';
+import { Paris } from '../../../paris/domain';
+import { IParisRepository } from '../../../paris/domain/data.abstract';
 import { ParisAccountDto, UpdateParisDTO } from '../dto';
-import { IUserRepository } from 'user/domain';
+import { IUserRepository } from '../../../user/domain';
 import { ParisFactory } from '../paris.factory';
-import { UserFactory } from 'user/adapter/user.factory';
 
 @Injectable()
 export class ParisService implements IParisService {

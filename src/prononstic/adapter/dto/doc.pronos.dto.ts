@@ -8,7 +8,7 @@ import {
     IsString,
     IsUUID,
 } from 'class-validator';
-import { PronoState } from 'src/prononstic/domain';
+import { PronoState } from '../../domain';
 
 export class DocPrononsticOutputDTO {
   @ApiProperty({

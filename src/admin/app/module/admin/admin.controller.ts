@@ -1,9 +1,13 @@
-import { IIDParamDTO } from 'app/dto';
-import { Admin } from 'src/admin/domain';
-import { ICreateAdminDTO, IUpdateAdminDTO } from '../../dto';
+import { IIDParamDTO } from '../../../../_shared/app/dto';
+import { Admin } from '../../../../admin/domain';
+import { IChangeAdminPasswordDTO, ICreateAdminDTO, IUpdateAdminDTO } from '../../dto';
+import { Coupon } from '../../../../coupon/domain';
+import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
+import { PaginationOptionsDto } from "../../../../_shared/adapter/dto/pagination-options.dto";
+import { PaginationResultDto } from "../../../../_shared/adapter/dto/pagination-result.dto";
 
 export abstract class IAdminController {
-  abstract all(): Promise<Admin[]>;
+  abstract all(options: PaginationOptionsDto): Promise<PaginationResultDto<Admin>>;
 
   abstract show(param: IIDParamDTO): Promise<Admin>;
 
@@ -13,7 +17,15 @@ export abstract class IAdminController {
 
   abstract update(data: IUpdateAdminDTO, file?: any): Promise<Admin>;
 
+  abstract changePassword(data: IChangeAdminPasswordDTO): Promise<boolean>;
+
   abstract setState(param: IIDParamDTO): Promise<boolean>;
 
   abstract remove(param: IIDParamDTO): Promise<boolean>;
+
+  abstract getAllCoupons(): Promise<Coupon[]>;
+
+  abstract getAllTournoiCoupons(): Promise<TournoiCoupon[]>;
+
+  abstract getCompleteFinancialReport(): Promise<any>;
 }

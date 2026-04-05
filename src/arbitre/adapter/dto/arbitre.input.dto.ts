@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
 import { IsEnum, IsOptional, IsString, IsUUID } from "class-validator";
-import { RoleArbitre } from "src/arbitre/domain";
+import { RoleArbitre } from "../../domain";
 
 export class ArbitreAccountDto {
     @ApiProperty({

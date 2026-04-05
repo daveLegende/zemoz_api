@@ -2,11 +2,13 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
 import { IIDParamDTO } from 'app/dto';
-import { Team } from 'src/team/domain';
+import { Team } from '../../domain';
 import { ICreateTeamDTO, IUpdateTeamDTO } from '../dto';
+import { PaginationOptionsDto } from "../../../_shared/adapter/dto/pagination-options.dto";
+import { PaginationResultDto } from "../../../_shared/adapter/dto/pagination-result.dto";
 
 export abstract class ITeamController {
-  abstract all(): Promise<Team[]>;
+  abstract all(options: PaginationOptionsDto): Promise<PaginationResultDto<Team>>;
 
   abstract show(param: IIDParamDTO): Promise<Team>;
 

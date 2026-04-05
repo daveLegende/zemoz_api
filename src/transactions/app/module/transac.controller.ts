@@ -1,13 +1,15 @@
 import { IIDParamDTO } from 'app/dto';
-import { Transaction } from 'src/transactions/domain';
+import { Transaction } from '../../domain';
 import { ICreatePassDTO, ICreateTransactionDTO, IUpdateTransactionDTO } from '../dto';
+import { PaginationOptionsDto } from "../../../_shared/adapter/dto/pagination-options.dto";
+import { PaginationResultDto } from "../../../_shared/adapter/dto/pagination-result.dto";
 
 export abstract class ITransactionController {
-  abstract all(): Promise<Transaction[]>;
+  abstract all(options: PaginationOptionsDto): Promise<PaginationResultDto<Transaction>>;
 
   abstract show(param: IIDParamDTO): Promise<Transaction>;
 
-  abstract create(data: ICreateTransactionDTO, pass: ICreatePassDTO, file?: any): Promise<Transaction>;
+  abstract create(data: ICreateTransactionDTO, file?: any): Promise<Transaction>;
 
   abstract search(data: Partial<Transaction>, file?: any): Promise<Transaction>;
 

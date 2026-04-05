@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { IPouleRepository } from 'src/poule/domain';
+import { IPouleRepository } from '../../domain';
 import { PouleRepository } from './poule.repository';
 import { PouleEntity } from './schema/poule.entity';
 

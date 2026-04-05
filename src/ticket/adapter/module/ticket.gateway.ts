@@ -1,7 +1,7 @@
 import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { UpdateTicketDTO } from '../dto';
-import { ITicketService } from 'src/ticket/app/module';
+import { ITicketService } from '../../app/module';
 
 @WebSocketGateway(81, { transports: ['websocket'] })
 export class TicketGateway {

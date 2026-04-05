@@ -4,11 +4,13 @@ import {
     Logger,
     NotFoundException,
   } from '@nestjs/common';
-import { IPouleService } from 'src/poule/app/module';
-import { IPouleRepository, Poule } from 'src/poule/domain';
+import { IPouleService } from '../../app/module';
+import { IPouleRepository, Poule } from '../../domain';
 import { PouleFactory } from '../poule.factory';
 import { PouleAccountDto, UpdatePouleDTO } from '../dto';
-import { ITeamRepository } from 'src/team/domain';
+import { ITeamRepository } from '../../../team/domain';
+import { PaginationOptionsDto } from '../../../_shared/adapter/dto/pagination-options.dto';
+import { PaginationResultDto } from '../../../_shared/adapter/dto/pagination-result.dto';
   
   @Injectable()
   export class PouleService implements IPouleService {
@@ -18,13 +20,15 @@ import { ITeamRepository } from 'src/team/domain';
       private teamRepository: ITeamRepository
     ) {}
   
-    async fetchAll(): Promise<Poule[]> {
+    async fetchAll(options: PaginationOptionsDto): Promise<PaginationResultDto<Poule>> {
       try {
-        return await this.pouleRepository.poules.find({
-          relations: {
-            equipes: true
-          }
+        const [poules, total] = await this.pouleRepository.poules.findAndCount({
+          skip: options.skip,
+          take: options.limit,
+          relations: { equipes: true },
+          order: { name: 'ASC' }
         });
+        return new PaginationResultDto(poules, total, options.page, options.limit);
       } catch (error) {
         this.logger.error(error.message, 'ERROR::PouleService.fetchAll');
         throw error;
@@ -90,9 +94,14 @@ import { ITeamRepository } from 'src/team/domain';
   
     async remove(id: string): Promise<boolean> {
       try {
-        const poule = await this.pouleRepository.poules.findOneByID(id);
+        // Correction: Utiliser findOne au lieu de findOneByID
+        const poule = await this.pouleRepository.poules.findOne({ 
+          where: { id } 
+        });
+        
         if (poule) {
-          return await this.pouleRepository.poules.remove(poule).then(() => true);
+          await this.pouleRepository.poules.remove(poule);
+          return true;
         }
         return false;
       } catch (error) {

@@ -1,8 +1,6 @@
-import { Team } from "src/team/domain";
 import { ForgotPass } from "../domain";
-import { ICreateForgotPassDTO, IUpdateForgotPassDTO } from "../app/dto";
-import { User } from "user/domain";
-import { HashFactory } from "user/adapter/guard/hash.factory";
+import { ICreateForgotPassDTO } from "../app/dto";
+import { HashFactory } from "../../user/adapter/guard/hash.factory";
 
 export abstract class ForgotPassFactory {
     static async create(data: ICreateForgotPassDTO): Promise<ForgotPass> {

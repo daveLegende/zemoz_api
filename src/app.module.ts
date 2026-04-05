@@ -8,10 +8,10 @@ import * as winston from 'winston';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { HttpExceptionFilter } from 'adapter/exception/http-exception.filter';
+import { HttpExceptionFilter } from './_shared/adapter/exception/http-exception.filter';
 import { UserModule } from './user/adapter/module/user';
 import { AuthModule } from './user/adapter/module/auth';
-import { SeedsModule } from 'framework/seed/seeds.module';
+import { SeedsModule } from './_shared/framework/seed/seeds.module';
 import { PlayerModule } from './player/adapter/module';
 import { TeamModule } from './team/adapter/module';
 import { PouleModule } from './poule/adapter/module';
@@ -32,7 +32,9 @@ import { PasswordModule } from './password/password.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ForgotPassModule } from './forgotpass/adapter/module';
 import { TournoiModule } from './tournoi/adapter/module';
-// import { TasksModule } from './tasks/task.module';
+import { TournoiCouponModule } from './tournoiCoupon/adapter/module';
+import { TournoiCouponBetModule } from './tournoiCouponBet/adapter/module';
+import { MVPModule } from './mvp/adapter/module';
 
 @Module({
   imports: [
@@ -57,6 +59,9 @@ import { TournoiModule } from './tournoi/adapter/module';
     PasswordModule,
     ForgotPassModule,
     TournoiModule,
+    TournoiCouponModule,
+    TournoiCouponBetModule,
+    MVPModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -67,6 +72,7 @@ export class IAppModule {}
   imports: [
     ConfigModule.forRoot({
       envFilePath: '.dev.env', //.dev.env, .prod.env
+      // envFilePath: '.prod.env', //.dev.env, .prod.env
       expandVariables: true,
       isGlobal: true,
     }),

@@ -9,6 +9,8 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
+import { PaginationOptionsDto } from '../../../_shared/adapter/dto/pagination-options.dto';
+import { PaginationResultDto } from '../../../_shared/adapter/dto/pagination-result.dto';
 import {
   ApiTags,
   ApiOperation,
@@ -18,33 +20,34 @@ import {
   ApiConsumes,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { IDParamDTO } from 'adapter/dto';
+import { IDParamDTO } from '../../../_shared/adapter/dto';
 import { CouponBetFactory } from '../coupon_bet.factory';
 import { CouponBetAccountDto, UpdateCouponBetDTO } from '../dto';
 import { DocCouponBetOutputDto } from '../dto/doc.output_bet.dto';
-import { CouponBet } from 'src/couponBet/domain';
-import { ICouponBetController, ICouponBetService } from 'src/couponBet/app/module';
-import { UserGuard } from 'user/adapter/guard/auth.guard';
-import { AdminGuard } from 'src/admin/adapter/guard/auth.guard';
+import { CouponBet } from '../../../couponBet/domain';
+import { ICouponBetController, ICouponBetService } from '../../../couponBet/app/module';
+import { UserGuard } from '../../../user/adapter/guard/auth.guard';
+import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 
 @ApiTags('Coupon management')
 @ApiBearerAuth()
 @UseGuards(UserGuard, AdminGuard)
-@Controller('coupons')
+@Controller('coupon-bets')
 export class CouponBetController implements ICouponBetController {
   constructor(private readonly couponBetService: ICouponBetService) {}
 
   @Get()
-  // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
   @ApiConsumes('multipart/form-data', 'application/json')
   @ApiOperation({
     summary: 'Coupons list',
     description: 'Fetch all Coupons in the DB',
   })
-  // @ApiResponse({ type: [CouponAccountDTO] })
-  async all(): Promise<CouponBet[]> {
-    const coupons = await this.couponBetService.fetchAll();
-    return coupons?.map((coupon) => CouponBetFactory.getCouponBet(coupon));
+  async all(@Query() options: PaginationOptionsDto): Promise<PaginationResultDto<CouponBet>> {
+    const result = await this.couponBetService.fetchAll(options);
+    
+    const mappedItems = result.items?.map((coupon) => CouponBetFactory.getCouponBet(coupon));
+    
+    return new PaginationResultDto(mappedItems, result.total, result.page, result.limit);
   }
 
 
