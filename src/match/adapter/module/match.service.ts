@@ -54,9 +54,9 @@ export class MatchService implements IMatchService {
         relations: {
           home: { joueurs: true },
           away: { joueurs: true },
-          arbitres: true,
+          // arbitres: true,
           // events: { joueur: true, equipe: true },
-          // bets: true,
+          bets: true,
         }
       });
       // Ajouter les URLs complets pour les images
