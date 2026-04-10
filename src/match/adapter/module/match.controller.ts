@@ -36,6 +36,8 @@ import { MatchAccoutDTO, MatchDocOutputDTO, UpdateMatchDTO, UpdateMatchPenaltySc
 import { DocArbitreOutputDto } from '../../../arbitre/adapter/dto';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 import * as multer from 'multer';
+import { MatchEventFactory } from '../../../matchEvents/adapter/match.events.factory';
+import { MatchEvent } from '../../../matchEvents/domain';
 
   
   @ApiTags('matchs management')
@@ -53,9 +55,27 @@ import * as multer from 'multer';
     // @ApiResponse({ type: [MatchAccountDTO] })
     async all(): Promise<Match[]> {
       const matchs = await this.matchService.fetchAll();
-      console.log(matchs);
+      // console.log(matchs);
       
       return matchs?.map((match) => MatchFactory.getMatch(match));
+    }
+    
+    
+    @Get('events/:id')
+    @ApiOperation({
+      summary: 'Fetch Events of one match',
+      description: 'Fetch match events by ID',
+    })
+    @ApiParam({
+      type: String,
+      name: 'id',
+      description: 'ID of the needed account',
+    })
+    // @ApiResponse({ type: MatchDocOutputDTO })
+    async fetchMatchEvents(@Param() { id }: IDParamDTO): Promise<MatchEvent[]> {
+      const events = await this.matchService.fetchMatchEvents(id);
+      
+      return events?.map((event) => MatchEventFactory.getMatch(event));
     }
 
   

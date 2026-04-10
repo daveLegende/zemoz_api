@@ -93,7 +93,7 @@ async function bootstrap() {
     app.enableCors({
       origin: [
         'https://www.petitpoto.pro',
-        // 'http://localhost:5173',
+        // 'http://localhost:8080',
       ],
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
       credentials: true,

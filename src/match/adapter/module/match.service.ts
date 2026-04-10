@@ -66,6 +66,27 @@ export class MatchService implements IMatchService {
       throw error;
     }
   }
+  
+  async fetchMatchEvents(id: string): Promise<MatchEvent[]> {
+    try {
+      const events = await this.eventRepository.events.find({
+          where: { match: { id: id } },
+          relations: { match: true, joueur: true, equipe: true }
+      });
+      if (events) {
+        // const referee = await this.arbitreRepository.arbitres.findByIds(match.arbitres);
+        // const domicile = await this.teamRepository.teams.findOneByID(match.home.id);
+        // const exterieure = await this.teamRepository.teams.findOneByID(match.away.id);
+
+      
+        return events;
+      }
+      throw new NotFoundException('Events not found');
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::MatchService.fetchOne');
+      throw error;
+    }
+  }
 
   async fetchOne(id: string): Promise<Match> {
     try {

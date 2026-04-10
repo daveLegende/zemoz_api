@@ -1,11 +1,14 @@
 import { HalfPauseState, Match } from "../../../match/domain";
 import { ICreateMatchDTO, IUpdateMatchDTO } from "../dto";
 import { UpdateMatchPenaltyScoreDto, UpdateMatchPenaltyStateDto, UpdateMatchScoreEventDto, UpdateStateDto } from "../../../match/adapter/dto";
+import { MatchEvent } from "../../../matchEvents/domain";
 
 export abstract class IMatchService {
   abstract add(data: ICreateMatchDTO): Promise<Match>;
 
   abstract fetchAll(): Promise<Match[]>;
+  
+  abstract fetchMatchEvents(id: string): Promise<MatchEvent[]>;
 
   abstract fetchOne(id: string): Promise<Match>;
 
