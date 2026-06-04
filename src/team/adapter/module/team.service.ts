@@ -28,7 +28,8 @@ import { Express } from 'express';
     async fetchAll(): Promise<Team[]> {
       try {
         return await this.teamRepository.teams.find({
-          relations: { joueurs: true, poule: true }
+          relations: { joueurs: true, poule: true },
+          withDeleted: true
         });
       } catch (error) {
         this.logger.error(error.message, 'ERROR::TeamService.fetchAll');
@@ -41,7 +42,8 @@ import { Express } from 'express';
         const team = await this.teamRepository.teams.findOne(
           {
             where: { id: id },
-            relations: { poule: true, joueurs: true }
+            relations: { poule: true, joueurs: true },
+            withDeleted: true
           }
         );
         if (team) {

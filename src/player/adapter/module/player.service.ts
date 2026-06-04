@@ -22,7 +22,8 @@ import { Express } from 'express';
     async fetchAll(): Promise<Player[]> {
       try {
         return await this.playerRepository.players.find({
-          relations: { team: true }
+          relations: { team: true },
+          withDeleted: true
         });
       } catch (error) {
         this.logger.error(error.message, 'ERROR::playerService.fetchAll');
