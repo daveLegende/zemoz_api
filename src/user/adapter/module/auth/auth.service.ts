@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import * as moment from 'moment';
 import { IOtpRepository } from 'src/otp/domain';
 import { TwilioService } from 'src/twilio/twilio.service';
+import { ResendService } from 'src/email/resend.service';
 import { OtpFactory } from 'src/otp/adapter/otp.factory';
 import { OtpAccountDto, SendOtpDTo, VerifyOtpDTo } from 'src/otp/adapter/dto';
 import { IUserRepository, User } from 'user/domain';
@@ -16,8 +17,9 @@ export class AuthService {
       private usersService: IUserService,
       private userRepository: IUserRepository,
       private otpRepository: IOtpRepository,
-      private twilioService: TwilioService,
-      private jwtService: JwtService,
+        private twilioService: TwilioService,
+        private resendService: ResendService,
+        private jwtService: JwtService,
     ) {}
     
       // async validateUser(email: string, pass: string): Promise<any> {
@@ -29,18 +31,33 @@ export class AuthService {
       //   return null;
       // }
 
-  async validateUser(phone: string, password: string): Promise<any> {
-    console.log('Validating user credentials for:', phone);
-    const user = await this.usersService.fetchByPhone(phone);
+  async validateUser(identifier: string, password: string): Promise<any> {
+    console.log('Validating user credentials for identifier:', identifier);
+    let user: any = null;
+
+    // Try to find by email first (new method)
+    if (identifier.includes('@')) {
+      try {
+        user = await this.usersService.fetchByEmail(identifier);
+      } catch (err) {
+        console.log(`User not found by email: ${identifier}`);
+      }
+    } else {
+      // Fallback to phone for backward compatibility
+      try {
+        user = await this.usersService.fetchByPhone(identifier);
+      } catch (err) {
+        console.log(`User not found by phone: ${identifier}`);
+      }
+    }
 
     if (!user) {
-        console.log(`User not found for email: ${phone}`);
         throw new BadRequestException('User not found');
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-        console.log(`Invalid password for phone: ${phone}`);
+        console.log(`Invalid password for identifier: ${identifier}`);
         throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -55,7 +72,9 @@ export class AuthService {
   // }
 
   async login(user: any): Promise<{ accessToken: string; refreshToken: string; user: User }> {
-    const payload = { /*email: user.email, */phone: user.phone, sub: user.userId };
+    // Use email if available, fallback to phone for backward compatibility
+    const identifier = user.email || user.phone;
+    const payload = { email: user.email, phone: user.phone, sub: user.userId || user.id };
     
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
@@ -161,6 +180,57 @@ export class AuthService {
       return true;
     } catch (error) {
       
+    }
+  }
+
+  // Magic link: envoie un lien de confirmation par email
+  async sendMagicLink(data: { email: string }): Promise<any> {
+    try {
+      const { email } = data;
+      const user = await this.usersService.fetchByEmail(email);
+      if (!user) throw new NotFoundException("Aucun utilisateur avec cet email");
+
+      const token = this.jwtService.sign(
+        { sub: user.id ?? user.userId, email: user.email },
+        {
+          secret: process.env.EMAIL_TOKEN_SECRET || process.env.JWT_SECRET,
+          expiresIn: '24h',
+        },
+      );
+
+      const frontendUrl = process.env.FRONTEND_URL || 'https://app.petitpoto.pro';
+      const link = `${frontendUrl}/auth/verify-email?token=${token}`;
+
+      const html = `<p>Bonjour ${user.firstname || ''},</p>
+        <p>Merci de confirmer ton adresse e-mail en cliquant sur le lien ci-dessous :</p>
+        <p><a href="${link}">Confirmer mon email</a></p>
+        <p>Si tu n'as pas demandé ce mail, ignore-le.</p>`;
+
+      await this.resendService.sendEmail(email, 'Confirme ton adresse email', html);
+
+      return { ok: true };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // Vérifie le token envoyé via magic link et active le compte
+  async verifyMagicLink(token: string): Promise<{ accessToken: string; refreshToken: string; user: User }> {
+    try {
+      const payload: any = this.jwtService.verify(token, { secret: process.env.EMAIL_TOKEN_SECRET || process.env.JWT_SECRET });
+      const userId = payload.sub || payload.userId;
+      const user = await this.userRepository.users.findOneByID(userId);
+      if (!user) throw new NotFoundException('Utilisateur introuvable');
+
+      user.isActivated = true;
+      await this.userRepository.users.update(user);
+
+      // ensure compatibility with login expecting user.userId
+      (user as any).userId = user.id;
+
+      return this.login(user as any);
+    } catch (err) {
+      throw new BadRequestException('Token invalide ou expiré');
     }
   }
 }

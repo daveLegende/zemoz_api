@@ -74,9 +74,13 @@ export class UserService implements IUserService {
       const existed = await this.userRepository.users.findOneBy({ email });
       if (existed)
         throw new ConflictException('User account email allready exist');
-      return await this.userRepository.users.create(
-        await UserFactory.create(data),
-      );
+      const newUser = await UserFactory.create(data);
+      // If registration via email (no phone provided), require email confirmation
+      if (data.email && (!data.phone || data.phone === '')) {
+        (newUser as any).isActivated = false;
+      }
+
+      return await this.userRepository.users.create(newUser);
     } catch (error) {
       this.logger.error(error.message, 'ERROR::UserService.add');
       throw error;

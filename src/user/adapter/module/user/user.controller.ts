@@ -49,6 +49,8 @@ import { Ticket } from 'src/ticket/domain';
 import { AuthGuard } from '@nestjs/passport';
 import { Coupon } from 'src/coupon/domain';
 import { Paris } from 'src/paris/domain';
+import { JwtService } from '@nestjs/jwt';
+import { ResendService } from 'src/email/resend.service';
 
 @ApiTags('Users management')
 // @ApiBearerAuth()
@@ -57,6 +59,8 @@ import { Paris } from 'src/paris/domain';
 export class UserController implements IUserController {
   constructor(
     private readonly userService: IUserService,
+    private readonly jwtService: JwtService,
+    private readonly resendService: ResendService,
   ) {}
 
   @Get("current/:id")
@@ -159,6 +163,33 @@ export class UserController implements IUserController {
   ): Promise<User> {
     data.avatar = file?.filename;
     const user = await this.userService.add(data);
+
+    // If created with email and not activated, send magic link automatically
+    try {
+      if (user && user.email && !user.isActivated) {
+        const token = this.jwtService.sign(
+          { sub: user.id ?? (user as any).userId, email: user.email },
+          {
+            secret: process.env.EMAIL_TOKEN_SECRET || process.env.JWT_SECRET,
+            expiresIn: '24h',
+          },
+        );
+
+        const frontendUrl = process.env.FRONTEND_URL || 'https://app.petitpoto.pro';
+        const link = `${frontendUrl}/auth/verify-email?token=${token}`;
+
+        const html = `<p>Bonjour ${user.firstname || ''},</p>
+          <p>Merci de confirmer ton adresse e-mail en cliquant sur le lien ci-dessous :</p>
+          <p><a href="${link}">Confirmer mon email</a></p>
+          <p>Si tu n'as pas demandé ce mail, ignore-le.</p>`;
+
+        await this.resendService.sendEmail(user.email, 'Confirme ton adresse email', html);
+      }
+    } catch (err) {
+      // Log but don't fail the creation flow
+      console.error('Failed to send magic link:', err?.message ?? err);
+    }
+
     if (user) return UserFactory.getUser(user);
   }
 

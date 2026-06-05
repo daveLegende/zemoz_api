@@ -14,6 +14,7 @@ import { UserGuard } from 'user/adapter/guard/auth.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CouponRepositoryModule } from 'src/coupon/framework/coupon.module.repository';
 import { ParisRepositoryModule } from 'src/paris/framework/paris.module.repository';
+import { EmailModule } from 'src/email/email.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { ParisRepositoryModule } from 'src/paris/framework/paris.module.reposito
     TicketRepositoryModule,
     CouponRepositoryModule,
     ParisRepositoryModule,
+    EmailModule,
   ],
   controllers: [UserController],
   providers: [{ provide: IUserService, useClass: UserService }],

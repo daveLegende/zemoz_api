@@ -9,10 +9,11 @@ import { UserRepositoryModule } from 'user/framework/database/user.repository.mo
 import { UserModule } from '../user';
 import { OtpRepositoryModule } from 'src/otp/framework/database/otp.repository.module';
 import { TwilioModule } from 'src/twilio/twilio.module';
+import { EmailModule } from 'src/email/email.module';
 
 @Module({
   imports: [
-    UserRepositoryModule, OtpRepositoryModule, UserModule, TwilioModule, 
+    UserRepositoryModule, OtpRepositoryModule, UserModule, TwilioModule, EmailModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],

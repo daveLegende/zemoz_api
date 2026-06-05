@@ -14,7 +14,12 @@ export class AuthController {
 //   @UseGuards(LocalAuthGuard) 
   @Post('login')
   async login(@Body() loginDto: SigninAccoutDTO): Promise<{ accessToken: string; refreshToken: string; user: User }> {
-    const user = await this.authService.validateUser(loginDto.phone, loginDto.password);
+    // Support both email and phone; email is preferred
+    const identifier = loginDto.email || loginDto.phone;
+    if (!identifier) {
+      throw new BadRequestException('Email or phone is required');
+    }
+    const user = await this.authService.validateUser(identifier, loginDto.password);
     if (!user) {
       throw new BadRequestException('Invalid credentials');
     }
@@ -36,6 +41,20 @@ export class AuthController {
     console.log("cdfcxch c v");
     
     return await this.authService.sendOTP(data);
+  }
+
+  @Post('send-magic-link')
+  async sendMagicLink(@Body() body: { email: string }) {
+    const { email } = body;
+    if (!email) throw new BadRequestException('Email requis');
+    return await this.authService.sendMagicLink({ email });
+  }
+
+  @Post('verify-email')
+  async verifyEmail(@Body() body: { token: string }) {
+    const { token } = body;
+    if (!token) throw new BadRequestException('Token requis');
+    return await this.authService.verifyMagicLink(token);
   }
 
   // @Post()
