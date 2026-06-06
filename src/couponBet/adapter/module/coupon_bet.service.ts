@@ -24,7 +24,6 @@ export class CouponBetService implements ICouponBetService {
     private betRepository: IBetRepository,
   ) {}
 
-  
   setState(id: string): Promise<boolean> {
     throw new Error('Method not implemented.');
   }
@@ -67,11 +66,7 @@ export class CouponBetService implements ICouponBetService {
       this.validateSelectedOptions(bet.odds, selectedOptions);
 
       return await this.couponBetsRepository.couponBets.create(
-        CouponBetFactory.create(
-          bet,
-          coupon,
-          selectedOptions,
-        ),
+        CouponBetFactory.create(bet, coupon, selectedOptions),
       );
     } catch (error) {
       this.logger.error(error.message, 'ERROR::CouponBetService.add');
@@ -161,7 +156,7 @@ export class CouponBetService implements ICouponBetService {
       const match = await this.matchRepository.matchs.findOne({
         where: { id: matchId },
       });
-      
+
       if (!match) {
         throw new NotFoundException('Match non trouvé');
       }
@@ -171,34 +166,33 @@ export class CouponBetService implements ICouponBetService {
         where: {
           status: BetStatus.PENDING,
           bet: {
-            match: { id: matchId }
-          }
+            match: { id: matchId },
+          },
         },
-        relations: { 
-          bet: { 
-            match: { 
-              home: true, 
+        relations: {
+          bet: {
+            match: {
+              home: true,
               away: true,
-              events: { joueur: true, equipe: true }  // Pour MATCH_GOAL_SCORER
-            } 
-          }, 
-          coupon: { 
+              events: { joueur: true, equipe: true }, // Pour MATCH_GOAL_SCORER
+            },
+          },
+          coupon: {
             user: true,
-            couponBets: true  // Pour updateCouponStatus
-          } 
+            couponBets: true, // Pour updateCouponStatus
+          },
         },
         order: { createdAt: 'DESC' },
       });
 
       return coupons;
-      
     } catch (error) {
       // Log l'erreur pour le débogage
       this.logger.error(
         `Erreur lors de la récupération des coupons en attente pour le match ${matchId}: ${error.message}`,
-        error.stack
+        error.stack,
       );
-      
+
       // Relancer l'erreur ou retourner un tableau vide selon votre logique métier
       throw error;
     }

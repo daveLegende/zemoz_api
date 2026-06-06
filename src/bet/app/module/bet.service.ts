@@ -1,6 +1,5 @@
-import { Bet } from "../../../bet/domain";
-import { ICreateBetDTO, IUpdateBetDTO } from "../dto";
-
+import { Bet } from '../../../bet/domain';
+import { ICreateBetDTO, IUpdateBetDTO } from '../dto';
 
 export abstract class IBetService {
   abstract add(data: ICreateBetDTO): Promise<Bet>;

@@ -5,7 +5,6 @@ import { IMatchRepository } from '../../../match/domain';
 import { MatchRepository } from './match.repository';
 import { MatchEntity } from './schema/match.entity';
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([MatchEntity])],
   providers: [

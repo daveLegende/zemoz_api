@@ -25,7 +25,7 @@ interface AxiosInstance {
 }
 
 export class AxiosRest<T> implements IFetcher<T> {
-  constructor(private readonly axios: AxiosInstance) { }
+  constructor(private readonly axios: AxiosInstance) {}
 
   private async getResponse(rep: Promise<AxiosResponse>) {
     return rep

@@ -7,12 +7,20 @@ import { Coupon } from '../../../../coupon/domain';
 import { Paris } from '../../../../paris/domain';
 import { Ticket } from '../../../../ticket/domain';
 import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
-import { DeleteUserBetDTO, DeleteUserTicketDTO } from '../../../../user/adapter/dto';
-import { IChangePasswordDTO, ICreateUserDTO, IReinitialisePassDTO, IUpdateUserDTO } from '../../../../user/app/dto/user.input.dto';
+import {
+  DeleteUserBetDTO,
+  DeleteUserTicketDTO,
+} from '../../../../user/adapter/dto';
+import {
+  IChangePasswordDTO,
+  ICreateUserDTO,
+  IReinitialisePassDTO,
+  IUpdateUserDTO,
+} from '../../../../user/app/dto/user.input.dto';
 import { User } from '../../../../user/domain/user.model';
 
 export abstract class IUserController {
-  abstract getCurrentUser(param: IIDParamDTO, file?: any): Promise<User>
+  abstract getCurrentUser(param: IIDParamDTO, file?: any): Promise<User>;
 
   abstract all(): Promise<User[]>;
 
@@ -28,7 +36,10 @@ export abstract class IUserController {
 
   abstract remove(param: IIDParamDTO): Promise<boolean>;
 
-  abstract reinitialisePass(data: IReinitialisePassDTO, file?: any): Promise<User>;
+  abstract reinitialisePass(
+    data: IReinitialisePassDTO,
+    file?: any,
+  ): Promise<User>;
 
   abstract changePass(data: IChangePasswordDTO, file?: any): Promise<User>;
 
@@ -42,5 +53,8 @@ export abstract class IUserController {
 
   abstract deleteUserBet(data: DeleteUserBetDTO, file?: any): Promise<boolean>;
 
-  abstract deleteUserTicket(data: DeleteUserTicketDTO, file?: any): Promise<boolean>;
+  abstract deleteUserTicket(
+    data: DeleteUserTicketDTO,
+    file?: any,
+  ): Promise<boolean>;
 }

@@ -5,7 +5,6 @@ import { ITeamRepository } from '../../domain';
 import { TeamEntity } from './schema/team.entity';
 import { TeamRepository } from './team.repository';
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([TeamEntity])],
   providers: [

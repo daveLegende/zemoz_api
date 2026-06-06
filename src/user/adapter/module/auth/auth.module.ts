@@ -12,7 +12,10 @@ import { TwilioModule } from '../../../../twilio/twilio.module';
 
 @Module({
   imports: [
-    UserRepositoryModule, OtpRepositoryModule, UserModule, TwilioModule, 
+    UserRepositoryModule,
+    OtpRepositoryModule,
+    UserModule,
+    TwilioModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],

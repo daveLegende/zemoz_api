@@ -23,7 +23,10 @@ import { CouponBetFactory } from '../coupon_bet.factory';
 import { CouponBetAccountDto, UpdateCouponBetDTO } from '../dto';
 import { DocCouponBetOutputDto } from '../dto/doc.output_bet.dto';
 import { CouponBet } from '../../../couponBet/domain';
-import { ICouponBetController, ICouponBetService } from '../../../couponBet/app/module';
+import {
+  ICouponBetController,
+  ICouponBetService,
+} from '../../../couponBet/app/module';
 import { UserGuard } from '../../../user/adapter/guard/auth.guard';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 
@@ -47,11 +50,12 @@ export class CouponBetController implements ICouponBetController {
     return coupons?.map((coupon) => CouponBetFactory.getCouponBet(coupon));
   }
 
-
   @Get('search')
   async search(@Query() param: CouponBet): Promise<CouponBet> {
     if (param) {
-      return CouponBetFactory.getCouponBet(await this.couponBetService.search(param));
+      return CouponBetFactory.getCouponBet(
+        await this.couponBetService.search(param),
+      );
     }
   }
 
@@ -68,7 +72,9 @@ export class CouponBetController implements ICouponBetController {
   })
   @ApiResponse({ type: DocCouponBetOutputDto })
   async show(@Param() { id }: IDParamDTO): Promise<CouponBet> {
-    return CouponBetFactory.getCouponBet(await this.couponBetService.fetchOne(id));
+    return CouponBetFactory.getCouponBet(
+      await this.couponBetService.fetchOne(id),
+    );
   }
 
   /**
@@ -81,9 +87,7 @@ export class CouponBetController implements ICouponBetController {
   })
   // @ApiBody({ type: RegisterAccoutDTO })
   // @ApiResponse({ type: DocUserOutputDTO })
-  async create(
-    @Body() data: CouponBetAccountDto
-  ): Promise<CouponBet> {
+  async create(@Body() data: CouponBetAccountDto): Promise<CouponBet> {
     const coupon = await this.couponBetService.add(data);
     if (coupon) return CouponBetFactory.getCouponBet(coupon);
   }
@@ -95,10 +99,10 @@ export class CouponBetController implements ICouponBetController {
   @Patch()
   @ApiBody({ type: UpdateCouponBetDTO })
   @ApiResponse({ type: DocCouponBetOutputDto })
-  async update(
-    @Body() data: UpdateCouponBetDTO
-  ): Promise<CouponBet> {
-    return CouponBetFactory.getCouponBet(await this.couponBetService.edit(data));
+  async update(@Body() data: UpdateCouponBetDTO): Promise<CouponBet> {
+    return CouponBetFactory.getCouponBet(
+      await this.couponBetService.edit(data),
+    );
   }
 
   @Patch('state/:id')

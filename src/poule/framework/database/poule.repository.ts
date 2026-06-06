@@ -7,15 +7,17 @@ import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { PouleEntity } from './schema/poule.entity';
 
 @Injectable()
-export class PouleRepository implements IPouleRepository, OnApplicationBootstrap {
-    poules: IGenericRepository<Poule>;
-    
-    constructor(
-        @InjectRepository(PouleEntity)
-        private PouleRepository: Repository<PouleEntity>,
-    ) {}
+export class PouleRepository
+  implements IPouleRepository, OnApplicationBootstrap
+{
+  poules: IGenericRepository<Poule>;
 
-    onApplicationBootstrap(): void {
-        this.poules = new DBGenericRepository<PouleEntity>(this.PouleRepository);
-    }
+  constructor(
+    @InjectRepository(PouleEntity)
+    private PouleRepository: Repository<PouleEntity>,
+  ) {}
+
+  onApplicationBootstrap(): void {
+    this.poules = new DBGenericRepository<PouleEntity>(this.PouleRepository);
+  }
 }

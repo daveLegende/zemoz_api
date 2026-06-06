@@ -1,8 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-
 @Entity('passwords')
-export class PasswordEntity{
+export class PasswordEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -12,7 +11,11 @@ export class PasswordEntity{
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
   updatedAt: Date;
 
   // Optionnel, si vous souhaitez inclure deletedAt

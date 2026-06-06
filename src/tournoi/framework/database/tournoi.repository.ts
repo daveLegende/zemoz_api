@@ -7,15 +7,19 @@ import { Repository } from 'typeorm';
 import { TournoiEntity } from './schema/tournoi.entity';
 
 @Injectable()
-export class TournoiRepository implements ITournoiRepository, OnApplicationBootstrap {
-    tournois: IGenericRepository<Tournoi>;
-    
-    constructor(
-        @InjectRepository(TournoiEntity)
-        private tournoiRepository: Repository<TournoiEntity>,
-    ) {}
+export class TournoiRepository
+  implements ITournoiRepository, OnApplicationBootstrap
+{
+  tournois: IGenericRepository<Tournoi>;
 
-    onApplicationBootstrap(): void {
-        this.tournois = new DBGenericRepository<TournoiEntity>(this.tournoiRepository);
-    }
+  constructor(
+    @InjectRepository(TournoiEntity)
+    private tournoiRepository: Repository<TournoiEntity>,
+  ) {}
+
+  onApplicationBootstrap(): void {
+    this.tournois = new DBGenericRepository<TournoiEntity>(
+      this.tournoiRepository,
+    );
+  }
 }

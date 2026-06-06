@@ -8,8 +8,22 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { IMatchService } from '../../app/module';
-import { EventType, HalfPauseState, IMatchRepository, Match, MatchState, MatchType } from '../../domain';
-import { MatchAccoutDTO, UpdateMatchDTO, UpdateMatchPenaltyScoreDto, UpdateMatchPenaltyStateDto, UpdateMatchScoreEventDto, UpdateStateDto } from '../dto';
+import {
+  EventType,
+  HalfPauseState,
+  IMatchRepository,
+  Match,
+  MatchState,
+  MatchType,
+} from '../../domain';
+import {
+  MatchAccoutDTO,
+  UpdateMatchDTO,
+  UpdateMatchPenaltyScoreDto,
+  UpdateMatchPenaltyStateDto,
+  UpdateMatchScoreEventDto,
+  UpdateStateDto,
+} from '../dto';
 import { MatchFactory } from '../match.factory';
 import { IArbitreRepository } from '../../../arbitre/domain';
 import { ITeamRepository } from '../../../team/domain';
@@ -21,7 +35,11 @@ import { MatchGateway } from './match.gateway';
 import { ICouponRepository } from '../../../coupon/domain/data.abstract';
 import { ICouponBetService } from '../../../couponBet/app/module/coupon_bet.service';
 import { CategoryName } from '../../../bet/domain';
-import { BetStatus, CouponBet, ICouponBetRepository } from '../../../couponBet/domain';
+import {
+  BetStatus,
+  CouponBet,
+  ICouponBetRepository,
+} from '../../../couponBet/domain';
 import { CouponBetFactory } from '../../../couponBet/adapter/coupon_bet.factory';
 import { Coupon, CouponState } from '../../../coupon/domain';
 import { DataSource } from 'typeorm';
@@ -46,11 +64,10 @@ export class MatchService implements IMatchService {
     private dataSource: DataSource,
     @InjectQueue('payout-queue')
     private payoutQueue: Queue,
-    // 
+    //
     @Inject(forwardRef(() => MatchGateway)) // Injection du Gateway
     private readonly matchGateway: MatchGateway,
-
-  ) { }
+  ) {}
 
   async fetchAll(): Promise<Match[]> {
     try {
@@ -58,15 +75,36 @@ export class MatchService implements IMatchService {
         relations: {
           home: { joueurs: true },
           away: { joueurs: true },
-          arbitres: true,
-          events: { joueur: true, equipe: true },
+          // arbitres: true,
+          // events: { joueur: true, equipe: true },
           bets: true,
-        }
+        },
+        withDeleted: true,
       });
       // Ajouter les URLs complets pour les images
       return matches;
     } catch (error) {
       this.logger.error(error.message, 'ERROR::MatchService.fetchAll');
+      throw error;
+    }
+  }
+
+  async fetchMatchEvents(id: string): Promise<MatchEvent[]> {
+    try {
+      const events = await this.eventRepository.events.find({
+        where: { match: { id: id } },
+        relations: { match: true, joueur: true, equipe: true },
+      });
+      if (events) {
+        // const referee = await this.arbitreRepository.arbitres.findByIds(match.arbitres);
+        // const domicile = await this.teamRepository.teams.findOneByID(match.home.id);
+        // const exterieure = await this.teamRepository.teams.findOneByID(match.away.id);
+
+        return events;
+      }
+      throw new NotFoundException('Events not found');
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::MatchService.fetchOne');
       throw error;
     }
   }
@@ -78,16 +116,16 @@ export class MatchService implements IMatchService {
         relations: {
           home: { joueurs: true },
           away: { joueurs: true },
-          arbitres: true,
+          // arbitres: true,
           bets: true,
-          events: { joueur: true, equipe: true }
-        }
+          // events: { joueur: true, equipe: true }
+        },
+        withDeleted: true,
       });
       if (match) {
         // const referee = await this.arbitreRepository.arbitres.findByIds(match.arbitres);
         // const domicile = await this.teamRepository.teams.findOneByID(match.home.id);
         // const exterieure = await this.teamRepository.teams.findOneByID(match.away.id);
-
 
         return match;
       }
@@ -104,7 +142,6 @@ export class MatchService implements IMatchService {
 
   async add(data: MatchAccoutDTO): Promise<Match> {
     try {
-
       console.log('Données reçues :', data); // `data` étant l'objet JSON reçu par l'API
 
       const { away, home, arbitres, type, odds, poule } = data;
@@ -114,37 +151,50 @@ export class MatchService implements IMatchService {
       // }, });
       // if (existed)
       //   throw new ConflictException('Match already exist');
-      console.log("referee   ----------------" + data);
+      console.log('referee   ----------------' + data);
 
       const referee = await this.arbitreRepository.arbitres.findByIds(arbitres);
 
       const domicile = await this.teamRepository.teams.findOne({
         where: { id: home },
-        relations: { poule: true }
+        relations: { poule: true },
       });
       const exterieure = await this.teamRepository.teams.findOne({
         where: { id: away },
-        relations: { poule: true }
+        relations: { poule: true },
       });
-      console.log("referee   ----------------" + data.home);
+      console.log('referee   ----------------' + data.home);
 
       if (!domicile || !exterieure) {
-        throw new NotFoundException('L\'une des équipes spécifiées est introuvable.');
+        throw new NotFoundException(
+          "L'une des équipes spécifiées est introuvable.",
+        );
       }
 
       if (type === MatchType.POULE) {
         if (!domicile.poule || !exterieure.poule) {
-          throw new NotFoundException("L'une des équipes n'a pas de poule associée.");
+          throw new NotFoundException(
+            "L'une des équipes n'a pas de poule associée.",
+          );
         } else {
           if (domicile.poule.id === exterieure.poule.id) {
             const match = await this.matchRepository.matchs.create(
-              await MatchFactory.create(data, referee, domicile, exterieure, domicile.poule),
+              await MatchFactory.create(
+                data,
+                referee,
+                domicile,
+                exterieure,
+                domicile.poule,
+              ),
             );
 
             // Utilisez save pour persister le match avec toutes ses relations
             return await this.matchRepository.save(match);
           } else {
-            throw new NotFoundException("Les équipes ne sont pas dans la même poule", 'ERROR::MatchService.editMatch');
+            throw new NotFoundException(
+              'Les équipes ne sont pas dans la même poule',
+              'ERROR::MatchService.editMatch',
+            );
           }
         }
       } else {
@@ -152,7 +202,7 @@ export class MatchService implements IMatchService {
           await MatchFactory.create(data, referee, domicile, exterieure, null),
         );
         return await this.matchRepository.save(match);
-      };
+      }
     } catch (error) {
       this.logger.error(error.message, 'ERROR::MatchService.add');
       throw error;
@@ -166,9 +216,11 @@ export class MatchService implements IMatchService {
 
     // Traitement des arbitres
     if (match.arbitres && match.arbitres.length > 0) {
-      match.arbitres = match.arbitres.map(arbitre => ({
+      match.arbitres = match.arbitres.map((arbitre) => ({
         ...arbitre,
-        avatar: arbitre.avatar ? `${baseUrl}/${uploadPath}/${arbitre.avatar}` : null
+        avatar: arbitre.avatar
+          ? `${baseUrl}/${uploadPath}/${arbitre.avatar}`
+          : null,
       }));
     }
 
@@ -176,7 +228,7 @@ export class MatchService implements IMatchService {
     if (match.home && match.home.logo) {
       match.home = {
         ...match.home,
-        logo: `${baseUrl}/${uploadPath}/${match.home.logo}`
+        logo: `${baseUrl}/${uploadPath}/${match.home.logo}`,
       };
     }
 
@@ -184,7 +236,7 @@ export class MatchService implements IMatchService {
     if (match.away && match.away.logo) {
       match.away = {
         ...match.away,
-        logo: `${baseUrl}/${uploadPath}/${match.away.logo}`
+        logo: `${baseUrl}/${uploadPath}/${match.away.logo}`,
       };
     }
 
@@ -194,22 +246,31 @@ export class MatchService implements IMatchService {
   async edit(data: UpdateMatchDTO): Promise<Match> {
     try {
       const { id, home, away, arbitres, date, type } = data;
-      const match = id && (await this.matchRepository.matchs.findOne({
-        where: { id: id },
-        relations: { home: true, away: true, arbitres: true, poule: true, events: { joueur: true, equipe: true } }
-      }));
+      const match =
+        id &&
+        (await this.matchRepository.matchs.findOne({
+          where: { id: id },
+          relations: {
+            home: true,
+            away: true,
+            arbitres: true,
+            poule: true,
+            events: { joueur: true, equipe: true },
+          },
+        }));
 
       if (match) {
         const domicile = await this.teamRepository.teams.findOne({
           where: { id: home },
-          relations: { poule: true }
+          relations: { poule: true },
         });
         const exterieure = await this.teamRepository.teams.findOne({
           where: { id: away },
-          relations: { poule: true }
+          relations: { poule: true },
         });
 
-        const referee = await this.arbitreRepository.arbitres.findByIds(arbitres);
+        const referee =
+          await this.arbitreRepository.arbitres.findByIds(arbitres);
 
         return await this.matchRepository.matchs.update(
           MatchFactory.update(match, data, referee, domicile, exterieure),
@@ -229,10 +290,16 @@ export class MatchService implements IMatchService {
 
   async remove(id: string): Promise<boolean> {
     try {
-      const match = await this.matchRepository.matchs.findOne(({
+      const match = await this.matchRepository.matchs.findOne({
         where: { id: id },
-        relations: { home: true, away: true, arbitres: true, poule: true, events: { joueur: true, equipe: true } }
-      }));
+        relations: {
+          home: true,
+          away: true,
+          arbitres: true,
+          poule: true,
+          events: { joueur: true, equipe: true },
+        },
+      });
       if (match) {
         return await this.matchRepository.matchs.remove(match).then(() => true);
       }
@@ -243,31 +310,37 @@ export class MatchService implements IMatchService {
     }
   }
 
-  // web socket 
+  // web socket
   async updateScore(data: UpdateMatchScoreEventDto) {
     try {
-      const { id, homeScore, awayScore, eventType, teamId, playerId, minuite } = data;
+      const { id, homeScore, awayScore, eventType, teamId, playerId, minuite } =
+        data;
       if (minuite === undefined || minuite === null) {
         throw new BadRequestException('Minuite doit être définie');
       }
 
       const match = await this.matchRepository.matchs.findOne({
         where: { id: id },
-        relations: { home: true, away: true, arbitres: true, events: { joueur: true, equipe: true } }
+        relations: {
+          home: true,
+          away: true,
+          arbitres: true,
+          events: { joueur: true, equipe: true },
+        },
       });
 
       const home = await this.teamRepository.teams.findOne({
         where: { id: match.home.id },
-        relations: { poule: true }
+        relations: { poule: true },
       });
       const away = await this.teamRepository.teams.findOne({
         where: { id: match.away.id },
-        relations: { poule: true }
+        relations: { poule: true },
       });
 
       const player = await this.playerRepository.players.findOne({
         where: { id: playerId },
-        relations: { team: true }
+        relations: { team: true },
       });
       const events = new MatchEvent();
 
@@ -350,7 +423,13 @@ export class MatchService implements IMatchService {
 
       const match = await this.matchRepository.matchs.findOne({
         where: { id: id },
-        relations: { home: true, away: true, arbitres: true, poule: true, events: true },
+        relations: {
+          home: true,
+          away: true,
+          arbitres: true,
+          poule: true,
+          events: true,
+        },
       });
 
       if (!match) {
@@ -391,13 +470,23 @@ export class MatchService implements IMatchService {
           }
         }
 
-        if (match.type === MatchType.HUITIEME || match.type === MatchType.QUART ||
-          match.type === MatchType.DEMI || match.type === MatchType.FINALE) {
+        if (
+          match.type === MatchType.HUITIEME ||
+          match.type === MatchType.QUART ||
+          match.type === MatchType.DEMI ||
+          match.type === MatchType.FINALE
+        ) {
           if (match.scores.home === match.scores.away) {
-            match.teamQualify = match.homePenalty > match.awayPenalty ? match.home.id : match.away.id;
+            match.teamQualify =
+              match.homePenalty > match.awayPenalty
+                ? match.home.id
+                : match.away.id;
           } else {
             match.isProlongation = false;
-            match.teamQualify = match.scores.home > match.scores.away ? match.home.id : match.away.id;
+            match.teamQualify =
+              match.scores.home > match.scores.away
+                ? match.home.id
+                : match.away.id;
           }
         }
 
@@ -410,12 +499,11 @@ export class MatchService implements IMatchService {
         MatchFactory.updateState(match, data),
       );
 
-      // 
+      //
       await this.checkMatchRelatedCoupons(id);
       await this.checkRealTimeCoupons(updatedMatch.id);
 
       return updatedMatch;
-
     } catch (error) {
       this.logger.error(error.message, 'ERROR::MatchService.updateState');
       throw error;
@@ -423,11 +511,14 @@ export class MatchService implements IMatchService {
   }
 
   // Fonction pour mettre à jour l'état de mi-temps/pause
-  async updateHalfTimeState(id: string, halfPauseState: HalfPauseState): Promise<Match> {
+  async updateHalfTimeState(
+    id: string,
+    halfPauseState: HalfPauseState,
+  ): Promise<Match> {
     try {
       const match = await this.matchRepository.matchs.findOne({
         where: { id: id },
-        relations: { home: true, away: true, arbitres: true, poule: true }
+        relations: { home: true, away: true, arbitres: true, poule: true },
       });
 
       if (!match) {
@@ -436,7 +527,9 @@ export class MatchService implements IMatchService {
 
       // Validation: On ne peut changer l'état que si le match est en cours
       if (match.etat !== MatchState.EN_COURS) {
-        throw new BadRequestException('Le match doit être en cours pour modifier l\'état de mi-temps');
+        throw new BadRequestException(
+          "Le match doit être en cours pour modifier l'état de mi-temps",
+        );
       }
 
       // Logique de transition d'état
@@ -446,11 +539,16 @@ export class MatchService implements IMatchService {
       const validTransitions = {
         [HalfPauseState.FIRST_HALF]: [HalfPauseState.HALF_TIME],
         [HalfPauseState.HALF_TIME]: [HalfPauseState.SECOND_HALF],
-        [HalfPauseState.SECOND_HALF]: [] // Aucune transition depuis SECOND_HALF
+        [HalfPauseState.SECOND_HALF]: [], // Aucune transition depuis SECOND_HALF
       };
 
-      if (validTransitions[currentState] && !validTransitions[currentState].includes(halfPauseState)) {
-        throw new BadRequestException(`Transition invalide: ${currentState} -> ${halfPauseState}`);
+      if (
+        validTransitions[currentState] &&
+        !validTransitions[currentState].includes(halfPauseState)
+      ) {
+        throw new BadRequestException(
+          `Transition invalide: ${currentState} -> ${halfPauseState}`,
+        );
       }
 
       match.halfPauseState = halfPauseState;
@@ -461,7 +559,7 @@ export class MatchService implements IMatchService {
           matchId: match.id,
           homeScore: match.scores?.home || 0,
           awayScore: match.scores?.away || 0,
-          timestamp: new Date()
+          timestamp: new Date(),
         });
       }
 
@@ -472,21 +570,23 @@ export class MatchService implements IMatchService {
         matchId: match.id,
         halfPauseState: updatedMatch.halfPauseState,
         previousState: currentState,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
       await this.checkRealTimeCoupons(match.id);
 
       return updatedMatch;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::MatchService.updateHalfTimeState');
+      this.logger.error(
+        error.message,
+        'ERROR::MatchService.updateHalfTimeState',
+      );
       throw error;
     }
   }
 
-
   /**
- * Met à jour les scores des tirs aux buts
- */
+   * Met à jour les scores des tirs aux buts
+   */
   async updatePenaltyScores(data: UpdateMatchPenaltyScoreDto): Promise<Match> {
     try {
       const { id, homePenalty, awayPenalty } = data;
@@ -496,7 +596,7 @@ export class MatchService implements IMatchService {
         relations: {
           home: true,
           away: true,
-          events: true
+          events: true,
         },
       });
 
@@ -506,7 +606,9 @@ export class MatchService implements IMatchService {
 
       // Validation des données
       if (homePenalty < 0 || awayPenalty < 0) {
-        throw new BadRequestException('Les scores de tirs aux buts ne peuvent pas être négatifs');
+        throw new BadRequestException(
+          'Les scores de tirs aux buts ne peuvent pas être négatifs',
+        );
       }
 
       // Vérifier que le match n'est pas déjà terminé
@@ -525,7 +627,9 @@ export class MatchService implements IMatchService {
       } else if (awayPenalty > homePenalty) {
         match.teamQualify = match.away.id;
       } else {
-        throw new BadRequestException('Il doit forcement y avoir un vainqueur.');
+        throw new BadRequestException(
+          'Il doit forcement y avoir un vainqueur.',
+        );
       }
 
       // Sauvegarder les modifications
@@ -533,7 +637,10 @@ export class MatchService implements IMatchService {
 
       return updatedMatch;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::MatchService.updatePenaltyScores');
+      this.logger.error(
+        error.message,
+        'ERROR::MatchService.updatePenaltyScores',
+      );
       throw error;
     }
   }
@@ -542,12 +649,14 @@ export class MatchService implements IMatchService {
    * Met à jour uniquement le statut isTirAuxButs
    * Utile pour indiquer que le match passe en tirs aux buts
    */
-  async updateTirAuxButsStatus(data: UpdateMatchPenaltyStateDto): Promise<Match> {
+  async updateTirAuxButsStatus(
+    data: UpdateMatchPenaltyStateDto,
+  ): Promise<Match> {
     try {
       const { id } = data;
       const match = await this.matchRepository.matchs.findOne({
         where: { id: id },
-        relations: { home: true, away: true }
+        relations: { home: true, away: true },
       });
 
       if (!match) {
@@ -564,43 +673,57 @@ export class MatchService implements IMatchService {
 
       return updatedMatch;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::MatchService.updateTirAuxButsStatus');
+      this.logger.error(
+        error.message,
+        'ERROR::MatchService.updateTirAuxButsStatus',
+      );
       throw error;
     }
   }
 
-
-
   /**
- * Vérifie les coupons en temps réel (pendant le match)
- */
-  private async checkRealTimeCoupons(matchId: string, scoreData?: UpdateMatchScoreEventDto): Promise<void> {
+   * Vérifie les coupons en temps réel (pendant le match)
+   */
+  private async checkRealTimeCoupons(
+    matchId: string,
+    scoreData?: UpdateMatchScoreEventDto,
+  ): Promise<void> {
     const match = await this.matchRepository.matchs.findOne({
       where: { id: matchId },
-      relations: { home: true, away: true, events: { joueur: true, equipe: true } }
+      relations: {
+        home: true,
+        away: true,
+        events: { joueur: true, equipe: true },
+      },
     });
 
     if (!match) return;
 
-    this.logger.log(`=== checkRealTimeCoupons appelé pour match ${matchId} ===`);
+    this.logger.log(
+      `=== checkRealTimeCoupons appelé pour match ${matchId} ===`,
+    );
     this.logger.log(`État du match: ${match.etat}`);
     this.logger.log(`Score: ${match.scores.home}-${match.scores.away}`);
-    this.logger.log(`Nombre d'événements chargés: ${match.events?.length || 0}`); // ✅ LOG
+    this.logger.log(
+      `Nombre d'événements chargés: ${match.events?.length || 0}`,
+    ); // ✅ LOG
 
     const pendingCouponBets = await this.couponBetRepository.couponBets.find({
       where: {
         bet: { match: { id: matchId } },
-        status: BetStatus.PENDING
+        status: BetStatus.PENDING,
       },
       relations: {
         bet: {
-          match: { home: true, away: true }
+          match: { home: true, away: true },
         },
-        coupon: { user: true }
-      }
+        coupon: { user: true },
+      },
     });
 
-    this.logger.log(`Nombre de couponBets en attente trouvés: ${pendingCouponBets.length}`);
+    this.logger.log(
+      `Nombre de couponBets en attente trouvés: ${pendingCouponBets.length}`,
+    );
 
     if (pendingCouponBets.length === 0) {
       this.logger.warn(`Aucun couponBet en attente pour le match ${matchId}`);
@@ -609,16 +732,22 @@ export class MatchService implements IMatchService {
 
     for (const couponBet of pendingCouponBets) {
       if (!couponBet.bet) {
-        this.logger.error(`CouponBet ${couponBet.id} sans bet associé - ERREUR DE CHARGEMENT`);
+        this.logger.error(
+          `CouponBet ${couponBet.id} sans bet associé - ERREUR DE CHARGEMENT`,
+        );
         continue;
       }
 
       if (!couponBet.coupon) {
-        this.logger.error(`CouponBet ${couponBet.id} sans coupon associé - ERREUR DE CHARGEMENT`);
+        this.logger.error(
+          `CouponBet ${couponBet.id} sans coupon associé - ERREUR DE CHARGEMENT`,
+        );
         continue;
       }
 
-      this.logger.log(`✅ Vérification du couponBet ${couponBet.id} - Catégorie: ${couponBet.bet.category}`);
+      this.logger.log(
+        `✅ Vérification du couponBet ${couponBet.id} - Catégorie: ${couponBet.bet.category}`,
+      );
 
       switch (couponBet.bet.category) {
         case CategoryName.MATCH_GOAL_SCORER:
@@ -649,37 +778,46 @@ export class MatchService implements IMatchService {
     this.logger.log(`=== Fin checkRealTimeCoupons pour match ${matchId} ===`);
   }
 
-
   /**
- * Vérifie les paris de type MATCH_GOAL_SCORER
- */
+   * Vérifie les paris de type MATCH_GOAL_SCORER
+   */
   private async checkMatchGoalScorer(
     couponBet: CouponBet,
     scoreData: UpdateMatchScoreEventDto | undefined, // ✅ Peut être undefined
-    match: Match
+    match: Match,
   ): Promise<void> {
     // ✅ Vérifier si déjà traité
     if (couponBet.status !== BetStatus.PENDING) {
-      this.logger.log(`CouponBet ${couponBet.id} déjà traité (${couponBet.status}), skip`);
+      this.logger.log(
+        `CouponBet ${couponBet.id} déjà traité (${couponBet.status}), skip`,
+      );
       return;
     }
 
     const selectedPlayerIds = Object.keys(couponBet.selectedOptions || {});
 
     if (selectedPlayerIds.length === 0) {
-      this.logger.warn(`MATCH_GOAL_SCORER: Aucun joueur sélectionné pour couponBet ${couponBet.id}`);
+      this.logger.warn(
+        `MATCH_GOAL_SCORER: Aucun joueur sélectionné pour couponBet ${couponBet.id}`,
+      );
       return;
     }
 
     const selectedPlayerId = selectedPlayerIds[0];
 
-    this.logger.log(`--- checkMatchGoalScorer pour CouponBet ${couponBet.id} ---`);
+    this.logger.log(
+      `--- checkMatchGoalScorer pour CouponBet ${couponBet.id} ---`,
+    );
     this.logger.log(`Joueur sélectionné: ${selectedPlayerId}`);
     this.logger.log(`État du match: ${match.etat}`);
     this.logger.log(`scoreData fourni: ${scoreData ? 'OUI' : 'NON'}`);
 
     // ✅ CAS 1: Vérification en temps réel (pendant le match)
-    if (scoreData && scoreData.eventType === EventType.BUT && scoreData.playerId === selectedPlayerId) {
+    if (
+      scoreData &&
+      scoreData.eventType === EventType.BUT &&
+      scoreData.playerId === selectedPlayerId
+    ) {
       this.logger.log(`🎯 Le joueur ${selectedPlayerId} vient de marquer!`);
       await this.markCouponBetAsWon(couponBet);
       return;
@@ -693,26 +831,35 @@ export class MatchService implements IMatchService {
       // ✅ Afficher tous les événements pour déboguer
       if (match.events && match.events.length > 0) {
         match.events.forEach((event, index) => {
-          this.logger.log(`Événement ${index + 1}: Type=${event.type}, Joueur=${event.joueur?.id || 'N/A'}, Minute=${event.minute}`);
+          this.logger.log(
+            `Événement ${index + 1}: Type=${event.type}, Joueur=${event.joueur?.id || 'N/A'}, Minute=${event.minute}`,
+          );
         });
       } else {
         this.logger.warn(`Aucun événement trouvé dans le match!`);
       }
 
       // Vérifier si le joueur a marqué
-      const playerScored = match.events?.some(event => {
-        const hasScored = event.type === EventType.BUT && event.joueur?.id === selectedPlayerId;
+      const playerScored = match.events?.some((event) => {
+        const hasScored =
+          event.type === EventType.BUT && event.joueur?.id === selectedPlayerId;
         if (hasScored) {
-          this.logger.log(`✅ Match trouvé: ${event.joueur?.id} a marqué à la ${event.minute}e minute`);
+          this.logger.log(
+            `✅ Match trouvé: ${event.joueur?.id} a marqué à la ${event.minute}e minute`,
+          );
         }
         return hasScored;
       });
 
       if (playerScored) {
-        this.logger.log(`🎉 Le joueur ${selectedPlayerId} a marqué - CouponBet GAGNANT`);
+        this.logger.log(
+          `🎉 Le joueur ${selectedPlayerId} a marqué - CouponBet GAGNANT`,
+        );
         await this.markCouponBetAsWon(couponBet);
       } else {
-        this.logger.log(`❌ Le joueur ${selectedPlayerId} n'a pas marqué - CouponBet PERDANT`);
+        this.logger.log(
+          `❌ Le joueur ${selectedPlayerId} n'a pas marqué - CouponBet PERDANT`,
+        );
         await this.markCouponBetAsLost(couponBet);
       }
     } else {
@@ -723,7 +870,10 @@ export class MatchService implements IMatchService {
   /**
    * Vérifie les paris de type BOTH_TEAMS_SCORE
    */
-  private async checkBothTeamsScore(couponBet: CouponBet, match: Match): Promise<void> {
+  private async checkBothTeamsScore(
+    couponBet: CouponBet,
+    match: Match,
+  ): Promise<void> {
     // Pour BOTH_TEAMS_SCORE, selectedOptions contient { "YES": cote } ou { "NO": cote }
     const selectedOption = Object.keys(couponBet.selectedOptions || {})[0];
 
@@ -731,16 +881,18 @@ export class MatchService implements IMatchService {
 
     const bothTeamsScored = match.scores.home > 0 && match.scores.away > 0;
 
-    if (selectedOption === "OUI" && bothTeamsScored) {
+    if (selectedOption === 'OUI' && bothTeamsScored) {
       await this.markCouponBetAsWon(couponBet);
-    } else if (selectedOption === "NON" && !bothTeamsScored) {
+    } else if (selectedOption === 'NON' && !bothTeamsScored) {
       await this.markCouponBetAsWon(couponBet);
     }
 
     // Marquer comme perdu à la fin du match si la prédiction est fausse
     if (match.etat === MatchState.TERMINER) {
-      if ((selectedOption === "OUI" && !bothTeamsScored) ||
-        (selectedOption === "NON" && bothTeamsScored)) {
+      if (
+        (selectedOption === 'OUI' && !bothTeamsScored) ||
+        (selectedOption === 'NON' && bothTeamsScored)
+      ) {
         await this.markCouponBetAsLost(couponBet);
       }
     }
@@ -749,24 +901,33 @@ export class MatchService implements IMatchService {
   /**
    * Vérifie les paris de type MATCH_RESULT
    */
-  private async checkMatchResult(couponBet: CouponBet, match: Match): Promise<void> {
+  private async checkMatchResult(
+    couponBet: CouponBet,
+    match: Match,
+  ): Promise<void> {
     const selectedResult = Object.keys(couponBet.selectedOptions || {})[0];
 
     this.logger.log(`--- checkMatchResult pour CouponBet ${couponBet.id} ---`);
-    this.logger.log(`selectedOptions: ${JSON.stringify(couponBet.selectedOptions)}`);
+    this.logger.log(
+      `selectedOptions: ${JSON.stringify(couponBet.selectedOptions)}`,
+    );
     this.logger.log(`selectedResult: ${selectedResult}`);
     this.logger.log(`État match: ${match.etat}`);
     this.logger.log(`Score actuel: ${match.scores.home}-${match.scores.away}`);
 
     if (!selectedResult) {
-      this.logger.warn(`Aucune option sélectionnée pour le couponBet ${couponBet.id}`);
+      this.logger.warn(
+        `Aucune option sélectionnée pour le couponBet ${couponBet.id}`,
+      );
       return;
     }
 
     if (match.etat === MatchState.TERMINER) {
       const actualResult = this.calculateMatchResult(match);
 
-      this.logger.log(`✅ Match terminé - Résultat attendu: ${selectedResult}, Résultat réel: ${actualResult}`);
+      this.logger.log(
+        `✅ Match terminé - Résultat attendu: ${selectedResult}, Résultat réel: ${actualResult}`,
+      );
 
       if (selectedResult === actualResult) {
         this.logger.log(`🎉 CouponBet ${couponBet.id} GAGNANT`);
@@ -776,14 +937,19 @@ export class MatchService implements IMatchService {
         await this.markCouponBetAsLost(couponBet);
       }
     } else {
-      this.logger.log(`⏳ Match pas encore terminé, état actuel: ${match.etat}`);
+      this.logger.log(
+        `⏳ Match pas encore terminé, état actuel: ${match.etat}`,
+      );
     }
   }
 
   /**
    * Vérifie les paris de type FIRST_HALF_RESULT
    */
-  private async checkFirstHalfResult(couponBet: CouponBet, match: Match): Promise<void> {
+  private async checkFirstHalfResult(
+    couponBet: CouponBet,
+    match: Match,
+  ): Promise<void> {
     // Vérifier seulement si on est à la mi-temps
     if (match.halfPauseState === HalfPauseState.HALF_TIME) {
       const selectedResult = Object.keys(couponBet.selectedOptions || {})[0];
@@ -817,7 +983,10 @@ export class MatchService implements IMatchService {
   /**
    * Vérifie les paris de type MATCH_TEAM_QUALIFY
    */
-  private async checkMatchTeamQualify(couponBet: CouponBet, match: Match): Promise<void> {
+  private async checkMatchTeamQualify(
+    couponBet: CouponBet,
+    match: Match,
+  ): Promise<void> {
     // Pour MATCH_TEAM_QUALIFY, selectedOptions contient { "team-uuid": cote }
     const selectedTeamId = Object.keys(couponBet.selectedOptions || {})[0];
 
@@ -849,8 +1018,13 @@ export class MatchService implements IMatchService {
   private async markCouponBetAsWon(couponBet: CouponBet): Promise<void> {
     try {
       // Vérifier que le couponBet n'est pas déjà traité
-      if (couponBet.status === BetStatus.GAGNE || couponBet.status === BetStatus.PERDU) {
-        this.logger.warn(`CouponBet ${couponBet.id} déjà traité avec le statut: ${couponBet.status}`);
+      if (
+        couponBet.status === BetStatus.GAGNE ||
+        couponBet.status === BetStatus.PERDU
+      ) {
+        this.logger.warn(
+          `CouponBet ${couponBet.id} déjà traité avec le statut: ${couponBet.status}`,
+        );
         return;
       }
 
@@ -879,13 +1053,12 @@ export class MatchService implements IMatchService {
         matchId: couponBet.bet?.match?.id,
         selectedOption,
         odds,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
-
     } catch (error) {
       this.logger.error(
         `Erreur lors du marquage du couponBet ${couponBet.id} comme gagnant: ${error.message}`,
-        error.stack
+        error.stack,
       );
       throw error; // Ou gérer l'erreur selon votre stratégie
     }
@@ -897,8 +1070,13 @@ export class MatchService implements IMatchService {
   private async markCouponBetAsLost(couponBet: CouponBet): Promise<void> {
     try {
       // Vérifier que le couponBet n'est pas déjà traité
-      if (couponBet.status === BetStatus.GAGNE || couponBet.status === BetStatus.PERDU) {
-        this.logger.warn(`CouponBet ${couponBet.id} déjà traité avec le statut: ${couponBet.status}`);
+      if (
+        couponBet.status === BetStatus.GAGNE ||
+        couponBet.status === BetStatus.PERDU
+      ) {
+        this.logger.warn(
+          `CouponBet ${couponBet.id} déjà traité avec le statut: ${couponBet.status}`,
+        );
         return;
       }
 
@@ -910,7 +1088,9 @@ export class MatchService implements IMatchService {
       const selectedOption = Object.keys(couponBet.selectedOptions || {})[0];
 
       // Log pour le débogage
-      this.logger.log(`CouponBet ${couponBet.id} marqué comme perdant - Option: ${selectedOption}`);
+      this.logger.log(
+        `CouponBet ${couponBet.id} marqué comme perdant - Option: ${selectedOption}`,
+      );
 
       // Mettre à jour dans la base de données
       await this.couponBetRepository.couponBets.update(
@@ -929,13 +1109,12 @@ export class MatchService implements IMatchService {
         betId: couponBet.bet?.id,
         matchId: couponBet.bet?.match?.id,
         selectedOption,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
-
     } catch (error) {
       this.logger.error(
         `Erreur lors du marquage du couponBet ${couponBet.id} comme perdant: ${error.message}`,
-        error.stack
+        error.stack,
       );
       throw error;
     }
@@ -944,7 +1123,7 @@ export class MatchService implements IMatchService {
   // VALIDER LES COUPONS
   /**
    * Vérifie et met à jour l'état d'un coupon en fonction de ses couponBets
-  */
+   */
   // private async updateCouponStatus(couponId: string): Promise<void> {
   //   try {
   //     this.logger.log(`--- updateCouponStatus pour coupon ${couponId} ---`);
@@ -1043,7 +1222,6 @@ export class MatchService implements IMatchService {
   //   }
   // }
 
-
   private async updateCouponStatus(couponId: string): Promise<void> {
     try {
       this.logger.log(`--- updateCouponStatus pour coupon ${couponId} ---`);
@@ -1052,8 +1230,8 @@ export class MatchService implements IMatchService {
         where: { id: couponId },
         relations: {
           couponBets: { bet: { match: true } },
-          user: true
-        }
+          user: true,
+        },
       });
 
       if (!coupon) {
@@ -1061,7 +1239,9 @@ export class MatchService implements IMatchService {
         return;
       }
 
-      this.logger.log(`État actuel du coupon: ${coupon.etat}, isPaid: ${coupon.isPaid}`);
+      this.logger.log(
+        `État actuel du coupon: ${coupon.etat}, isPaid: ${coupon.isPaid}`,
+      );
 
       // ✅ CORRECTION: Ne pas skip si le coupon est déjà WIN mais non payé
       if (coupon.isPaid) {
@@ -1075,10 +1255,10 @@ export class MatchService implements IMatchService {
       const stats = {
         gagne: 0,
         perdu: 0,
-        pending: 0
+        pending: 0,
       };
 
-      couponBets.forEach(couponBet => {
+      couponBets.forEach((couponBet) => {
         this.logger.log(`CouponBet ${couponBet.id}: ${couponBet.status}`);
         switch (couponBet.status) {
           case BetStatus.GAGNE:
@@ -1093,7 +1273,9 @@ export class MatchService implements IMatchService {
         }
       });
 
-      this.logger.log(`Stats - Gagnés: ${stats.gagne}, Perdus: ${stats.perdu}, En attente: ${stats.pending}`);
+      this.logger.log(
+        `Stats - Gagnés: ${stats.gagne}, Perdus: ${stats.perdu}, En attente: ${stats.pending}`,
+      );
 
       let newCouponState: CouponState;
       let shouldPayout = false;
@@ -1118,7 +1300,9 @@ export class MatchService implements IMatchService {
       // ✅ CORRECTION: Mettre à jour même si l'état ne change pas (pour le paiement)
       if (coupon.etat !== newCouponState || shouldPayout) {
         if (coupon.etat !== newCouponState) {
-          this.logger.log(`Mise à jour du coupon de ${coupon.etat} vers ${newCouponState}`);
+          this.logger.log(
+            `Mise à jour du coupon de ${coupon.etat} vers ${newCouponState}`,
+          );
           coupon.etat = newCouponState;
         }
 
@@ -1129,12 +1313,14 @@ export class MatchService implements IMatchService {
           userId: coupon.user?.id,
           newState: newCouponState,
           gains: coupon.gains,
-          timestamp: new Date()
+          timestamp: new Date(),
         });
 
         // ✅ CORRECTION: Paiement si le coupon est gagnant ET non payé
         if (newCouponState === CouponState.WIN && !coupon.isPaid) {
-          this.logger.log(`💰 Tentative de paiement pour le coupon ${coupon.id}`);
+          this.logger.log(
+            `💰 Tentative de paiement pour le coupon ${coupon.id}`,
+          );
           // await this.payoutUser(coupon.id);
           await this.payoutQueue.add('payout', {
             couponId: coupon.id,
@@ -1143,15 +1329,13 @@ export class MatchService implements IMatchService {
       } else {
         this.logger.log(`Pas de changement d'état nécessaire`);
       }
-
     } catch (error) {
       this.logger.error(
         `Erreur lors de la mise à jour du statut du coupon ${couponId}: ${error.message}`,
-        error.stack
+        error.stack,
       );
     }
   }
-
 
   // private async payoutUser(coupon: Coupon): Promise<void> {
   //   try {
@@ -1207,12 +1391,10 @@ export class MatchService implements IMatchService {
   //   }
   // }
 
-
   async payoutUser(couponId: string): Promise<void> {
     try {
-
       await this.dataSource.transaction(async (manager) => {
-
+        // ✅ ÉTAPE 1 : Verrouiller le coupon SANS relation (évite le LEFT JOIN + FOR UPDATE)
         const lockedCoupon = await manager.findOne(CouponEntity, {
           where: { id: couponId },
           lock: { mode: 'pessimistic_write' },
@@ -1225,8 +1407,18 @@ export class MatchService implements IMatchService {
           return;
         }
 
+        // ✅ ÉTAPE 2 : Récupérer la relation user (sans verrouiller les relations pour éviter l'erreur Postgres)
+        const couponWithUser = await manager.findOne(CouponEntity, {
+          where: { id: couponId },
+          relations: { user: true },
+        });
+
+        const userId = lockedCoupon.user?.id ?? couponWithUser?.user?.id;
+        if (!userId) throw new Error('userId introuvable sur le coupon');
+
+        // ✅ ÉTAPE 3 : Verrouiller l'utilisateur séparément via userId
         const user = await manager.findOne(UserEntity, {
-          where: { id: lockedCoupon.user?.id },
+          where: { id: userId },
           lock: { mode: 'pessimistic_write' },
         });
 
@@ -1241,10 +1433,10 @@ export class MatchService implements IMatchService {
         await manager.save(user);
         await manager.save(lockedCoupon);
 
-        this.logger.log(`✅ Paiement ${gains} FCFA au user ${user.id}`);
-
+        this.logger.log(
+          `✅ Paiement de ${gains} FCFA à l'utilisateur ${user.id}`,
+        );
       });
-
     } catch (error) {
       this.logger.error(`❌ payout error: ${error.message}`);
       throw error;
@@ -1252,20 +1444,20 @@ export class MatchService implements IMatchService {
   }
 
   /**
- * Vérifie tous les coupons liés à un match après une mise à jour
- */
+   * Vérifie tous les coupons liés à un match après une mise à jour
+   */
   async checkMatchRelatedCoupons(matchId: string): Promise<void> {
     try {
       // Récupérer tous les couponBets pour ce match
       const couponBets = await this.couponBetRepository.couponBets.find({
         where: { bet: { match: { id: matchId } } },
-        relations: { coupon: true, bet: { match: true } }
+        relations: { coupon: true, bet: { match: true } },
       });
 
       // Regrouper par coupon
       const couponMap = new Map<string, CouponBet[]>();
 
-      couponBets.forEach(couponBet => {
+      couponBets.forEach((couponBet) => {
         if (couponBet.coupon?.id) {
           const couponId = couponBet.coupon.id;
           if (!couponMap.has(couponId)) {
@@ -1279,11 +1471,10 @@ export class MatchService implements IMatchService {
       for (const [couponId] of couponMap) {
         await this.updateCouponStatus(couponId);
       }
-
     } catch (error) {
       this.logger.error(
         `Erreur lors de la vérification des coupons pour le match ${matchId}: ${error.message}`,
-        error.stack
+        error.stack,
       );
     }
   }

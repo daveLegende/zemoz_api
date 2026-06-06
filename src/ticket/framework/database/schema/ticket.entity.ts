@@ -1,6 +1,21 @@
-import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ATimestamp } from '../../../../_shared/framework/timestamp.abstract';
-import { TicketDuration, TicketState, TicketType } from '../../../../ticket/domain/ticket.enum';
+import {
+  TicketDuration,
+  TicketPosition,
+  TicketState,
+  TicketType,
+} from '../../../../ticket/domain/ticket.enum';
 import { UserEntity } from '../../../../user/framework/database/schema/user.entity';
 import { MatchEntity } from '../../../../match/framework/database/schema/match.entity';
 import { Ticket } from '../../../../ticket/domain';
@@ -42,24 +57,34 @@ import { Ticket } from '../../../../ticket/domain';
 
 @Entity('tickets')
 export class TicketEntity extends ATimestamp implements Ticket {
-
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ type: 'text', nullable: true })
   qrCode: string;
 
-  @Column({ default: "" })
+  @Column({ default: '' })
   code?: string; // code unique pour le scan
 
   @Column({ type: 'enum', enum: TicketType, default: TicketType.STANDARD })
   type: TicketType;
 
-  @Column({ type: 'enum', enum: TicketDuration, default: TicketDuration.SIMPLE })
+  @Column({
+    type: 'enum',
+    enum: TicketDuration,
+    default: TicketDuration.SIMPLE,
+  })
   duree: TicketDuration;
 
   @Column({ type: 'enum', enum: TicketState, default: TicketState.VALIDE })
   etat: TicketState;
+
+  @Column({
+    type: 'enum',
+    enum: TicketPosition,
+    default: TicketPosition.SORTIE,
+  })
+  position: TicketPosition;
 
   @ManyToOne(() => UserEntity, (user) => user.tickets, { nullable: false })
   user: UserEntity;
@@ -80,4 +105,3 @@ export class TicketEntity extends ATimestamp implements Ticket {
   @Column({ default: false })
   isDeleted: boolean;
 }
-

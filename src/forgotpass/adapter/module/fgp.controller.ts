@@ -21,7 +21,10 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { IDParamDTO } from '../../../_shared/adapter/dto';
-import { IForgotPassController, IForgotPassService } from '../../../forgotpass/app/module';
+import {
+  IForgotPassController,
+  IForgotPassService,
+} from '../../../forgotpass/app/module';
 import { ForgotPass } from '../../../forgotpass/domain';
 import { ForgotPassAccountDto } from '../dto';
 import { ForgotPassFactory } from '../fgp.factory';
@@ -29,7 +32,7 @@ import { ForgotPassFactory } from '../fgp.factory';
 @ApiTags('forgot pass management')
 @Controller('forgotpass')
 export class ForgotPassController implements IForgotPassController {
-  constructor(private readonly fgpService: IForgotPassService) { }
+  constructor(private readonly fgpService: IForgotPassService) {}
 
   @Get()
   // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
@@ -68,9 +71,7 @@ export class ForgotPassController implements IForgotPassController {
   @ApiOperation({
     summary: 'Create ForgotPass',
   })
-  async create(
-    @Body() data: ForgotPassAccountDto,
-  ): Promise<ForgotPass> {
+  async create(@Body() data: ForgotPassAccountDto): Promise<ForgotPass> {
     const fgp = await this.fgpService.add(data);
     if (fgp) return ForgotPassFactory.getFgp(fgp);
   }
@@ -91,19 +92,16 @@ export class ForgotPassController implements IForgotPassController {
     return this.fgpService.remove(id);
   }
 
-
   /**
    *
    * @method POST
    */
-  @Post("verify-code")
+  @Post('verify-code')
   @ApiConsumes('multipart/form-data', 'application/json')
   @ApiOperation({
     summary: 'Verify code',
   })
-  async verifyCode(
-    @Body() data: ForgotPassAccountDto,
-  ): Promise<boolean> {
+  async verifyCode(@Body() data: ForgotPassAccountDto): Promise<boolean> {
     const fgp = await this.fgpService.verifyCode(data);
     return fgp;
   }

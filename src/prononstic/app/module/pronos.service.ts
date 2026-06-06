@@ -1,6 +1,5 @@
-import { Prononstic } from "../../domain";
-import { ICreatePronosDTO, IUpdatePronosDTO } from "../dto";
-
+import { Prononstic } from '../../domain';
+import { ICreatePronosDTO, IUpdatePronosDTO } from '../dto';
 
 export abstract class IPrononsticService {
   abstract add(data: ICreatePronosDTO): Promise<Prononstic>;

@@ -5,7 +5,6 @@ import { MatchEventEntity } from './schema/match.event.entity';
 import { IMatchEventRepository } from '../../../matchEvents/domain';
 import { MatchEventRepository } from './match.event.repository';
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([MatchEventEntity])],
   providers: [

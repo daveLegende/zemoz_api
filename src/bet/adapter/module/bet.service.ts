@@ -7,11 +7,17 @@ import {
 } from '@nestjs/common';
 import { IBetService } from '../../../bet/app/module';
 import { Bet, CategoryName, MarketType } from '../../../bet/domain';
-import { BetAccountDto, UpdateBetDTO, CreateMultipleBetsDto, UpdateMultipleBetsDTO } from '../dto';
+import {
+  BetAccountDto,
+  UpdateBetDTO,
+  CreateMultipleBetsDto,
+  UpdateMultipleBetsDTO,
+} from '../dto';
 import { IBetRepository } from '../../../bet/domain/data.abstract';
 import { IMatchRepository, Match } from '../../../match/domain';
 import { BetFactory } from '../bet.factory';
 import { MARKET_CONFIG } from '../../../bet/domain/bet.mapping';
+import { ITournoiRepository, Tournoi } from '../../../tournoi/domain';
 import { isUUID } from 'class-validator';
 
 @Injectable()
@@ -19,13 +25,14 @@ export class BetService implements IBetService {
   private readonly logger = new Logger();
   constructor(
     private betsRepository: IBetRepository,
-    private matchRepository: IMatchRepository
+    private matchRepository: IMatchRepository,
+    private tournoiRepository: ITournoiRepository,
   ) {}
 
   async fetchAll(): Promise<Bet[]> {
     try {
       return await this.betsRepository.bets.find({
-        relations: { match: true }
+        relations: { match: true, competition: true },
       });
     } catch (error) {
       this.logger.error(error.message, 'ERROR::betsService.fetchAll');
@@ -37,7 +44,7 @@ export class BetService implements IBetService {
     try {
       const bets = await this.betsRepository.bets.findOne({
         where: { id: id },
-        relations: { match: true }
+        relations: { match: true, competition: true },
       });
       if (bets) {
         return bets;
@@ -53,12 +60,11 @@ export class BetService implements IBetService {
     return await this.betsRepository.bets.findOneBy({ ...data });
   }
 
-
   // dans bet/service/bet.service.ts
   async addMultiple(data: CreateMultipleBetsDto): Promise<Bet[]> {
     try {
       const { matchId, competitionId, bets } = data;
-      
+
       // 1️⃣ Vérifier que le match existe (si nécessaire)
       let match: Match = null;
       if (matchId) {
@@ -69,8 +75,13 @@ export class BetService implements IBetService {
       }
 
       // 2️⃣ Vérifier que la compétition existe (si nécessaire)
+      let competition: Tournoi = null;
       if (competitionId) {
-        // Logique de vérification de compétition...
+        competition =
+          await this.tournoiRepository.tournois.findOneByID(competitionId);
+        if (!competition) {
+          throw new NotFoundException('Compétition non trouvée');
+        }
       }
 
       const createdBets: Bet[] = [];
@@ -86,13 +97,13 @@ export class BetService implements IBetService {
           where: {
             category: betData.category,
             match: match ? { id: matchId } : null,
-            competitionId: competitionId ?? null,
+            competition: competition ? { id: competitionId } : null,
           },
         });
 
         if (existed) {
           throw new ConflictException(
-            `Le marché ${betData.category} existe déjà pour ce match / compétition`
+            `Le marché ${betData.category} existe déjà pour ce match / compétition`,
           );
         }
 
@@ -101,7 +112,7 @@ export class BetService implements IBetService {
           category: betData.category,
           odds: betData.odds.odds, // Note: odds.odds à cause de la structure
           match,
-          competitionId,
+          competition,
         });
 
         const savedBet = await this.betsRepository.bets.create(bet);
@@ -109,7 +120,6 @@ export class BetService implements IBetService {
       }
 
       return createdBets;
-
     } catch (error) {
       this.logger.error(error.message, 'ERROR::betservice.addMultiple');
       throw error;
@@ -123,9 +133,8 @@ export class BetService implements IBetService {
 
       const config = MARKET_CONFIG[data.category];
 
-      // 2️⃣ Charger match / competition si nécessaire
+      // 2️⃣ Charger match si nécessaire
       let match: Match = null;
-
       if (config.requiresMatch) {
         match = await this.matchRepository.matchs.findOneByID(data.matchId);
         if (!match) {
@@ -133,38 +142,46 @@ export class BetService implements IBetService {
         }
       }
 
-      // 3️⃣ Vérifier unicité du market
+      // 3️⃣ Charger competition si nécessaire
+      let competition: Tournoi = null;
+      if (config.requiresCompetition) {
+        competition = await this.tournoiRepository.tournois.findOneByID(
+          data.competitionId,
+        );
+        if (!competition) {
+          throw new NotFoundException('Compétition non trouvée');
+        }
+      }
+
+      // 4️⃣ Vérifier unicité du market
       const existed = await this.betsRepository.bets.findOne({
         where: {
           category: data.category,
           match: match ?? null,
-          competitionId: data.competitionId ?? null,
+          competition: competition ?? null,
         },
       });
 
       if (existed) {
         throw new ConflictException(
-          'Ce marché existe déjà pour ce match / compétition'
+          'Ce marché existe déjà pour ce match / compétition',
         );
       }
 
-      // 4️⃣ Création du bet
+      // 5️⃣ Création du bet
       const bet = BetFactory.create({
         category: data.category,
         odds: data.odds.odds,
         match,
-        competitionId: data.competitionId,
+        competition,
       });
 
       return await this.betsRepository.bets.create(bet);
-
     } catch (error) {
       this.logger.error(error.message, 'ERROR::betservice.add');
       throw error;
     }
   }
-
-
 
   async edit(data: UpdateBetDTO): Promise<Bet> {
     try {
@@ -172,7 +189,7 @@ export class BetService implements IBetService {
 
       const bet = await this.betsRepository.bets.findOne({
         where: { id },
-        relations: { match: true },
+        relations: { match: true, competition: true },
       });
 
       if (!bet) {
@@ -187,20 +204,18 @@ export class BetService implements IBetService {
       this.validateBet({
         category: bet.category,
         matchId: bet.match?.id,
-        competitionId: bet.competitionId,
+        competitionId: bet.competition?.id,
         odds,
       });
 
       const updated = BetFactory.update(bet, odds.odds);
 
       return await this.betsRepository.bets.update(updated);
-
     } catch (error) {
       this.logger.error(error.message, 'ERROR::betservice.editbets');
       throw error;
     }
   }
-
 
   async setState(id: string): Promise<boolean> {
     return false;
@@ -210,7 +225,7 @@ export class BetService implements IBetService {
     try {
       const bets = await this.betsRepository.bets.findOne({
         where: { id: id },
-        relations: { match: true }
+        relations: { match: true },
       });
       if (bets) {
         return await this.betsRepository.bets.remove(bets).then(() => true);
@@ -222,16 +237,15 @@ export class BetService implements IBetService {
     }
   }
 
-
   validateBet(dto: BetAccountDto) {
     const config = MARKET_CONFIG[dto.category];
 
     if (config.requiresMatch && !dto.matchId) {
-      throw new BadRequestException("Match requis pour ce pari");
+      throw new BadRequestException('Match requis pour ce pari');
     }
 
     if (config.requiresCompetition && !dto.competitionId) {
-      throw new BadRequestException("Compétition requise");
+      throw new BadRequestException('Compétition requise');
     }
 
     // Validation des options
@@ -254,11 +268,7 @@ export class BetService implements IBetService {
     }
   }
 
-  
-  private assertKeys(
-    odds: Record<string, number>,
-    allowedKeys: string[]
-  ) {
+  private assertKeys(odds: Record<string, number>, allowedKeys: string[]) {
     if (!odds || typeof odds !== 'object') {
       throw new BadRequestException('Cotes invalides');
     }
@@ -266,18 +276,18 @@ export class BetService implements IBetService {
     const keys = Object.keys(odds);
 
     // Clés manquantes
-    const missingKeys = allowedKeys.filter(k => !keys.includes(k));
+    const missingKeys = allowedKeys.filter((k) => !keys.includes(k));
     if (missingKeys.length > 0) {
       throw new BadRequestException(
-        `Options manquantes: ${missingKeys.join(', ')}`
+        `Options manquantes: ${missingKeys.join(', ')}`,
       );
     }
 
     // Clés interdites
-    const invalidKeys = keys.filter(k => !allowedKeys.includes(k));
+    const invalidKeys = keys.filter((k) => !allowedKeys.includes(k));
     if (invalidKeys.length > 0) {
       throw new BadRequestException(
-        `Options invalides: ${invalidKeys.join(', ')}`
+        `Options invalides: ${invalidKeys.join(', ')}`,
       );
     }
 
@@ -285,9 +295,7 @@ export class BetService implements IBetService {
     for (const key of keys) {
       const value = odds[key];
       if (typeof value !== 'number' || value <= 1) {
-        throw new BadRequestException(
-          `Cote invalide pour ${key}`
-        );
+        throw new BadRequestException(`Cote invalide pour ${key}`);
       }
     }
   }
@@ -305,20 +313,13 @@ export class BetService implements IBetService {
 
     for (const key of keys) {
       if (!isUUID(key)) {
-        throw new BadRequestException(
-          `Clé invalide (UUID attendu): ${key}`
-        );
+        throw new BadRequestException(`Clé invalide (UUID attendu): ${key}`);
       }
 
       const value = odds[key];
       if (typeof value !== 'number' || value <= 1) {
-        throw new BadRequestException(
-          `Cote invalide pour ${key}`
-        );
+        throw new BadRequestException(`Cote invalide pour ${key}`);
       }
     }
   }
-
-
-
 }

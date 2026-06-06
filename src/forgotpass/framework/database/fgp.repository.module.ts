@@ -5,7 +5,6 @@ import { ForgotPassEntity } from './schema/fgp.entity';
 import { IForgotPassRepository } from '../../../forgotpass/domain';
 import { ForgotPassRepository } from './fgp.repository';
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([ForgotPassEntity])],
   providers: [

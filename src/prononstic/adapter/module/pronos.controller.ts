@@ -37,7 +37,7 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 @UseGuards(UserGuard, AdminGuard)
 @Controller('pronos')
 export class PrononsticController implements IPrononsticController {
-  constructor(private readonly pronoService: IPrononsticService) { }
+  constructor(private readonly pronoService: IPrononsticService) {}
 
   @Get()
   // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
@@ -78,9 +78,7 @@ export class PrononsticController implements IPrononsticController {
     summary: 'Create prono',
   })
   @ApiResponse({ type: DocPrononsticOutputDTO })
-  async create(
-    @Body() data: PrononsticAccoutDTO,
-  ): Promise<Prononstic> {
+  async create(@Body() data: PrononsticAccoutDTO): Promise<Prononstic> {
     const prono = await this.pronoService.add(data);
     if (prono) return PrononsticFactory.getPronos(prono);
   }
@@ -94,12 +92,9 @@ export class PrononsticController implements IPrononsticController {
   @ApiOperation({ summary: 'Update user account' })
   @ApiBody({ type: UpdatePrononsticDTO })
   @ApiResponse({ type: DocPrononsticOutputDTO })
-  async update(
-    @Body() data: UpdatePrononsticDTO,
-  ): Promise<Prononstic> {
+  async update(@Body() data: UpdatePrononsticDTO): Promise<Prononstic> {
     return PrononsticFactory.getPronos(await this.pronoService.edit(data));
   }
-
 
   /**
    * @method DELETE

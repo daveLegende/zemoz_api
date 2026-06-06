@@ -7,4 +7,4 @@ import { AuthAPIService } from './auth.api.service';
   providers: [AuthAPIService],
   exports: [AuthAPIService],
 })
-export class AuthApiModule { }
+export class AuthApiModule {}

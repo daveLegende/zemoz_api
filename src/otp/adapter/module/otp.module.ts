@@ -7,9 +7,13 @@ import { UserRepositoryModule } from '../../../user/framework/database/user.repo
 import { AuthApiModule } from '../../../user/framework/API';
 import { TwilioModule } from '../../../twilio/twilio.module';
 
-
 @Module({
-  imports: [OtpRepositoryModule, UserRepositoryModule, AuthApiModule, TwilioModule],
+  imports: [
+    OtpRepositoryModule,
+    UserRepositoryModule,
+    AuthApiModule,
+    TwilioModule,
+  ],
   controllers: [OtpController],
   providers: [OtpService, { provide: IOtpService, useClass: OtpService }],
   exports: [IOtpService, OtpRepositoryModule],

@@ -7,15 +7,19 @@ import { Repository } from 'typeorm';
 import { ForgotPassEntity } from './schema/fgp.entity';
 
 @Injectable()
-export class ForgotPassRepository implements IForgotPassRepository, OnApplicationBootstrap {
-    fgps: IGenericRepository<ForgotPass>;
-    
-    constructor(
-        @InjectRepository(ForgotPassEntity)
-        private forgotPassRepository: Repository<ForgotPassEntity>,
-    ) {}
+export class ForgotPassRepository
+  implements IForgotPassRepository, OnApplicationBootstrap
+{
+  fgps: IGenericRepository<ForgotPass>;
 
-    onApplicationBootstrap(): void {
-        this.fgps = new DBGenericRepository<ForgotPassEntity>(this.forgotPassRepository);
-    }
+  constructor(
+    @InjectRepository(ForgotPassEntity)
+    private forgotPassRepository: Repository<ForgotPassEntity>,
+  ) {}
+
+  onApplicationBootstrap(): void {
+    this.fgps = new DBGenericRepository<ForgotPassEntity>(
+      this.forgotPassRepository,
+    );
+  }
 }

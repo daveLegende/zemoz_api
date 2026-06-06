@@ -5,7 +5,6 @@ import { IPouleRepository } from '../../domain';
 import { PouleRepository } from './poule.repository';
 import { PouleEntity } from './schema/poule.entity';
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([PouleEntity])],
   providers: [

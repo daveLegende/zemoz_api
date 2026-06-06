@@ -1,5 +1,5 @@
-import { ICreateCouponBetDTO, IUpdateCouponBetDTO } from "../dto";
-import { CouponBet } from "../../../couponBet/domain";
+import { ICreateCouponBetDTO, IUpdateCouponBetDTO } from '../dto';
+import { CouponBet } from '../../../couponBet/domain';
 
 export abstract class ICouponBetService {
   abstract add(data: ICreateCouponBetDTO): Promise<CouponBet>;

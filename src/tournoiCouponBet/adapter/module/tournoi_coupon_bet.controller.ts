@@ -23,7 +23,10 @@ import { TournoiCouponBetFactory } from '../tournoi_coupon_bet.factory';
 import { TournoiCouponBetAccountDto, UpdateTournoiCouponBetDTO } from '../dto';
 import { DocTournoiCouponBetOutputDto } from '../dto/doc.output_bet.dto';
 import { TournoiCouponBet } from '../../../tournoiCouponBet/domain';
-import { ITournoiCouponBetController, ITournoiCouponBetService } from '../../../tournoiCouponBet/app/module';
+import {
+  ITournoiCouponBetController,
+  ITournoiCouponBetService,
+} from '../../../tournoiCouponBet/app/module';
 import { UserGuard } from '../../../user/adapter/guard/auth.guard';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 
@@ -32,7 +35,7 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 @UseGuards(UserGuard, AdminGuard)
 @Controller('tournoi-coupon-bets')
 export class TournoiCouponBetController implements ITournoiCouponBetController {
-  constructor(private readonly couponBetService: ITournoiCouponBetService) { }
+  constructor(private readonly couponBetService: ITournoiCouponBetService) {}
 
   @Get()
   // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
@@ -44,14 +47,17 @@ export class TournoiCouponBetController implements ITournoiCouponBetController {
   // @ApiResponse({ type: [CouponAccountDTO] })
   async all(): Promise<TournoiCouponBet[]> {
     const coupons = await this.couponBetService.fetchAll();
-    return coupons?.map((coupon) => TournoiCouponBetFactory.getCouponBet(coupon));
+    return coupons?.map((coupon) =>
+      TournoiCouponBetFactory.getCouponBet(coupon),
+    );
   }
-
 
   @Get('search')
   async search(@Query() param: TournoiCouponBet): Promise<TournoiCouponBet> {
     if (param) {
-      return TournoiCouponBetFactory.getCouponBet(await this.couponBetService.search(param));
+      return TournoiCouponBetFactory.getCouponBet(
+        await this.couponBetService.search(param),
+      );
     }
   }
 
@@ -68,7 +74,9 @@ export class TournoiCouponBetController implements ITournoiCouponBetController {
   })
   @ApiResponse({ type: DocTournoiCouponBetOutputDto })
   async show(@Param() { id }: IDParamDTO): Promise<TournoiCouponBet> {
-    return TournoiCouponBetFactory.getCouponBet(await this.couponBetService.fetchOne(id));
+    return TournoiCouponBetFactory.getCouponBet(
+      await this.couponBetService.fetchOne(id),
+    );
   }
 
   /**
@@ -82,7 +90,7 @@ export class TournoiCouponBetController implements ITournoiCouponBetController {
   // @ApiBody({ type: RegisterAccoutDTO })
   // @ApiResponse({ type: DocUserOutputDTO })
   async create(
-    @Body() data: TournoiCouponBetAccountDto
+    @Body() data: TournoiCouponBetAccountDto,
   ): Promise<TournoiCouponBet> {
     const coupon = await this.couponBetService.add(data);
     if (coupon) return TournoiCouponBetFactory.getCouponBet(coupon);
@@ -96,9 +104,11 @@ export class TournoiCouponBetController implements ITournoiCouponBetController {
   @ApiBody({ type: UpdateTournoiCouponBetDTO })
   @ApiResponse({ type: DocTournoiCouponBetOutputDto })
   async update(
-    @Body() data: UpdateTournoiCouponBetDTO
+    @Body() data: UpdateTournoiCouponBetDTO,
   ): Promise<TournoiCouponBet> {
-    return TournoiCouponBetFactory.getCouponBet(await this.couponBetService.edit(data));
+    return TournoiCouponBetFactory.getCouponBet(
+      await this.couponBetService.edit(data),
+    );
   }
 
   @Patch('state/:id')

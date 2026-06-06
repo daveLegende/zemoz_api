@@ -5,7 +5,6 @@ import { IInfoRepository } from '../../../infos/domain';
 import { InfoRepository } from './info.repository';
 import { InfoEntity } from './schema/info.entity';
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([InfoEntity])],
   providers: [

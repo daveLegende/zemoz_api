@@ -26,7 +26,10 @@ import { TournoiCouponAccountDto, UpdateTournoiCouponDTO } from '../dto';
 import { DocTournoiCouponOutputDto } from '../dto/doc.output.dto';
 import { UserGuard } from '../../../user/adapter/guard/auth.guard';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
-import { ITournoiCouponController, ITournoiCouponService } from '../../../tournoiCoupon/app/module';
+import {
+  ITournoiCouponController,
+  ITournoiCouponService,
+} from '../../../tournoiCoupon/app/module';
 import { TournoiCoupon } from '../../../tournoiCoupon/domain';
 
 @ApiTags('Tournoi Coupon management')
@@ -34,7 +37,7 @@ import { TournoiCoupon } from '../../../tournoiCoupon/domain';
 @UseGuards(UserGuard, AdminGuard)
 @Controller('tournoi-coupons')
 export class TournoiCouponController implements ITournoiCouponController {
-  constructor(private readonly tournoiCouponService: ITournoiCouponService) { }
+  constructor(private readonly tournoiCouponService: ITournoiCouponService) {}
 
   @Get()
   // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
@@ -49,11 +52,12 @@ export class TournoiCouponController implements ITournoiCouponController {
     return coupons?.map((coupon) => TournoiCouponFactory.getCoupon(coupon));
   }
 
-
   @Get('search')
   async search(@Query() param: TournoiCoupon): Promise<TournoiCoupon> {
     if (param) {
-      return TournoiCouponFactory.getCoupon(await this.tournoiCouponService.search(param));
+      return TournoiCouponFactory.getCoupon(
+        await this.tournoiCouponService.search(param),
+      );
     }
   }
 
@@ -70,7 +74,9 @@ export class TournoiCouponController implements ITournoiCouponController {
   })
   @ApiResponse({ type: DocTournoiCouponOutputDto })
   async show(@Param() { id }: IDParamDTO): Promise<TournoiCoupon> {
-    return TournoiCouponFactory.getCoupon(await this.tournoiCouponService.fetchOne(id));
+    return TournoiCouponFactory.getCoupon(
+      await this.tournoiCouponService.fetchOne(id),
+    );
   }
 
   /**
@@ -83,9 +89,7 @@ export class TournoiCouponController implements ITournoiCouponController {
   })
   // @ApiBody({ type: RegisterAccoutDTO })
   // @ApiResponse({ type: DocUserOutputDTO })
-  async create(
-    @Body() data: TournoiCouponAccountDto
-  ): Promise<TournoiCoupon> {
+  async create(@Body() data: TournoiCouponAccountDto): Promise<TournoiCoupon> {
     const coupon = await this.tournoiCouponService.add(data);
     if (coupon) return TournoiCouponFactory.getCoupon(coupon);
   }
@@ -97,10 +101,10 @@ export class TournoiCouponController implements ITournoiCouponController {
   @Patch()
   @ApiBody({ type: UpdateTournoiCouponDTO })
   @ApiResponse({ type: DocTournoiCouponOutputDto })
-  async update(
-    @Body() data: UpdateTournoiCouponDTO
-  ): Promise<TournoiCoupon> {
-    return TournoiCouponFactory.getCoupon(await this.tournoiCouponService.edit(data));
+  async update(@Body() data: UpdateTournoiCouponDTO): Promise<TournoiCoupon> {
+    return TournoiCouponFactory.getCoupon(
+      await this.tournoiCouponService.edit(data),
+    );
   }
 
   @Patch('state/:id')

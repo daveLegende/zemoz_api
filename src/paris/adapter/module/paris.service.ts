@@ -18,13 +18,13 @@ export class ParisService implements IParisService {
   constructor(
     private parisRepository: IParisRepository,
     private userRepository: IUserRepository,
-    private matchRepository: IMatchRepository
+    private matchRepository: IMatchRepository,
   ) {}
 
   async fetchAll(): Promise<Paris[]> {
     try {
       return await this.parisRepository.paris.find({
-        relations: { match: true, user: true, }
+        relations: { match: true, user: true },
       });
     } catch (error) {
       this.logger.error(error.message, 'ERROR::betsService.fetchAll');
@@ -36,7 +36,7 @@ export class ParisService implements IParisService {
     try {
       const bets = await this.parisRepository.paris.findOne({
         where: { id: id },
-        relations: { match: true }
+        relations: { match: true },
       });
       if (bets) {
         return bets;
@@ -55,19 +55,19 @@ export class ParisService implements IParisService {
   async add(data: ParisAccountDto): Promise<Paris> {
     try {
       const { match, user, odd, type, potentialGain, amount } = data;
-      
 
       if (type === null) {
-        throw new NotFoundException("odds not found")
+        throw new NotFoundException('odds not found');
       } else {
-        const matchExisted = await this.matchRepository.matchs.findOneByID(match);
-        if(!matchExisted) throw new NotFoundException("Match non trouvé")
-          
+        const matchExisted =
+          await this.matchRepository.matchs.findOneByID(match);
+        if (!matchExisted) throw new NotFoundException('Match non trouvé');
+
         const userExisted = await this.userRepository.users.findOneByID(user);
-        if(!userExisted) throw new NotFoundException("Utilisateur non trouvé")
+        if (!userExisted) throw new NotFoundException('Utilisateur non trouvé');
 
         if (userExisted.solde < amount) {
-          throw new NotFoundException("Solde utilisateur insuffisant");
+          throw new NotFoundException('Solde utilisateur insuffisant');
         }
 
         // Récupérer la cote actuelle selon l'option choisie
@@ -107,10 +107,12 @@ export class ParisService implements IParisService {
   async edit(data: UpdateParisDTO): Promise<Paris> {
     try {
       const { id } = data;
-      const bets = id && (await this.parisRepository.paris.findOne({
-        where: { id: id },
-        relations: { match: true }
-      }));
+      const bets =
+        id &&
+        (await this.parisRepository.paris.findOne({
+          where: { id: id },
+          relations: { match: true },
+        }));
       if (bets) {
         return await this.parisRepository.paris.update(
           ParisFactory.update(bets, data, bets.match, bets.user),
@@ -132,7 +134,7 @@ export class ParisService implements IParisService {
     try {
       const bets = await this.parisRepository.paris.findOne({
         where: { id: id },
-        relations: { match: true , user: true,}
+        relations: { match: true, user: true },
       });
       if (bets) {
         return await this.parisRepository.paris.remove(bets).then(() => true);
@@ -146,14 +148,13 @@ export class ParisService implements IParisService {
 
   async getPendingParisForMatch(id: string): Promise<Paris[]> {
     try {
-
       const match = await this.matchRepository.matchs.findOneByID(id);
 
-      if(!match) throw new NotFoundException("Aucun match trouvé avec cet ID");
+      if (!match) throw new NotFoundException('Aucun match trouvé avec cet ID');
 
       const paris = await this.parisRepository.paris.find({
-        where: { match: {id: id} },
-        relations: { match: true , user: true,}
+        where: { match: { id: id } },
+        relations: { match: true, user: true },
       });
       if (paris.length > 0) {
         return paris;
@@ -166,16 +167,15 @@ export class ParisService implements IParisService {
     }
   }
 
-    async updateParisStatus(id: string): Promise<boolean> {
+  async updateParisStatus(id: string): Promise<boolean> {
     try {
-
       const match = await this.matchRepository.matchs.findOneByID(id);
 
-      if(!match) throw new NotFoundException("Aucun match trouvé avec cet ID");
+      if (!match) throw new NotFoundException('Aucun match trouvé avec cet ID');
 
       const paris = await this.parisRepository.paris.find({
-        where: { match: {id: id} },
-        relations: { match: true , user: true,}
+        where: { match: { id: id } },
+        relations: { match: true, user: true },
       });
       if (paris.length > 0) {
         return true;

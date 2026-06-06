@@ -5,7 +5,6 @@ import { IOtpRepository } from '../../../otp/domain';
 import { OtpEntity } from './schema/otp.entity';
 import { OtpRepository } from './otp.repository';
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([OtpEntity])],
   providers: [

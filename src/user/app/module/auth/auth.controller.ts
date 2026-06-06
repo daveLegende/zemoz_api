@@ -6,7 +6,7 @@ export abstract class IAuthController {
 
   abstract forgotPassword(data: IForgotPasswordDTO): Promise<boolean>;
 
-  abstract sendOTP(phone: String): Promise<any>;
+  abstract sendOTP(phone: string): Promise<any>;
 
   abstract verifyOTP(phone: string, otp: string): Promise<any>;
 }

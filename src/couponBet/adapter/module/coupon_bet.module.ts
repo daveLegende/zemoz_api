@@ -11,11 +11,10 @@ import { AdminAuthApiModule } from '../../../admin/framework/API';
 import { AdminRepositoryModule } from '../../../admin/framework/database/admin.repository.module';
 import { MatchRepositoryModule } from '../../../match/framework/database/match.repository.module';
 
-
 @Module({
   imports: [
-    CouponBetRepositoryModule, 
-    CouponRepositoryModule, 
+    CouponBetRepositoryModule,
+    CouponRepositoryModule,
     BetRepositoryModule,
     UserRepositoryModule,
     MatchRepositoryModule,

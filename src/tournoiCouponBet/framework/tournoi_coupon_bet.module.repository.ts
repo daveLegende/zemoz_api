@@ -4,7 +4,6 @@ import { TournoiCouponBetEntity } from './schema/tournoi_coupon_bet.entity';
 import { ITournoiCouponBetRepository } from '../domain/data.abstract';
 import { TournoiCouponBetRepository } from './tournoi_coupon_bet.repository';
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([TournoiCouponBetEntity])],
   providers: [

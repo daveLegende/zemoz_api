@@ -8,15 +8,19 @@ import { ITournoiCouponBetRepository } from '../domain/data.abstract';
 import { TournoiCouponBetEntity } from './schema/tournoi_coupon_bet.entity';
 
 @Injectable()
-export class TournoiCouponBetRepository implements ITournoiCouponBetRepository, OnApplicationBootstrap {
-    tournoiCouponBets: IGenericRepository<TournoiCouponBet>;
-    
-    constructor(
-        @InjectRepository(TournoiCouponBetEntity)
-        private tournoiCouponBetRepository: Repository<TournoiCouponBetEntity>,
-    ) {}
+export class TournoiCouponBetRepository
+  implements ITournoiCouponBetRepository, OnApplicationBootstrap
+{
+  tournoiCouponBets: IGenericRepository<TournoiCouponBet>;
 
-    onApplicationBootstrap(): void {
-        this.tournoiCouponBets = new DBGenericRepository<TournoiCouponBetEntity>(this.tournoiCouponBetRepository);
-    }
+  constructor(
+    @InjectRepository(TournoiCouponBetEntity)
+    private tournoiCouponBetRepository: Repository<TournoiCouponBetEntity>,
+  ) {}
+
+  onApplicationBootstrap(): void {
+    this.tournoiCouponBets = new DBGenericRepository<TournoiCouponBetEntity>(
+      this.tournoiCouponBetRepository,
+    );
+  }
 }

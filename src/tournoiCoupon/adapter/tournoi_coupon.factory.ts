@@ -1,13 +1,16 @@
-import { User } from "../../user/domain";
-import { ICreateTournoiCouponDTO, IUpdateTournoiCouponDTO } from "../app/dto";
-import { TournoiCoupon } from "../domain";
+import { User } from '../../user/domain';
+import { ICreateTournoiCouponDTO, IUpdateTournoiCouponDTO } from '../app/dto';
+import { TournoiCoupon } from '../domain';
 
 export abstract class TournoiCouponFactory {
-  static async create(data: ICreateTournoiCouponDTO, user: User): Promise<TournoiCoupon> {
+  static async create(
+    data: ICreateTournoiCouponDTO,
+    user: User,
+  ): Promise<TournoiCoupon> {
     const coupon = new TournoiCoupon();
 
     coupon.user = user;
-    // coupon.tournoiCouponBets is managed via repository relations usually, 
+    // coupon.tournoiCouponBets is managed via repository relations usually,
     // or we assign what we have. data.tournoiCouponBets comes as DTO/Partial from service.
     // For creation, we might not need to set it on the entity if we save children separately.
     coupon.totalOdds = data.totalOdds;
@@ -19,8 +22,10 @@ export abstract class TournoiCouponFactory {
     return coupon;
   }
 
-  static update(coupon: TournoiCoupon, data: IUpdateTournoiCouponDTO): TournoiCoupon {
-
+  static update(
+    coupon: TournoiCoupon,
+    data: IUpdateTournoiCouponDTO,
+  ): TournoiCoupon {
     coupon.etat = data.etat ?? coupon.etat;
     coupon.isDeleted = coupon.isDeleted;
 
@@ -41,7 +46,7 @@ export abstract class TournoiCouponFactory {
         isDeleted: coupon.isDeleted,
         createdAt: coupon.createdAt,
         updatedAt: coupon.updatedAt,
-        deletedAt: coupon.deletedAt
+        deletedAt: coupon.deletedAt,
       };
     }
   }

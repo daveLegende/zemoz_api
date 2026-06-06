@@ -1,12 +1,10 @@
 export interface ICreatePlayerDTO {
-  firstname: string;
-
-  lastname: string;
+  name: string;
 
   age?: number;
 
-  phone: string;
-  
+  phone?: string;
+
   avatar?: string;
 
   buts?: number;
@@ -14,7 +12,6 @@ export interface ICreatePlayerDTO {
   passes?: number;
 
   team: string;
-
 }
 
 export interface IUpdatePlayerDTO extends Partial<ICreatePlayerDTO> {

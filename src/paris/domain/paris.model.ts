@@ -1,7 +1,6 @@
-import { ITimestamp } from "../../_shared/domain/interface";
-import { Match } from "../../match/domain";
-import { User } from "../../user/domain";
-
+import { ITimestamp } from '../../_shared/domain/interface';
+import { Match } from '../../match/domain';
+import { User } from '../../user/domain';
 
 // export class ParisCategories extends ITimestamp {
 //     id: string;
@@ -23,14 +22,14 @@ import { User } from "../../user/domain";
 // }
 
 export class Paris extends ITimestamp {
-    id: string;
-    odd: number;
-    type: 'V1' | 'X' | 'V2';
-    state: 'Pending' | 'Lost' | 'Won';
-    amount: number;
-    potentialGain: number;
-    match: Match;
-    user: User;
-    isWon: boolean;
-    isPaid: boolean;
+  id: string;
+  odd: number;
+  type: 'V1' | 'X' | 'V2';
+  state: 'Pending' | 'Lost' | 'Won';
+  amount: number;
+  potentialGain: number;
+  match: Match;
+  user: User;
+  isWon: boolean;
+  isPaid: boolean;
 }

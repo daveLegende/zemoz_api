@@ -1,8 +1,20 @@
-import { ApiProperty, PartialType } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsArray, IsDefined, IsEnum, IsNotEmpty, IsNotEmptyObject, IsNumber, IsObject, IsOptional, IsString, IsUUID, ValidateIf, ValidateNested } from "class-validator";
-import { CategoryName } from "../../domain";
-
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsDefined,
+  IsEnum,
+  IsNotEmpty,
+  IsNotEmptyObject,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+  IsUUID,
+  ValidateIf,
+  ValidateNested,
+} from 'class-validator';
+import { CategoryName } from '../../domain';
 
 // export class OddsDto {
 //     @ApiProperty({ description: 'Cote pour l’équipe V1', example: 1.2 })
@@ -52,9 +64,6 @@ import { CategoryName } from "../../domain";
 //     @IsString()
 //     match: string;
 // }
-
-
-
 
 // // 1. DTOs spécifiques par catégorie
 // export class Odds1X2Dto {
@@ -111,17 +120,28 @@ export class OddsDto {
 }
 
 export class BetAccountDto {
-
-  @ApiProperty({ description: 'Catégorie du pari', enum: CategoryName, example: CategoryName.COMPETITION_WINNER })
+  @ApiProperty({
+    description: 'Catégorie du pari',
+    enum: CategoryName,
+    example: CategoryName.COMPETITION_WINNER,
+  })
   @IsEnum(CategoryName)
   category: CategoryName;
 
-  @ApiProperty({ description: 'ID du match (optionnel)', required: false, example: 'd290f1ee-6c54-4b01-90e6-d701748f0851' })
+  @ApiProperty({
+    description: 'ID du match (optionnel)',
+    required: false,
+    example: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
+  })
   @IsOptional()
   @IsUUID()
   matchId?: string;
 
-  @ApiProperty({ description: 'ID de la compétition (optionnel)', required: false, example: 'd290f1ee-6c54-4b01-90e6-d701748f0851' })
+  @ApiProperty({
+    description: 'ID de la compétition (optionnel)',
+    required: false,
+    example: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
+  })
   @IsOptional()
   @IsUUID()
   competitionId?: string;
@@ -131,11 +151,6 @@ export class BetAccountDto {
   @Type(() => OddsDto)
   odds: OddsDto;
 }
-
-
-
-
-
 
 export class UpdateBetDTO extends PartialType(BetAccountDto) {
   @ApiProperty({
@@ -148,36 +163,32 @@ export class UpdateBetDTO extends PartialType(BetAccountDto) {
   id: string;
 }
 
-
-
 export class CreateMultipleBetsDto {
-  @ApiProperty({ 
-    description: 'ID du match', 
-    example: 'dc25f57f-11f7-48f3-af32-8a0b1065ae57' 
+  @ApiProperty({
+    description: 'ID du match',
+    example: 'dc25f57f-11f7-48f3-af32-8a0b1065ae57',
   })
   @IsUUID()
   @IsOptional()
   matchId?: string;
 
-
-  @ApiProperty({ 
-    description: 'ID de la competition', 
-    example: 'dc25f57f-11f7-48f3-af32-8a0b1065ae57' 
+  @ApiProperty({
+    description: 'ID de la competition',
+    example: 'dc25f57f-11f7-48f3-af32-8a0b1065ae57',
   })
   @IsOptional()
   @IsUUID()
   competitionId?: string;
 
-  @ApiProperty({ 
-    description: 'Liste des paris à créer', 
-    type: [BetAccountDto] 
+  @ApiProperty({
+    description: 'Liste des paris à créer',
+    type: [BetAccountDto],
   })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => BetAccountDto)
   bets: BetAccountDto[];
 }
-
 
 export class UpdateMultipleBetsDTO extends PartialType(CreateMultipleBetsDto) {
   @ApiProperty({

@@ -20,7 +20,8 @@ import {
 import { AuthService } from '../auth/auth.service';
 import { IUserService } from '../../../app/module/user';
 import { User } from '../../../domain';
-import { IUserRepository } from '../../../domain/data.abstract'; import { HashFactory } from '../../guard/hash.factory';
+import { IUserRepository } from '../../../domain/data.abstract';
+import { HashFactory } from '../../guard/hash.factory';
 import { ITicketRepository, Ticket } from '../../../../ticket/domain';
 import { Coupon } from '../../../../coupon/domain';
 import { ICouponRepository } from '../../../../coupon/domain/data.abstract';
@@ -39,7 +40,7 @@ export class UserService implements IUserService {
     private ticketRepository: ITicketRepository,
     private couponRepository: ICouponRepository,
     private tournoiCouponRepository: ITournoiCouponRepository,
-  ) { }
+  ) {}
 
   async fetchAll(): Promise<User[]> {
     try {
@@ -131,41 +132,41 @@ export class UserService implements IUserService {
     }
   }
 
-
   async fetchByEmail(email: string): Promise<User> {
     try {
       const user = await this.userRepository.users.findOne({
-        where: { email: email }
+        where: { email: email },
       });
 
       if (!user) {
-        throw new NotFoundException("Aucun utilisateur avec cet email");
+        throw new NotFoundException('Aucun utilisateur avec cet email');
       }
 
       return user;
     } catch (error) {
       this.logger.error(error.message, 'ERROR::UserService.fetchByEmail');
-      return error;
+      throw error;
     }
   }
 
   async fetchByPhone(phone: string): Promise<User> {
     try {
       const user = await this.userRepository.users.findOne({
-        where: { phone: phone }
+        where: { phone: phone },
       });
 
       if (!user) {
-        throw new NotFoundException("Aucun utilisateur avec ce numero de téléphone");
+        throw new NotFoundException(
+          'Aucun utilisateur avec ce numero de téléphone',
+        );
       }
 
       return user;
     } catch (error) {
       this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      throw error;
     }
   }
-
 
   async reinitialisePass(data: ReinitialisePassAccountDTO): Promise<User> {
     try {
@@ -174,14 +175,14 @@ export class UserService implements IUserService {
       const user = await this.userRepository.users.findOneBy({ email });
 
       if (password.length < 6 || !password || !confirm || !email) {
-        throw new BadRequestException("Données invalides")
+        throw new BadRequestException('Données invalides');
       }
       if (!user) {
-        throw new NotFoundException("Aucun utilisateur avec cet email");
+        throw new NotFoundException('Aucun utilisateur avec cet email');
       }
 
       if (password !== confirm) {
-        throw new BadRequestException("Mot de passe incorrecte")
+        throw new BadRequestException('Mot de passe incorrecte');
       }
 
       const hashPass = await HashFactory.hashPwd(password);
@@ -192,11 +193,10 @@ export class UserService implements IUserService {
 
       return user;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      this.logger.error(error.message, 'ERROR::UserService.reinitialisePass');
+      throw error;
     }
   }
-
 
   async changePass(data: ChangePassAccountDTO): Promise<User> {
     try {
@@ -205,19 +205,19 @@ export class UserService implements IUserService {
       const userE = await this.userRepository.users.findOneByID(id);
 
       if (newpass.length < 6 || !oldpass || !newpass || !confirm) {
-        throw new BadRequestException("Données invalides")
+        throw new BadRequestException('Données invalides');
       }
       if (!userE) {
-        throw new NotFoundException("Aucun utilisateur trouvé");
+        throw new NotFoundException('Aucun utilisateur trouvé');
       }
 
       const matchOld = await HashFactory.isRightPwd(oldpass, userE.password);
       if (!matchOld) {
-        throw new BadRequestException("Ancien mot de passe invalide")
+        throw new BadRequestException('Ancien mot de passe invalide');
       }
 
       if (newpass !== confirm) {
-        throw new BadRequestException("Nouveau mot de passe incorrecte")
+        throw new BadRequestException('Nouveau mot de passe incorrecte');
       }
 
       const hashPass = await HashFactory.hashPwd(newpass);
@@ -228,33 +228,33 @@ export class UserService implements IUserService {
 
       return userE;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      this.logger.error(error.message, 'ERROR::UserService.changePass');
+      throw error;
     }
   }
 
-  // 
+  //
   async getUserTickets(id: string): Promise<Ticket[]> {
     try {
       const user = await this.userRepository.users.findOneByID(id);
 
       if (!user) {
-        throw new NotFoundException("Utilisateur non trouvé");
+        throw new NotFoundException('Utilisateur non trouvé');
       }
-      console.log("wsugsdhfligywsilhvi " + user);
+      console.log('wsugsdhfligywsilhvi ' + user);
 
       const tickets = await this.ticketRepository.tickets.find({
         where: {
           user: { id: user.id },
           isDeleted: false,
         },
-        relations: { user: true }
+        relations: { user: true },
       });
 
       return tickets;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      this.logger.error(error.message, 'ERROR::UserService.getUserTickets');
+      throw error;
     }
   }
 
@@ -264,20 +264,20 @@ export class UserService implements IUserService {
       const user = await this.userRepository.users.findOneByID(userId);
 
       if (!user) {
-        throw new NotFoundException("Utilisateur non trouvé");
+        throw new NotFoundException('Utilisateur non trouvé');
       }
-      const ticket = await this.ticketRepository.tickets.findOne(
-        {
-          where: {
-            id: id,
-            user: { id: user.id },
-          },
-          relations: { user: true }
-        }
-      );
+      const ticket = await this.ticketRepository.tickets.findOne({
+        where: {
+          id: id,
+          user: { id: user.id },
+        },
+        relations: { user: true },
+      });
       if (ticket) {
         ticket.isDeleted = true;
-        return await this.ticketRepository.tickets.update(ticket).then(() => true);
+        return await this.ticketRepository.tickets
+          .update(ticket)
+          .then(() => true);
       }
       return false;
     } catch (error) {
@@ -285,15 +285,15 @@ export class UserService implements IUserService {
       return false;
     }
   }
-  // 
+  //
   async getUserBets(id: string): Promise<Coupon[]> {
     try {
       const user = await this.userRepository.users.findOneByID(id);
 
       if (!user) {
-        throw new NotFoundException("Utilisateur non trouvé");
+        throw new NotFoundException('Utilisateur non trouvé');
       }
-      console.log("wsugsdhfligywsilhvi " + user);
+      // console.log("wsugsdhfligywsilhvi " + user);
 
       const coupons = await this.couponRepository.coupons.find({
         where: {
@@ -310,13 +310,13 @@ export class UserService implements IUserService {
               },
             },
           },
-        }
+        },
       });
 
       return coupons;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      this.logger.error(error.message, 'ERROR::UserService.getUserBets');
+      throw error;
     }
   }
 
@@ -325,7 +325,7 @@ export class UserService implements IUserService {
       const user = await this.userRepository.users.findOneByID(id);
 
       if (!user) {
-        throw new NotFoundException("Utilisateur non trouvé");
+        throw new NotFoundException('Utilisateur non trouvé');
       }
 
       const paris = await this.parisRepository.paris.find({
@@ -335,13 +335,13 @@ export class UserService implements IUserService {
         },
         relations: {
           user: true,
-        }
+        },
       });
 
       return paris;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      this.logger.error(error.message, 'ERROR::UserService.getUserParis');
+      throw error;
     }
   }
 
@@ -350,22 +350,26 @@ export class UserService implements IUserService {
       const user = await this.userRepository.users.findOneByID(id);
 
       if (!user) {
-        throw new NotFoundException("Utilisateur non trouvé");
+        throw new NotFoundException('Utilisateur non trouvé');
       }
 
-      const tournoiCoupons = await this.tournoiCouponRepository.tournoiCoupons.find({
-        where: {
-          user: { id: user.id } as User,
-        },
-        relations: {
-          user: true,
-        }
-      });
+      const tournoiCoupons =
+        await this.tournoiCouponRepository.tournoiCoupons.find({
+          where: {
+            user: { id: user.id } as User,
+          },
+          relations: {
+            user: true,
+          },
+        });
 
       return tournoiCoupons;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      this.logger.error(
+        error.message,
+        'ERROR::UserService.getUserTournoiCoupons',
+      );
+      throw error;
     }
   }
 
@@ -375,22 +379,20 @@ export class UserService implements IUserService {
       const user = await this.userRepository.users.findOneByID(userId);
 
       if (!user) {
-        throw new NotFoundException("Utilisateur non trouvé");
+        throw new NotFoundException('Utilisateur non trouvé');
       }
-      const coupon = await this.couponRepository.coupons.findOne(
-        {
-          where: {
-            id: id,
-            user: { id: user.id },
-          },
-          relations: { user: true }
-        }
-      );
+      const coupon = await this.couponRepository.coupons.findOne({
+        where: {
+          id: id,
+          user: { id: user.id },
+        },
+        relations: { user: true },
+      });
       if (coupon) {
         coupon.isDeleted = true;
-        return await this.couponRepository.coupons.update(
-          await CouponFactory.update(coupon, data),
-        ).then(() => true);
+        return await this.couponRepository.coupons
+          .update(await CouponFactory.update(coupon, data))
+          .then(() => true);
       }
       return false;
     } catch (error) {
@@ -399,7 +401,7 @@ export class UserService implements IUserService {
     }
   }
 
-  // 
+  //
   async getCurrentUser(id: string): Promise<User> {
     try {
       // const { id } = data;
@@ -409,13 +411,15 @@ export class UserService implements IUserService {
       });
 
       if (!user) {
-        throw new NotFoundException("Aucun utilisateur avec ce numero de téléphone");
+        throw new NotFoundException(
+          'Aucun utilisateur avec ce numero de téléphone',
+        );
       }
 
       return user;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::UserService.fetchByPhone');
-      return error;
+      this.logger.error(error.message, 'ERROR::UserService.getCurrentUser');
+      throw error;
     }
   }
 }

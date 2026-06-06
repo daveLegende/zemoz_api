@@ -8,15 +8,17 @@ import { IPlayerRepository, Player } from '../../domain';
 import { IGenericRepository } from '../../../igeneric.interface';
 
 @Injectable()
-export class PlayerRepository implements IPlayerRepository, OnApplicationBootstrap {
-    players: IGenericRepository<Player>;
-    
-    constructor(
-        @InjectRepository(PlayerEntity)
-        private playerRepository: Repository<PlayerEntity>,
-    ) {}
+export class PlayerRepository
+  implements IPlayerRepository, OnApplicationBootstrap
+{
+  players: IGenericRepository<Player>;
 
-    onApplicationBootstrap(): void {
-        this.players = new DBGenericRepository<PlayerEntity>(this.playerRepository);
-    }
+  constructor(
+    @InjectRepository(PlayerEntity)
+    private playerRepository: Repository<PlayerEntity>,
+  ) {}
+
+  onApplicationBootstrap(): void {
+    this.players = new DBGenericRepository<PlayerEntity>(this.playerRepository);
+  }
 }

@@ -5,7 +5,6 @@ import { ITransactionRepository } from '../../domain';
 import { TransactionEntity } from './schema/transac.entity';
 import { TransactionRepository } from './transac.repository';
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([TransactionEntity])],
   providers: [

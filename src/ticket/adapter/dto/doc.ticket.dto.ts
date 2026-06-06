@@ -1,19 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsDate,
-    IsEnum,
-    IsInt,
-    IsOptional,
-    IsPhoneNumber,
-    IsString,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsPhoneNumber,
+  IsString,
 } from 'class-validator';
-import { TicketType, TicketDuration, TicketState } from '../../domain/ticket.enum';
+import {
+  TicketType,
+  TicketDuration,
+  TicketState,
+  TicketPosition,
+} from '../../domain/ticket.enum';
 
 export class DocTicketOutputDTO {
-    @ApiProperty({ type: String, name: 'id' })
-    id: string;
+  @ApiProperty({ type: String, name: 'id' })
+  id: string;
 
-    @ApiProperty({ description: 'VIP ou STANDARD', enum: TicketType })
+  @ApiProperty({ description: 'VIP ou STANDARD', enum: TicketType })
   @IsEnum(TicketType)
   type: TicketType;
 
@@ -21,9 +26,16 @@ export class DocTicketOutputDTO {
   @IsEnum(TicketDuration)
   duree: TicketDuration;
 
-  @ApiProperty({ description: 'VALIDE ou UTILISER ou SUPPRIMER', enum: TicketState })
+  @ApiProperty({
+    description: 'VALIDE ou UTILISER ou SUPPRIMER',
+    enum: TicketState,
+  })
   @IsEnum(TicketState)
   etat: TicketState;
+
+  @ApiProperty({ description: 'ENTREE ou SORTIE', enum: TicketState })
+  @IsEnum(TicketPosition)
+  position?: TicketPosition;
 
   @ApiProperty({
     type: String,
@@ -41,7 +53,7 @@ export class DocTicketOutputDTO {
   })
   @IsInt()
   amount: number;
-  
+
   @ApiProperty({
     type: Date,
     name: 'date',
@@ -49,12 +61,12 @@ export class DocTicketOutputDTO {
   })
   @IsDate()
   date: Date;
-  
+
   @ApiProperty({
     type: String,
     name: 'match',
     description: 'id du match',
-    nullable: true
+    nullable: true,
   })
   @IsOptional()
   @IsString()

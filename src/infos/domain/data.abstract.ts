@@ -1,6 +1,6 @@
-import { IGenericRepository } from "../../igeneric.interface";
-import { Info } from "./info.model";
+import { IGenericRepository } from '../../igeneric.interface';
+import { Info } from './info.model';
 
 export abstract class IInfoRepository {
-    abstract infos: IGenericRepository<Info>;
+  abstract infos: IGenericRepository<Info>;
 }

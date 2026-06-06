@@ -9,14 +9,13 @@ import { AuthApiModule } from '../../../user/framework/API';
 import { AdminAuthApiModule } from '../../../admin/framework/API';
 import { AdminRepositoryModule } from '../../../admin/framework/database/admin.repository.module';
 
-
 @Module({
   imports: [
-    TicketRepositoryModule, 
+    TicketRepositoryModule,
     MatchRepositoryModule,
     UserRepositoryModule,
     AuthApiModule,
-    AdminRepositoryModule, 
+    AdminRepositoryModule,
     AdminAuthApiModule,
   ],
   controllers: [TicketController],

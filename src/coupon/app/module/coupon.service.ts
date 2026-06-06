@@ -1,6 +1,6 @@
-import { Coupon } from "../../../coupon/domain";
-import { ICreateCouponDTO, IUpdateCouponDTO } from "../dto";
-import { IUpdateMatchDTO } from "../../../match/app/dto";
+import { Coupon } from '../../../coupon/domain';
+import { ICreateCouponDTO, IUpdateCouponDTO } from '../dto';
+import { IUpdateMatchDTO } from '../../../match/app/dto';
 
 export abstract class ICouponService {
   abstract add(data: ICreateCouponDTO): Promise<Coupon>;
@@ -24,5 +24,4 @@ export abstract class ICouponService {
   // abstract getMatchPendingCoupons(id: string): Promise<Coupon[]>;
 
   abstract getPendingCoupons(): Promise<Coupon[]>;
-
 }

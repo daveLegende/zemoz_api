@@ -1,7 +1,6 @@
-import { TransactionType } from "../../../transactions/domain/transaction.enum";
+import { TransactionType } from '../../../transactions/domain/transaction.enum';
 
 export interface ICreateTransactionDTO {
-  
   type: TransactionType;
 
   amount: number;
@@ -16,15 +15,12 @@ export interface ICreateTransactionDTO {
 }
 
 export interface ICreatePassDTO {
-  
   pass: string;
 }
-
 
 export interface IUpdateTransactionDTO extends Partial<ICreateTransactionDTO> {
   id: string;
 }
-
 
 export interface IUpdatePassDTO extends Partial<ICreatePassDTO> {
   id: string;

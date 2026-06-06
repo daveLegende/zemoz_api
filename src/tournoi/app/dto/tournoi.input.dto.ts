@@ -1,4 +1,3 @@
-
 export interface ICreateTournoiDTO {
   name: string;
 
@@ -7,7 +6,6 @@ export interface ICreateTournoiDTO {
   edition?: number;
 
   annee?: Date;
-
 }
 
 export interface IUpdateTournoiDTO extends Partial<ICreateTournoiDTO> {

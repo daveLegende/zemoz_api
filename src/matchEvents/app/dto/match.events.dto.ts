@@ -1,14 +1,13 @@
-import { EventType } from "../../../match/domain";
+import { EventType } from '../../../match/domain';
 
 export class ICreateMatchEventDTO {
-    match: string;
-    type: EventType;
-    equipe: string;
-    joueur: string;
-    minute: number;
+  match: string;
+  type: EventType;
+  equipe: string;
+  joueur: string;
+  minute: number;
 }
 
 export interface IUpdateMatchEventDTO extends Partial<ICreateMatchEventDTO> {
-    id: string;
+  id: string;
 }
-  

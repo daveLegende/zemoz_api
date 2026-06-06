@@ -1,43 +1,54 @@
-import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  Logger,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IAdminService } from '../../../app/module';
 import { Admin, IAdminRepository } from '../../../domain';
 import { AdminFactory } from '../../admin.factory';
 import { AdminAccountDto } from '../../dto';
-import * as bcrypt from 'bcrypt';
+import { HashFactory } from '../../guard/hash.factory';
 
 @Injectable()
 export class AdminAuthService {
   private readonly logger = new Logger();
-    constructor(
-      private adminService: IAdminService,
-      private adminRepository: IAdminRepository,
-      private jwtService: JwtService,
-    ) {}
+  constructor(
+    private adminService: IAdminService,
+    private adminRepository: IAdminRepository,
+    private jwtService: JwtService,
+  ) {}
 
   async validateAdmin(email: string, password: string): Promise<any> {
     console.log('Validating admin credentials for:', email);
     const admin = await this.adminRepository.admins.findOne({
-      where: {email: email}
+      where: { email: email },
     });
     if (!admin) {
-      throw new UnauthorizedException("Email incorrect");
+      throw new UnauthorizedException('Email incorrect');
     }
-    console.log('--------------------------'+admin.password);
-    
+    console.log('--------------------------' + admin.password);
 
-    const isPasswordValid = await bcrypt.compare(password, admin.password);
+    const isPasswordValid = await HashFactory.isRightPwd(
+      password,
+      admin.password,
+    );
     if (!isPasswordValid) {
-        // console.log(`Invalid password for admin: ${email}`);
-        throw new UnauthorizedException('Mot de passe incorrect');
+      // console.log(`Invalid password for admin: ${email}`);
+      throw new UnauthorizedException('Mot de passe incorrect');
     }
 
     return admin;
   }
 
-  async login(admin: any): Promise<{ accessToken: string; refreshToken: string; admin: Admin }> {
+  async login(
+    admin: any,
+  ): Promise<{ accessToken: string; refreshToken: string; admin: Admin }> {
     const payload = { email: admin.email, sub: admin.adminId };
-    
+
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
       expiresIn: '1h',
@@ -59,17 +70,19 @@ export class AdminAuthService {
   async refreshTokens(refreshToken: string) {
     try {
       // Valider le refresh token
-      const payload = this.jwtService.verify(refreshToken, { secret: process.env.JWT_REFRESH_SECRET });
+      const payload = this.jwtService.verify(refreshToken, {
+        secret: process.env.JWT_REFRESH_SECRET,
+      });
 
       // Si le refresh token est valide, générer un nouveau access token
       const newAccessToken = this.jwtService.sign(
         { sub: payload.sub, email: payload.email },
-        { secret: process.env.JWT_SECRET, expiresIn: '1h' } // Générer un nouveau access token
+        { secret: process.env.JWT_SECRET, expiresIn: '1h' }, // Générer un nouveau access token
       );
 
       const newRefreshToken = this.jwtService.sign(
         { sub: payload.sub, email: payload.email },
-        { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '1m' } // Générer un nouveau refresh token
+        { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '1m' }, // Générer un nouveau refresh token
       );
 
       return {
@@ -84,20 +97,19 @@ export class AdminAuthService {
   async register(data: AdminAccountDto): Promise<Admin> {
     try {
       const { nom, password, email } = data;
-      if(!nom || !password || !email) throw new BadRequestException("Invalid credentials");
+      if (!nom || !password || !email)
+        throw new BadRequestException('Invalid credentials');
       const existed = await this.adminRepository.admins.findOneBy({ email });
-      if (existed)
-        throw new ConflictException('Admin already exist');
+      if (existed) throw new ConflictException('Admin already exist');
 
       return await this.adminRepository.admins.create(
         await AdminFactory.create(data),
       );
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::AdminService.register');
+      this.logger.error(error.message, 'ERROR::AdminAuthService.register');
       throw error;
     }
   }
-
 
   // fetch by email
   // async fetchByEmail(email: string): Promise<Admin> {

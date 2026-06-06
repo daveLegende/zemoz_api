@@ -1,7 +1,6 @@
-
-import { BetStatus, TournoiCouponBet } from "../domain";
-import { Bet } from "../../bet/domain";
-import { TournoiCoupon } from "../../tournoiCoupon/domain";
+import { BetStatus, TournoiCouponBet } from '../domain';
+import { Bet } from '../../bet/domain';
+import { TournoiCoupon } from '../../tournoiCoupon/domain';
 
 // export abstract class CouponBetFactory {
 //     static async create(data: ICreateCouponBetDTO, bet: Bet, coupon: Coupon, selectedOptions: Record<string, number>): Promise<CouponBet> {
@@ -17,10 +16,10 @@ import { TournoiCoupon } from "../../tournoiCoupon/domain";
 //     static update(coupon: CouponBet, data: IUpdateCouponBetDTO): CouponBet {
 
 //       coupon.status = data.status ?? coupon.status;
-  
+
 //       return coupon;
 //     }
-    
+
 //     static getCouponBet(coupon: CouponBet): CouponBet {
 //       if (coupon) {
 //         return {
@@ -36,7 +35,6 @@ import { TournoiCoupon } from "../../tournoiCoupon/domain";
 //       }
 //     }
 // }
-
 
 export abstract class TournoiCouponBetFactory {
   static create(
@@ -62,7 +60,6 @@ export abstract class TournoiCouponBetFactory {
     return tournoiCouponBet;
   }
 
-
   static getCouponBet(tournoiCouponBet: TournoiCouponBet): TournoiCouponBet {
     if (tournoiCouponBet) {
       return {
@@ -73,7 +70,7 @@ export abstract class TournoiCouponBetFactory {
         status: tournoiCouponBet.status,
         createdAt: tournoiCouponBet.createdAt,
         updatedAt: tournoiCouponBet.updatedAt,
-        deletedAt: tournoiCouponBet.deletedAt
+        deletedAt: tournoiCouponBet.deletedAt,
       };
     }
   }

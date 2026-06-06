@@ -1,12 +1,26 @@
-import { ApiProperty, PartialType } from "@nestjs/swagger";
-import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString, IsUUID, Min } from "class-validator";
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Min,
+} from 'class-validator';
 
 export class DocParisOutputDto {
-  @ApiProperty({ description: 'Identifiant du match', example: '123e4567-e89b-12d3-a456-426614174000' })
+  @ApiProperty({
+    description: 'Identifiant du match',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
   @IsString()
   id: string;
 
-  @ApiProperty({ description: 'ID du match', example: '123e4567-e89b-12d3-a456-426614174000' })
+  @ApiProperty({
+    description: 'ID du match',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
   @IsUUID()
   matchId: string;
 
@@ -14,19 +28,18 @@ export class DocParisOutputDto {
   @IsNumber()
   odd: number;
 
-  @ApiProperty({ 
-    description: 'Option pariée', 
+  @ApiProperty({
+    description: 'Option pariée',
     enum: ['V1', 'X', 'V2'],
-    example: 'V1'
+    example: 'V1',
   })
   @IsEnum(['V1', 'X', 'V2'])
   type: 'V1' | 'X' | 'V2';
 
-
-  @ApiProperty({ 
-    description: 'Etat du pari', 
+  @ApiProperty({
+    description: 'Etat du pari',
     enum: ['Pending', 'Lost', 'Won'],
-    example: 'Pending'
+    example: 'Pending',
   })
   @IsEnum(['Pending', 'Lost', 'Won'])
   state: 'Pending' | 'Lost' | 'Won';
@@ -40,7 +53,7 @@ export class DocParisOutputDto {
   @IsNumber()
   @Min(1, { message: 'La mise doit être au moins de 1' })
   potentialGain: number;
-  
+
   @ApiProperty({ description: 'is won', example: 'true' })
   @IsBoolean()
   isWon: boolean;
@@ -49,7 +62,10 @@ export class DocParisOutputDto {
   @IsBoolean()
   isPaid: boolean;
 
-  @ApiProperty({ description: 'ID de l\'utilisateur', example: '123e4567-e89b-12d3-a456-426614174000' })
+  @ApiProperty({
+    description: "ID de l'utilisateur",
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
   @IsUUID()
   userId: string;
 }

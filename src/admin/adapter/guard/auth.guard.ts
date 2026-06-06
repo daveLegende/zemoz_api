@@ -44,7 +44,10 @@ export class AdminGuard implements CanActivate {
       throw new UnauthorizedException();
     }
     try {
-      const admin = await this.authAPIServices.api.tokenLogin(token, permission);
+      const admin = await this.authAPIServices.api.tokenLogin(
+        token,
+        permission,
+      );
       if (admin) {
         const account = await this.dataServices.admins.findOneBy({
           email: admin.email,

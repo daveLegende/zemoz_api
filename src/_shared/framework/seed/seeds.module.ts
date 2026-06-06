@@ -7,4 +7,4 @@ import { AuthAPIService } from '../../../user/framework/API/auth.api.service';
   imports: [CommandModule],
   providers: [AccessSeed, AuthAPIService],
 })
-export class SeedsModule { }
+export class SeedsModule {}

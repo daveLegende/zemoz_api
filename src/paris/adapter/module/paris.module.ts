@@ -8,9 +8,14 @@ import { ParisController } from './paris.controller';
 import { ParisService } from './paris.service';
 import { ParisRepositoryModule } from '../../../paris/framework/paris.module.repository';
 
-
 @Module({
-  imports: [ParisRepositoryModule, MatchRepositoryModule, UserRepositoryModule, AdminRepositoryModule, AdminAuthApiModule],
+  imports: [
+    ParisRepositoryModule,
+    MatchRepositoryModule,
+    UserRepositoryModule,
+    AdminRepositoryModule,
+    AdminAuthApiModule,
+  ],
   controllers: [ParisController],
   providers: [{ provide: IParisService, useClass: ParisService }],
   exports: [IParisService, ParisRepositoryModule],

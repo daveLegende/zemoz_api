@@ -7,7 +7,7 @@
 // } from 'domain/abstract';
 import { User } from './user.model';
 
-import { IGenericRepository } from "../../igeneric.interface";
+import { IGenericRepository } from '../../igeneric.interface';
 
 // interface IGenericRepository<T>
 //   extends IFindGeneric<T>,

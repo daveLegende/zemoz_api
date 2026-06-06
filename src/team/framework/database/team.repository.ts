@@ -8,14 +8,14 @@ import { TeamEntity } from './schema/team.entity';
 
 @Injectable()
 export class TeamRepository implements ITeamRepository, OnApplicationBootstrap {
-    teams: IGenericRepository<Team>;
-    
-    constructor(
-        @InjectRepository(TeamEntity)
-        private TeamRepository: Repository<TeamEntity>,
-    ) {}
+  teams: IGenericRepository<Team>;
 
-    onApplicationBootstrap(): void {
-        this.teams = new DBGenericRepository<TeamEntity>(this.TeamRepository);
-    }
+  constructor(
+    @InjectRepository(TeamEntity)
+    private TeamRepository: Repository<TeamEntity>,
+  ) {}
+
+  onApplicationBootstrap(): void {
+    this.teams = new DBGenericRepository<TeamEntity>(this.TeamRepository);
+  }
 }

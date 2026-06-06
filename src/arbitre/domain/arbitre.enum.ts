@@ -1,5 +1,5 @@
 export enum RoleArbitre {
-    PRINCIPAL = "principal",
-    TOUCHE = "touche",
-    VARREVIEW = "var"
+  PRINCIPAL = 'principal',
+  TOUCHE = 'touche',
+  VARREVIEW = 'var',
 }

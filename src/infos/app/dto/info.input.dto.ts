@@ -1,11 +1,9 @@
 export interface ICreateInfoDTO {
-    
   image: string;
 
   title: string;
-  
-  desc: string;
 
+  desc: string;
 }
 
 export interface IUpdateInfoDTO extends Partial<ICreateInfoDTO> {

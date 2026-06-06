@@ -5,7 +5,6 @@ import { PrononsticEntity } from './schema/prono.entity';
 import { IPronosRepository } from '../../domain';
 import { PrononsticRepository } from './prono.repository';
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([PrononsticEntity])],
   providers: [

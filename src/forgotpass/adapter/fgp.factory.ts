@@ -1,27 +1,27 @@
-import { ForgotPass } from "../domain";
-import { ICreateForgotPassDTO } from "../app/dto";
-import { HashFactory } from "../../user/adapter/guard/hash.factory";
+import { ForgotPass } from '../domain';
+import { ICreateForgotPassDTO } from '../app/dto';
+import { HashFactory } from '../../user/adapter/guard/hash.factory';
 
 export abstract class ForgotPassFactory {
-    static async create(data: ICreateForgotPassDTO): Promise<ForgotPass> {
-        const fgp = new ForgotPass();
+  static async create(data: ICreateForgotPassDTO): Promise<ForgotPass> {
+    const fgp = new ForgotPass();
 
-        fgp.code = await HashFactory.hashPwd(data.code);
-        fgp.email = data.email;
+    fgp.code = await HashFactory.hashPwd(data.code);
+    fgp.email = data.email;
 
-        return fgp;
+    return fgp;
+  }
+
+  static getFgp(fgp: ForgotPass): ForgotPass {
+    if (fgp) {
+      return {
+        id: fgp.id,
+        code: fgp.code,
+        email: fgp.email,
+        createdAt: fgp.createdAt,
+        updatedAt: fgp.updatedAt,
+        deletedAt: fgp.deletedAt,
+      };
     }
-    
-    static getFgp(fgp: ForgotPass): ForgotPass {
-      if (fgp) {
-        return {
-          id: fgp.id,
-          code: fgp.code,
-          email: fgp.email,
-          createdAt: fgp.createdAt,
-          updatedAt: fgp.updatedAt,
-          deletedAt: fgp.deletedAt
-        };
-      }
-    }
+  }
 }

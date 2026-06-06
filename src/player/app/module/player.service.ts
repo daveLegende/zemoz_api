@@ -1,16 +1,21 @@
-import { Player } from "../../domain";
-import { ICreatePlayerDTO, IUpdatePlayerDTO } from "../dto";
+import { Player } from '../../domain';
+import { ICreatePlayerDTO, IUpdatePlayerDTO } from '../dto';
 import { Express } from 'express';
 
-
 export abstract class IPlayerService {
-  abstract add(data: ICreatePlayerDTO, file?: Express.Multer.File): Promise<Player>;
+  abstract add(
+    data: ICreatePlayerDTO,
+    file?: Express.Multer.File,
+  ): Promise<Player>;
 
   abstract fetchAll(): Promise<Player[]>;
 
   abstract fetchOne(id: string): Promise<Player>;
 
-  abstract edit(data: IUpdatePlayerDTO, file?: Express.Multer.File): Promise<Player>;
+  abstract edit(
+    data: IUpdatePlayerDTO,
+    file?: Express.Multer.File,
+  ): Promise<Player>;
 
   abstract setState(id: string): Promise<boolean>;
 

@@ -12,17 +12,16 @@ import { AuthApiModule } from '../../../user/framework/API';
 import { AdminRepositoryModule } from '../../../admin/framework/database/admin.repository.module';
 import { AdminAuthApiModule } from '../../../admin/framework/API';
 
-
 @Module({
   imports: [
     CouponRepositoryModule,
-    BetRepositoryModule, 
-    CouponBetRepositoryModule, 
-    MatchRepositoryModule, 
+    BetRepositoryModule,
+    CouponBetRepositoryModule,
+    MatchRepositoryModule,
     forwardRef(() => MatchModule),
     UserRepositoryModule,
     AuthApiModule,
-    AdminRepositoryModule, 
+    AdminRepositoryModule,
     AdminAuthApiModule,
   ],
   controllers: [CouponController],

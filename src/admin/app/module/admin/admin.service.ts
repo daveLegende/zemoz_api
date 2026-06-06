@@ -1,7 +1,11 @@
-import { Admin } from "../../../../admin/domain";
-import { ICreateAdminDTO, IUpdateAdminDTO } from "../../dto";
-import { Coupon } from "../../../../coupon/domain";
-import { TournoiCoupon } from "../../../../tournoiCoupon/domain";
+import { Admin } from '../../../../admin/domain';
+import {
+  IChangeAdminPasswordDTO,
+  ICreateAdminDTO,
+  IUpdateAdminDTO,
+} from '../../dto';
+import { Coupon } from '../../../../coupon/domain';
+import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
 
 export abstract class IAdminService {
   abstract add(data: ICreateAdminDTO): Promise<Admin>;
@@ -11,6 +15,8 @@ export abstract class IAdminService {
   abstract fetchOne(id: string): Promise<Admin>;
 
   abstract edit(data: IUpdateAdminDTO): Promise<Admin>;
+
+  abstract changePassword(data: IChangeAdminPasswordDTO): Promise<boolean>;
 
   abstract setState(id: string): Promise<boolean>;
 
@@ -23,5 +29,4 @@ export abstract class IAdminService {
   abstract getAllTournoiCoupons(): Promise<TournoiCoupon[]>;
 
   abstract getCompleteFinancialReport(): Promise<any>;
-
 }

@@ -10,14 +10,13 @@ import { AuthApiModule } from '../../../user/framework/API';
 import { UserRepositoryModule } from '../../../user/framework/database/user.repository.module';
 import { CloudinaryModule } from '../../../shared/infrastructure/cloudinary/cloudinary.module';
 
-
 @Module({
   imports: [
-    TeamRepositoryModule, 
+    TeamRepositoryModule,
     PlayerRepositoryModule,
     UserRepositoryModule,
     AuthApiModule,
-    AdminRepositoryModule, 
+    AdminRepositoryModule,
     AdminAuthApiModule,
     CloudinaryModule,
   ],

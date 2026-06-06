@@ -1,4 +1,10 @@
-import { BadRequestException, Body, Controller, Post, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SigninAccoutDTO } from '../../dto';
 import { SendOtpDTo, VerifyOtpDTo } from '../../../../otp/adapter/dto';
@@ -6,18 +12,22 @@ import { User } from '../../../domain';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) {}
 
-//   @UseGuards(LocalAuthGuard) 
+  //   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Body() loginDto: SigninAccoutDTO): Promise<{ accessToken: string; refreshToken: string; user: User }> {
-    const user = await this.authService.validateUser(loginDto.phone, loginDto.password);
+  async login(
+    @Body() loginDto: SigninAccoutDTO,
+  ): Promise<{ accessToken: string; refreshToken: string; user: User }> {
+    const user = await this.authService.validateUser(
+      loginDto.phone,
+      loginDto.password,
+    );
     if (!user) {
       throw new BadRequestException('Invalid credentials');
     }
     return this.authService.login(user);
   }
-
 
   @Post('refresh_token')
   async refreshToken(@Body() body: { refresh_token: string }) {
@@ -25,13 +35,10 @@ export class AuthController {
     return this.authService.refreshTokens(refresh_token);
   }
 
-
   @Post('sendOtp')
-  async sendOTP(
-    @Body() data: SendOtpDTo
-  ) {
-    console.log("cdfcxch c v");
-    
+  async sendOTP(@Body() data: SendOtpDTo) {
+    console.log('cdfcxch c v');
+
     return await this.authService.sendOTP(data);
   }
 
@@ -49,10 +56,8 @@ export class AuthController {
   //     if (poule) return PouleFactory.getPoule(poule);
   // }
 
-  @Post("verifyOtp")
-  async verifyOTP(
-    @Body() data: VerifyOtpDTo,
-  ): Promise<Boolean> {
+  @Post('verifyOtp')
+  async verifyOTP(@Body() data: VerifyOtpDTo): Promise<boolean> {
     return await this.authService.verifyOtp(data);
   }
 }

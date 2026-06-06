@@ -7,16 +7,17 @@ import { AdminEntity } from './schema/admin.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class AdminRepository implements IAdminRepository, OnApplicationBootstrap {
-    
-    admins: IGenericRepository<Admin>;
+export class AdminRepository
+  implements IAdminRepository, OnApplicationBootstrap
+{
+  admins: IGenericRepository<Admin>;
 
-    constructor(
-        @InjectRepository(AdminEntity)
-        private adminRepository: Repository<AdminEntity>,
-    ) {}
+  constructor(
+    @InjectRepository(AdminEntity)
+    private adminRepository: Repository<AdminEntity>,
+  ) {}
 
-    onApplicationBootstrap(): void {
-        this.admins = new DBGenericRepository<AdminEntity>(this.adminRepository);
-    }
+  onApplicationBootstrap(): void {
+    this.admins = new DBGenericRepository<AdminEntity>(this.adminRepository);
+  }
 }

@@ -7,11 +7,20 @@ export abstract class ITournoiCouponController {
 
   abstract show(param: IIDParamDTO): Promise<TournoiCoupon>;
 
-  abstract create(data: ICreateTournoiCouponDTO, file?: any): Promise<TournoiCoupon>;
+  abstract create(
+    data: ICreateTournoiCouponDTO,
+    file?: any,
+  ): Promise<TournoiCoupon>;
 
-  abstract search(data: Partial<TournoiCoupon>, file?: any): Promise<TournoiCoupon>;
+  abstract search(
+    data: Partial<TournoiCoupon>,
+    file?: any,
+  ): Promise<TournoiCoupon>;
 
-  abstract update(data: IUpdateTournoiCouponDTO, file?: any): Promise<TournoiCoupon>;
+  abstract update(
+    data: IUpdateTournoiCouponDTO,
+    file?: any,
+  ): Promise<TournoiCoupon>;
 
   abstract setState(param: IIDParamDTO): Promise<boolean>;
 

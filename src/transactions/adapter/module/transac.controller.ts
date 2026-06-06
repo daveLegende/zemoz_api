@@ -27,14 +27,19 @@ import { IDParamDTO } from '../../../_shared/adapter/dto';
 import { UserGuard } from '../../../user/adapter/guard/auth.guard';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 import { ITransactionController, ITransactionService } from '../../app/module';
-import { DocTransactionOutputDto, PassAccountDto, TransactionAccountDto, UpdateTransactionDTO } from '../dto';
+import {
+  DocTransactionOutputDto,
+  PassAccountDto,
+  TransactionAccountDto,
+  UpdateTransactionDTO,
+} from '../dto';
 import { TransactionFactory } from '../transac.factory';
 import { Transaction } from '../../domain';
 
 @ApiTags('Transactions management')
 @Controller('transactions')
 export class TransactionController implements ITransactionController {
-  constructor(private readonly transactionService: ITransactionService) { }
+  constructor(private readonly transactionService: ITransactionService) {}
 
   @Get()
   // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
@@ -46,14 +51,17 @@ export class TransactionController implements ITransactionController {
   // @ApiResponse({ type: [TransactionAccountDTO] })
   async all(): Promise<Transaction[]> {
     const transactions = await this.transactionService.fetchAll();
-    return transactions?.map((transaction) => TransactionFactory.getTransaction(transaction));
+    return transactions?.map((transaction) =>
+      TransactionFactory.getTransaction(transaction),
+    );
   }
-
 
   @Get('search')
   async search(@Query() param: Transaction): Promise<Transaction> {
     if (param) {
-      return TransactionFactory.getTransaction(await this.transactionService.search(param));
+      return TransactionFactory.getTransaction(
+        await this.transactionService.search(param),
+      );
     }
   }
 
@@ -70,7 +78,9 @@ export class TransactionController implements ITransactionController {
   })
   @ApiResponse({ type: DocTransactionOutputDto })
   async show(@Param() { id }: IDParamDTO): Promise<Transaction> {
-    return TransactionFactory.getTransaction(await this.transactionService.fetchOne(id));
+    return TransactionFactory.getTransaction(
+      await this.transactionService.fetchOne(id),
+    );
   }
 
   /**
@@ -88,11 +98,8 @@ export class TransactionController implements ITransactionController {
   })
   // @ApiBody({ type: RegisterAccoutDTO })
   // @ApiResponse({ type: DocUserOutputDTO })
-  async create(
-    @Body() data: TransactionAccountDto,
-    @Body() pass: PassAccountDto,
-  ): Promise<Transaction> {
-    const transaction = await this.transactionService.add(data, pass);
+  async create(@Body() data: TransactionAccountDto): Promise<Transaction> {
+    const transaction = await this.transactionService.add(data);
     if (transaction) return TransactionFactory.getTransaction(transaction);
   }
 
@@ -106,10 +113,10 @@ export class TransactionController implements ITransactionController {
   @ApiOperation({ summary: 'Update user account' })
   @ApiBody({ type: UpdateTransactionDTO })
   @ApiResponse({ type: DocTransactionOutputDto })
-  async update(
-    @Body() data: UpdateTransactionDTO,
-  ): Promise<Transaction> {
-    return TransactionFactory.getTransaction(await this.transactionService.edit(data));
+  async update(@Body() data: UpdateTransactionDTO): Promise<Transaction> {
+    return TransactionFactory.getTransaction(
+      await this.transactionService.edit(data),
+    );
   }
 
   @Patch('state/:id')
@@ -145,16 +152,14 @@ export class TransactionController implements ITransactionController {
    */
   @ApiBearerAuth()
   @UseGuards(UserGuard)
-  @Post("user-transaction")
+  @Post('user-transaction')
   // @ApiBearerAuth()
   // @UseGuards(UserGuard)
   @ApiConsumes('multipart/form-data', 'application/json')
   @ApiOperation({
     summary: 'Create Transaction by user',
   })
-  async userTransac(
-    @Body() data: TransactionAccountDto,
-  ): Promise<Transaction> {
+  async userTransac(@Body() data: TransactionAccountDto): Promise<Transaction> {
     // const transaction = await this.transactionService.add(data);
     // if (transaction) return TransactionFactory.getTransaction(transaction);
     return;

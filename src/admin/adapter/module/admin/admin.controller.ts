@@ -24,7 +24,12 @@ import { IDParamDTO } from '../../../../_shared/adapter/dto';
 import { IAdminController, IAdminService } from '../../../app/module';
 import { Admin } from '../../../domain';
 import { AdminFactory } from '../../admin.factory';
-import { DocAdminOutputDto, AdminAccountDto, UpdateAdminDTO } from '../../dto';
+import {
+  DocAdminOutputDto,
+  AdminAccountDto,
+  UpdateAdminDTO,
+  ChangeAdminPasswordDTO,
+} from '../../dto';
 import { AdminGuard } from '../../guard/auth.guard';
 import { Coupon } from '../../../../coupon/domain';
 import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
@@ -34,8 +39,7 @@ import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
 @ApiBearerAuth()
 @Controller('admins')
 export class AdminController implements IAdminController {
-  constructor(private readonly adminService: IAdminService) { }
-
+  constructor(private readonly adminService: IAdminService) {}
 
   @Get()
   // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
@@ -49,7 +53,6 @@ export class AdminController implements IAdminController {
     const admins = await this.adminService.fetchAll();
     return admins?.map((admin) => AdminFactory.getAdmin(admin));
   }
-
 
   @Get('search')
   async search(@Query() param: Admin): Promise<Admin> {
@@ -98,9 +101,7 @@ export class AdminController implements IAdminController {
   })
   // @ApiBody({ type: RegisterAccoutDTO })
   // @ApiResponse({ type: DocUserOutputDTO })
-  async create(
-    @Body() data: AdminAccountDto,
-  ): Promise<Admin> {
+  async create(@Body() data: AdminAccountDto): Promise<Admin> {
     const Admin = await this.adminService.add(data);
     if (Admin) return AdminFactory.getAdmin(Admin);
   }
@@ -115,10 +116,16 @@ export class AdminController implements IAdminController {
   @ApiOperation({ summary: 'Update user account' })
   @ApiBody({ type: UpdateAdminDTO })
   @ApiResponse({ type: DocAdminOutputDto })
-  async update(
-    @Body() data: UpdateAdminDTO,
-  ): Promise<Admin> {
+  async update(@Body() data: UpdateAdminDTO): Promise<Admin> {
     return AdminFactory.getAdmin(await this.adminService.edit(data));
+  }
+
+  @Patch('change-password')
+  @ApiOperation({ summary: 'Change admin password' })
+  @ApiBody({ type: ChangeAdminPasswordDTO })
+  @ApiResponse({ type: Boolean })
+  async changePassword(@Body() data: ChangeAdminPasswordDTO): Promise<boolean> {
+    return await this.adminService.changePassword(data);
   }
 
   @Patch('state/:id')
@@ -159,5 +166,4 @@ export class AdminController implements IAdminController {
   async getAllTournoiCoupons(): Promise<TournoiCoupon[]> {
     return await this.adminService.getAllTournoiCoupons();
   }
-
 }

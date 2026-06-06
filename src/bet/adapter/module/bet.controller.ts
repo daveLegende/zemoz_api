@@ -33,7 +33,7 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 @ApiBearerAuth()
 @Controller('bets')
 export class BetController implements IBetController {
-  constructor(private readonly betService: IBetService) { }
+  constructor(private readonly betService: IBetService) {}
 
   @Get()
   // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
@@ -47,7 +47,6 @@ export class BetController implements IBetController {
     const bets = await this.betService.fetchAll();
     return bets?.map((bet) => BetFactory.getBet(bet));
   }
-
 
   @Get('search')
   async search(@Query() param: Bet): Promise<Bet> {
@@ -82,9 +81,7 @@ export class BetController implements IBetController {
   })
   // @ApiBody({ type: RegisterAccoutDTO })
   // @ApiResponse({ type: DocUserOutputDTO })
-  async create(
-    @Body() data: BetAccountDto
-  ): Promise<Bet> {
+  async create(@Body() data: BetAccountDto): Promise<Bet> {
     const bet = await this.betService.add(data);
     if (bet) return BetFactory.getBet(bet);
   }
@@ -96,9 +93,7 @@ export class BetController implements IBetController {
   @Patch()
   @ApiBody({ type: UpdateBetDTO })
   @ApiResponse({ type: DocBetOutputDto })
-  async update(
-    @Body() data: UpdateBetDTO
-  ): Promise<Bet> {
+  async update(@Body() data: UpdateBetDTO): Promise<Bet> {
     return BetFactory.getBet(await this.betService.edit(data));
   }
 

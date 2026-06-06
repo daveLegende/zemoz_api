@@ -8,15 +8,17 @@ import { Paris } from '../domain';
 import { IParisRepository } from '../domain/data.abstract';
 
 @Injectable()
-export class ParisRepository implements IParisRepository, OnApplicationBootstrap {
-    paris: IGenericRepository<Paris>;
-    
-    constructor(
-        @InjectRepository(ParisEntity)
-        private parisRepository: Repository<ParisEntity>,
-    ) {}
+export class ParisRepository
+  implements IParisRepository, OnApplicationBootstrap
+{
+  paris: IGenericRepository<Paris>;
 
-    onApplicationBootstrap(): void {
-        this.paris = new DBGenericRepository<ParisEntity>(this.parisRepository);
-    }
+  constructor(
+    @InjectRepository(ParisEntity)
+    private parisRepository: Repository<ParisEntity>,
+  ) {}
+
+  onApplicationBootstrap(): void {
+    this.paris = new DBGenericRepository<ParisEntity>(this.parisRepository);
+  }
 }

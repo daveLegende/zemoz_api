@@ -5,7 +5,7 @@ import { AuthAPIService } from '../../../user/framework/API/auth.api.service';
 
 @Injectable()
 export class AccessSeed {
-  constructor(private readonly authAPIService: AuthAPIService) { }
+  constructor(private readonly authAPIService: AuthAPIService) {}
 
   @Command({ command: 'create:rule', describe: 'Create admin account rules' })
   async create(): Promise<void> {

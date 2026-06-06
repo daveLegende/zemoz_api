@@ -34,17 +34,17 @@ import { ForgotPassModule } from './forgotpass/adapter/module';
 import { TournoiModule } from './tournoi/adapter/module';
 import { TournoiCouponModule } from './tournoiCoupon/adapter/module';
 import { TournoiCouponBetModule } from './tournoiCouponBet/adapter/module';
+import { MVPModule } from './mvp/adapter/module';
 import { BullModule } from '@nestjs/bullmq';
-import { PayoutModule } from './payout/payout.module';
 // import { TasksModule } from './tasks/task.module';
 
 @Module({
   imports: [
-    UserModule, 
+    UserModule,
     AuthModule,
     AdminModule,
     AdminAuthModule,
-    PlayerModule, 
+    PlayerModule,
     TeamModule,
     PouleModule,
     ArbitreModule,
@@ -63,7 +63,7 @@ import { PayoutModule } from './payout/payout.module';
     TournoiModule,
     TournoiCouponModule,
     TournoiCouponBetModule,
-    PayoutModule,
+    MVPModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -73,8 +73,8 @@ export class IAppModule {}
 @Module({
   imports: [
     ConfigModule.forRoot({
-      // envFilePath: '.dev.env', //.dev.env, .prod.env
-      envFilePath: '.prod.env', //.dev.env, .prod.env
+      envFilePath: '.dev.env', //.dev.env, .prod.env
+      // envFilePath: '.prod.env', //.dev.env, .prod.env
       expandVariables: true,
       isGlobal: true,
     }),
@@ -141,7 +141,6 @@ export class IAppModule {}
     { provide: APP_FILTER, useClass: HttpExceptionFilter },
   ],
 })
-
 export class AppModule {}
 
 // export class AppModule implements OnModuleInit {

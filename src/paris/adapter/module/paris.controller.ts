@@ -48,7 +48,6 @@ export class ParisController implements IParisController {
     return bets?.map((bet) => ParisFactory.getParis(bet));
   }
 
-
   @Get('search')
   async search(@Query() param: Paris): Promise<Paris> {
     if (param) {
@@ -82,9 +81,7 @@ export class ParisController implements IParisController {
   })
   // @ApiBody({ type: RegisterAccoutDTO })
   // @ApiResponse({ type: DocUserOutputDTO })
-  async create(
-    @Body() data: ParisAccountDto
-  ): Promise<Paris> {
+  async create(@Body() data: ParisAccountDto): Promise<Paris> {
     const bet = await this.parisService.add(data);
     if (bet) return ParisFactory.getParis(bet);
   }
@@ -96,9 +93,7 @@ export class ParisController implements IParisController {
   @Patch()
   @ApiBody({ type: UpdateParisDTO })
   @ApiResponse({ type: DocParisOutputDto })
-  async update(
-    @Body() data: UpdateParisDTO
-  ): Promise<Paris> {
+  async update(@Body() data: UpdateParisDTO): Promise<Paris> {
     return ParisFactory.getParis(await this.parisService.edit(data));
   }
 

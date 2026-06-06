@@ -9,15 +9,15 @@ import { AuthApiModule } from '../../../user/framework/API';
 import { AdminAuthApiModule } from '../../../admin/framework/API';
 import { AdminRepositoryModule } from '../../../admin/framework/database/admin.repository.module';
 
-
 @Module({
   imports: [
-    PrononsticRepositoryModule, 
+    PrononsticRepositoryModule,
     MatchRepositoryModule,
     UserRepositoryModule,
     AuthApiModule,
-    AdminRepositoryModule, 
-    AdminAuthApiModule,],
+    AdminRepositoryModule,
+    AdminAuthApiModule,
+  ],
   controllers: [PrononsticController],
   providers: [{ provide: IPrononsticService, useClass: PrononsticService }],
   exports: [IPrononsticService, PrononsticRepositoryModule],

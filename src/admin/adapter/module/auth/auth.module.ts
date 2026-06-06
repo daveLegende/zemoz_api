@@ -12,7 +12,9 @@ import { UserRepositoryModule } from '../../../../user/framework/database/user.r
 
 @Module({
   imports: [
-    AdminRepositoryModule, AdminModule, TwilioModule, 
+    AdminRepositoryModule,
+    AdminModule,
+    TwilioModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],

@@ -50,8 +50,7 @@ export class CouponController implements ICouponController {
     return coupons?.map((coupon) => CouponFactory.getCoupon(coupon));
   }
 
-
-  @Get("pending-coupons")
+  @Get('pending-coupons')
   // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
   @ApiConsumes('application/json')
   @ApiOperation({
@@ -63,7 +62,6 @@ export class CouponController implements ICouponController {
     const coupons = await this.couponService.getPendingCoupons();
     return coupons?.map((coupon) => CouponFactory.getCoupon(coupon));
   }
-
 
   @Get('search')
   async search(@Query() param: Coupon): Promise<Coupon> {
@@ -98,9 +96,7 @@ export class CouponController implements ICouponController {
   })
   // @ApiBody({ type: RegisterAccoutDTO })
   // @ApiResponse({ type: DocUserOutputDTO })
-  async create(
-    @Body() data: CouponAccountDto
-  ): Promise<Coupon> {
+  async create(@Body() data: CouponAccountDto): Promise<Coupon> {
     const coupon = await this.couponService.add(data);
     if (coupon) return CouponFactory.getCoupon(coupon);
   }
@@ -112,9 +108,7 @@ export class CouponController implements ICouponController {
   @Patch()
   @ApiBody({ type: UpdateCouponDTO })
   @ApiResponse({ type: DocCouponOutputDto })
-  async update(
-    @Body() data: UpdateCouponDTO
-  ): Promise<Coupon> {
+  async update(@Body() data: UpdateCouponDTO): Promise<Coupon> {
     return CouponFactory.getCoupon(await this.couponService.edit(data));
   }
 
@@ -141,14 +135,12 @@ export class CouponController implements ICouponController {
   remove(@Body() { id }: IDParamDTO): Promise<boolean> {
     return this.couponService.remove(id);
   }
-  
+
   @Post('status')
   @ApiOperation({
     summary: 'Create Coupon',
   })
-  async checkCoupons(
-    @Body() data: UpdateMatchDTO
-  ): Promise<any> {
+  async checkCoupons(@Body() data: UpdateMatchDTO): Promise<any> {
     return await this.couponService.checkCoupons(data);
   }
 }

@@ -1,8 +1,8 @@
-import { ITimestamp } from "../../_shared/domain/interface";
+import { ITimestamp } from '../../_shared/domain/interface';
 
 export class Admin extends ITimestamp {
-    id: string;
-    nom: string;
-    email: string;
-    password: string;
+  id: string;
+  nom: string;
+  email: string;
+  password: string;
 }

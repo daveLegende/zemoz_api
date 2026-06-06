@@ -1,13 +1,13 @@
-import { Player } from "../../../player/domain";
+import { Player } from '../../../player/domain';
 
 export interface ICreateTeamDTO {
   name: string;
 
   logo?: string;
 
-  coach: string;
+  coach?: string;
 
-  commune: string;
+  commune?: string;
 
   points?: number;
 
@@ -16,11 +16,10 @@ export interface ICreateTeamDTO {
   butMarques?: number;
 
   butConcedes?: number;
-  
-  joueurs: Player[];
+
+  joueurs?: Player[];
 
   // poule?: string;
-
 }
 
 export interface IUpdateTeamDTO extends Partial<ICreateTeamDTO> {

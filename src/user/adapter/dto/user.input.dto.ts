@@ -79,7 +79,6 @@ export class UserAccoutDTO {
   // solde?: number;
 }
 
-
 export class UserRegisterDTO extends UserAccoutDTO {
   @ApiProperty({
     type: String,
@@ -125,8 +124,7 @@ export class UserRegisterDTO extends UserAccoutDTO {
   @ApiProperty({
     type: String,
     name: 'password',
-    description:
-      'Password length > 8',
+    description: 'Password length > 8',
   })
   @IsString()
   password: string;
@@ -134,13 +132,11 @@ export class UserRegisterDTO extends UserAccoutDTO {
   @ApiProperty({
     type: String,
     name: 'confirmPass',
-    description:
-      'Confirmation de password',
+    description: 'Confirmation de password',
   })
   @IsString()
   confirmPass: string;
 }
-
 
 export class UserLoginDTO {
   @ApiProperty({
@@ -155,8 +151,7 @@ export class UserLoginDTO {
   @ApiProperty({
     type: String,
     name: 'password',
-    description:
-      'Password length > 8',
+    description: 'Password length > 8',
   })
   @IsString()
   password: string;
@@ -261,10 +256,8 @@ export class UserQueryDTO implements IForgotPasswordDTO {
   phone?: string;
 }
 
-
-// 
+//
 export class ReinitialisePassAccountDTO {
-
   @ApiProperty({
     type: String,
     name: 'email',
@@ -290,9 +283,7 @@ export class ReinitialisePassAccountDTO {
   confirm: string;
 }
 
-
 export class ChangePassAccountDTO {
-
   @ApiProperty({
     type: String,
     name: 'id',
@@ -327,9 +318,7 @@ export class ChangePassAccountDTO {
   confirm: string;
 }
 
-
 export class DeleteUserBetDTO {
-
   @ApiProperty({
     type: String,
     name: 'id',
@@ -342,16 +331,14 @@ export class DeleteUserBetDTO {
   @ApiProperty({
     type: String,
     name: 'userId',
-    description: 'ID de l\'utilisateur',
+    description: "ID de l'utilisateur",
     example: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
   })
   @IsString()
   userId: string;
 }
 
-
 export class DeleteUserTicketDTO {
-
   @ApiProperty({
     type: String,
     name: 'id',
@@ -365,7 +352,7 @@ export class DeleteUserTicketDTO {
   @ApiProperty({
     type: String,
     name: 'userId',
-    description: 'ID de l\'utilisateur',
+    description: "ID de l'utilisateur",
     example: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
   })
   @IsString()

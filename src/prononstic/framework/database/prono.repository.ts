@@ -7,15 +7,19 @@ import { Repository } from 'typeorm';
 import { PrononsticEntity } from './schema/prono.entity';
 
 @Injectable()
-export class PrononsticRepository implements IPronosRepository, OnApplicationBootstrap {
-    pronos: IGenericRepository<Prononstic>;
-    
-    constructor(
-        @InjectRepository(PrononsticEntity)
-        private prononsticRepository: Repository<PrononsticEntity>,
-    ) {}
+export class PrononsticRepository
+  implements IPronosRepository, OnApplicationBootstrap
+{
+  pronos: IGenericRepository<Prononstic>;
 
-    onApplicationBootstrap(): void {
-        this.pronos = new DBGenericRepository<PrononsticEntity>(this.prononsticRepository);
-    }
+  constructor(
+    @InjectRepository(PrononsticEntity)
+    private prononsticRepository: Repository<PrononsticEntity>,
+  ) {}
+
+  onApplicationBootstrap(): void {
+    this.pronos = new DBGenericRepository<PrononsticEntity>(
+      this.prononsticRepository,
+    );
+  }
 }

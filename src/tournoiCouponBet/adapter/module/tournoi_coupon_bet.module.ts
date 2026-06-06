@@ -11,7 +11,6 @@ import { AdminRepositoryModule } from '../../../admin/framework/database/admin.r
 import { MatchRepositoryModule } from '../../../match/framework/database/match.repository.module';
 import { ITournoiCouponBetService } from '../../../tournoiCouponBet/app/module';
 
-
 @Module({
   imports: [
     TournoiCouponBetRepositoryModule,
@@ -24,7 +23,9 @@ import { ITournoiCouponBetService } from '../../../tournoiCouponBet/app/module';
     AdminAuthApiModule,
   ],
   controllers: [TournoiCouponBetController],
-  providers: [{ provide: ITournoiCouponBetService, useClass: TournoiCouponBetService }],
+  providers: [
+    { provide: ITournoiCouponBetService, useClass: TournoiCouponBetService },
+  ],
   exports: [ITournoiCouponBetService, TournoiCouponBetRepositoryModule],
 })
-export class TournoiCouponBetModule { }
+export class TournoiCouponBetModule {}

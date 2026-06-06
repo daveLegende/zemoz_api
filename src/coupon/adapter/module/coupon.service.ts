@@ -12,6 +12,10 @@ import { CouponFactory } from '../coupon.factory';
 import { IBetRepository } from '../../../bet/domain/data.abstract';
 import { ICouponBetRepository } from '../../../couponBet/domain/data.abstract';
 import { BetStatus, CouponBet } from '../../../couponBet/domain';
+import { DataSource } from 'typeorm';
+import { UserEntity } from '../../../user/framework/database/schema/user.entity';
+import { CouponEntity } from '../../../coupon/framework/schema/coupon.entity';
+import { CouponBetEntity } from '../../../couponBet/framework/schema/coupon_bet.entity';
 
 @Injectable()
 export class CouponService {
@@ -22,7 +26,8 @@ export class CouponService {
     private userRepository: IUserRepository,
     private betRepository: IBetRepository,
     private cpRepository: ICouponBetRepository,
-  ) { }
+    private dataSource: DataSource,
+  ) {}
 
   // Récupérer tous les coupons avec relations
   async fetchAll(): Promise<Coupon[]> {
@@ -51,61 +56,70 @@ export class CouponService {
 
   // Ajouter un coupon avec ses CouponBets
   async add(data: CouponAccountDto): Promise<Coupon> {
-    const { amount, user, couponBets } = data;
+    return await this.dataSource.transaction(async (manager) => {
+      const { amount, user, couponBets } = data;
 
-    const userExisted = await this.userRepository.users.findOneByID(user);
-    if (!userExisted) throw new NotFoundException('Utilisateur non trouvé');
+      const userExisted = await manager.findOne(UserEntity, {
+        where: { id: user },
+        lock: { mode: 'pessimistic_write' },
+      });
+      if (!userExisted) throw new NotFoundException('Utilisateur non trouvé');
 
-    if (amount < 100 || amount > 100000)
-      throw new BadRequestException('Mise invalide (100 à 100000)');
+      if (amount < 100 || amount > 100000)
+        throw new BadRequestException('Mise invalide (100 à 100000)');
 
-    if (amount > userExisted.solde)
-      throw new BadRequestException('Solde insuffisant');
+      if (amount > userExisted.solde)
+        throw new BadRequestException('Solde insuffisant');
 
-    let totalOdds = 1;
+      let totalOdds = 1;
 
-    // Vérification des bets et calcul des cotes
-    const betsEntities: CouponBet[] = [];
-    for (const cp of couponBets) {
-      // @ts-ignore
-      const betId = typeof cp.bet === 'string' ? cp.bet : cp.bet.id;
-      const betExisted = await this.betRepository.bets.findOneByID(betId);
-      if (!betExisted) throw new NotFoundException('Bet non trouvé');
+      // Vérification des bets et calcul des cotes
+      const betsEntities: CouponBetEntity[] = [];
+      for (const cp of couponBets) {
+        // @ts-ignore
+        const betId = typeof cp.bet === 'string' ? cp.bet : cp.bet.id;
+        const betExisted = await this.betRepository.bets.findOneByID(betId);
+        if (!betExisted) throw new NotFoundException('Bet non trouvé');
 
-      // Vérification des options sélectionnées
-      for (const key of Object.keys(cp.selectedOptions)) {
-        if (!(key in betExisted.odds))
-          throw new BadRequestException(`Option ${key} invalide pour ce bet`);
+        // Vérification des options sélectionnées
+        for (const key of Object.keys(cp.selectedOptions)) {
+          if (!(key in betExisted.odds))
+            throw new BadRequestException(`Option ${key} invalide pour ce bet`);
+        }
+
+        const selectedOdds = Object.values(cp.selectedOptions)[0]; // Prendre la première sélection
+        totalOdds *= selectedOdds;
+
+        const cbEntity = manager.create(CouponBetEntity, {
+          ...cp,
+          bet: betExisted as any,
+          status: BetStatus.PENDING,
+        });
+        betsEntities.push(cbEntity);
       }
 
-      const selectedOdds = Object.values(cp.selectedOptions)[0]; // Prendre la première sélection
-      totalOdds *= selectedOdds;
+      const gains = totalOdds * amount;
 
-      betsEntities.push({
-        ...cp,
-        bet: betExisted,
-        status: BetStatus.PENDING,
-      } as CouponBet);
-    }
+      // Débiter le solde utilisateur
+      userExisted.solde -= amount;
+      await manager.save(UserEntity, userExisted);
 
-    const gains = totalOdds * amount;
+      // Création du coupon
+      const factoryCoupon = await CouponFactory.create(
+        { ...data, totalOdds, gains },
+        userExisted as any,
+      );
+      const couponEntity = manager.create(CouponEntity, factoryCoupon as any);
+      const savedCoupon = await manager.save(CouponEntity, couponEntity);
 
-    // Débiter le solde utilisateur
-    userExisted.solde -= amount;
-    await this.userRepository.users.update(userExisted);
+      // Création des CouponBets
+      for (const cp of betsEntities) {
+        cp.coupon = savedCoupon as any;
+        await manager.save(CouponBetEntity, cp);
+      }
 
-    // Création du coupon
-    const couponEntity = await this.couponsRepository.coupons.create(
-      await CouponFactory.create({ ...data, totalOdds, gains }, userExisted),
-    );
-
-    // Création des CouponBets
-    for (const cp of betsEntities) {
-      cp.coupon = couponEntity;
-      await this.cpRepository.couponBets.create(cp);
-    }
-
-    return couponEntity;
+      return savedCoupon as any;
+    });
   }
 
   // Modifier un coupon
@@ -120,7 +134,6 @@ export class CouponService {
       CouponFactory.update(coupon, data),
     );
   }
-
 
   // Récupérer tous les coupons avec relations
   async getPendingCoupons(): Promise<Coupon[]> {

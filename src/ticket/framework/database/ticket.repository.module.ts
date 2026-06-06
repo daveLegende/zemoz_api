@@ -5,7 +5,6 @@ import { ITicketRepository } from '../../domain';
 import { TicketEntity } from './schema/ticket.entity';
 import { TicketRepository } from './ticket.repository';
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([TicketEntity])],
   providers: [

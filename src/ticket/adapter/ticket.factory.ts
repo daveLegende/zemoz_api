@@ -1,13 +1,17 @@
-import { User } from "../../user/domain";
-import { ICreateTicketDTO, IUpdateTicketDTO } from "../app/dto";
-import { Ticket } from '../domain'
-
+import { User } from '../../user/domain';
+import { ICreateTicketDTO, IUpdateTicketDTO } from '../app/dto';
+import { Ticket } from '../domain';
 
 export abstract class TicketFactory {
-  static async create(data: ICreateTicketDTO, user: User, matchs: any[] = []): Promise<Ticket> {
+  static async create(
+    data: ICreateTicketDTO,
+    user: User,
+    matchs: any[] = [],
+  ): Promise<Ticket> {
     const ticket = new Ticket();
     ticket.type = data.type;
     ticket.duree = data.duree;
+    ticket.position = data.position;
     ticket.qrCode = data.qrCode;
     ticket.code = data.code;
     ticket.etat = data.etat;
@@ -20,7 +24,6 @@ export abstract class TicketFactory {
   }
 
   static update(ticket: Ticket, data: IUpdateTicketDTO): Ticket {
-
     ticket.type = data.type ?? ticket.type;
     ticket.duree = data.duree ?? ticket.duree;
     ticket.etat = data.etat ?? ticket.etat;
@@ -47,7 +50,7 @@ export abstract class TicketFactory {
         isDeleted: ticket.isDeleted,
         createdAt: ticket.createdAt,
         updatedAt: ticket.updatedAt,
-        deletedAt: ticket.deletedAt
+        deletedAt: ticket.deletedAt,
       };
     }
   }

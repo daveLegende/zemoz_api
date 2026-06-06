@@ -5,7 +5,6 @@ import { IArbitreRepository } from '../../domain';
 import { ArbitreRepository } from './arbitre.repository';
 import { ArbitreEntity } from './schema/arbitre.entity';
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([ArbitreEntity])],
   providers: [

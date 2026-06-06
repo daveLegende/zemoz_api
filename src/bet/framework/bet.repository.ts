@@ -9,14 +9,14 @@ import { BetEntity } from './schema/bet.entity';
 
 @Injectable()
 export class BetRepository implements IBetRepository, OnApplicationBootstrap {
-    bets: IGenericRepository<Bet>;
-    
-    constructor(
-        @InjectRepository(BetEntity)
-        private betRepository: Repository<BetEntity>,
-    ) {}
+  bets: IGenericRepository<Bet>;
 
-    onApplicationBootstrap(): void {
-        this.bets = new DBGenericRepository<BetEntity>(this.betRepository);
-    }
+  constructor(
+    @InjectRepository(BetEntity)
+    private betRepository: Repository<BetEntity>,
+  ) {}
+
+  onApplicationBootstrap(): void {
+    this.bets = new DBGenericRepository<BetEntity>(this.betRepository);
+  }
 }

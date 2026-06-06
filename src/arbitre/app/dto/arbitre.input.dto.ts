@@ -1,16 +1,13 @@
-import { RoleArbitre } from "../../domain";
-
+import { RoleArbitre } from '../../domain';
 
 export interface ICreateArbitreDTO {
-    
   name: string;
 
   avatar: string;
 
   phone: string;
-  
-  role?: RoleArbitre;
 
+  role?: RoleArbitre;
 }
 
 export interface IUpdateArbitreDTO extends Partial<ICreateArbitreDTO> {

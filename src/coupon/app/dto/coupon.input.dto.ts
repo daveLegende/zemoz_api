@@ -1,6 +1,6 @@
-import { OddsClass } from "../../../bet/domain";
-import { CouponState } from "../../../coupon/domain";
-import { CouponBet } from "../../../couponBet/domain";
+import { OddsClass } from '../../../bet/domain';
+import { CouponState } from '../../../coupon/domain';
+import { CouponBet } from '../../../couponBet/domain';
 
 export class BetCoupon {
   bet: string;
@@ -8,7 +8,6 @@ export class BetCoupon {
 }
 
 export interface ICreateCouponDTO {
-    
   user: string;
 
   totalOdds?: number;
@@ -24,7 +23,6 @@ export interface ICreateCouponDTO {
   isDeleted?: boolean;
 
   isPaid?: boolean;
-
 }
 
 export interface IUpdateCouponDTO extends Partial<ICreateCouponDTO> {

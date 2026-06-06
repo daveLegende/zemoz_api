@@ -1,6 +1,22 @@
-import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ATimestamp } from '../../../../_shared/framework/timestamp.abstract';
-import { HalfPauseState, Match, MatchScores, MatchState, MatchType } from '../../../../match/domain';
+import {
+  HalfPauseState,
+  Match,
+  MatchScores,
+  MatchState,
+  MatchType,
+} from '../../../../match/domain';
 import { PouleEntity } from '../../../../poule/framework/database/schema/poule.entity';
 import { TeamEntity } from '../../../../team/framework/database/schema/team.entity';
 import { ArbitreEntity } from '../../../../arbitre/framework/database/schema/arbitre.entity';
@@ -12,92 +28,95 @@ import { ParisEntity } from '../../../../paris/framework/schema/paris.entity';
 @Entity('matchs')
 // @Index(['email'], { unique: true, where: `deleted_at IS NULL` })
 export class MatchEntity extends ATimestamp implements Match {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column()
-    lieu: string;
+  @Column()
+  lieu: string;
 
-    @Column({
-        type: 'enum',
-        enum: MatchType,
-    })
-    type: MatchType;
+  @Column({
+    type: 'enum',
+    enum: MatchType,
+  })
+  type: MatchType;
 
-    @Column({
-        type: 'enum',
-        enum: MatchState,
-        nullable: true,
-        default: MatchState.A_VENIR
-    })
-    etat?: MatchState;
+  @Column({
+    type: 'enum',
+    enum: MatchState,
+    nullable: true,
+    default: MatchState.A_VENIR,
+  })
+  etat?: MatchState;
 
-    @Column({ nullable: true, default: 0 })
-    journee?: number;
+  @Column({ nullable: true, default: 0 })
+  journee?: number;
 
-    @Column('timestamp')
-    date: Date;
+  @Column('timestamp')
+  date: Date;
 
-    // @Column()
-    // home: string;
+  // @Column()
+  // home: string;
 
-    // @Column()
-    // away: string;
+  // @Column()
+  // away: string;
 
-    @ManyToOne(() => TeamEntity, (team) => team.matchHome, { nullable: false })
-    @JoinColumn({ name: 'home' })
-    home: TeamEntity;
+  @ManyToOne(() => TeamEntity, (team) => team.matchHome, { nullable: false })
+  @JoinColumn({ name: 'home' })
+  home: TeamEntity;
 
-    @ManyToOne(() => TeamEntity, (team) => team.matchAway, { nullable: false })
-    @JoinColumn({ name: 'away' })
-    away: TeamEntity;
+  @ManyToOne(() => TeamEntity, (team) => team.matchAway, { nullable: false })
+  @JoinColumn({ name: 'away' })
+  away: TeamEntity;
 
-    @Column('jsonb', { nullable: true, default: { "home": 0, "away": 0 } },)
-    scores?: MatchScores;
+  @Column('jsonb', { nullable: true, default: { home: 0, away: 0 } })
+  scores?: MatchScores;
 
-    @OneToMany(() => MatchEventEntity, (event) => event.match, { cascade: true })
-    events?: MatchEventEntity[];
+  @OneToMany(() => MatchEventEntity, (event) => event.match, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  events?: MatchEventEntity[];
 
-    @ManyToOne(() => PouleEntity, (poule) => poule.matches, { nullable: true })
-    @JoinColumn({ name: 'poule' })
-    poule?: PouleEntity;
+  @ManyToOne(() => PouleEntity, (poule) => poule.matches, { nullable: true })
+  @JoinColumn({ name: 'poule' })
+  poule?: PouleEntity;
 
-    @ManyToMany(() => ArbitreEntity, (arbitre) => arbitre.matchs)
-    @JoinTable({ name: "matchs_arbitres"})
-    arbitres: ArbitreEntity[]
+  @ManyToMany(() => ArbitreEntity, (arbitre) => arbitre.matchs)
+  @JoinTable({ name: 'matchs_arbitres' })
+  arbitres: ArbitreEntity[];
 
-    @OneToMany(() => PrononsticEntity, pronostic => pronostic.match)
-    pronostics?: PrononsticEntity[];
+  @OneToMany(() => PrononsticEntity, (pronostic) => pronostic.match)
+  pronostics?: PrononsticEntity[];
 
-    @OneToMany(() => BetEntity, (bet) => bet.match)
-    bets?: BetEntity[];
+  @OneToMany(() => BetEntity, (bet) => bet.match)
+  bets?: BetEntity[];
 
-    @OneToMany(() => ParisEntity, (paris) => paris.match)
-    paris?: ParisEntity[];
+  @OneToMany(() => ParisEntity, (paris) => paris.match)
+  paris?: ParisEntity[];
 
-    @Column({ nullable: true, default: false })
-    isProlongation?: boolean;
+  @Column({ nullable: true, default: false })
+  isProlongation?: boolean;
 
-    @Column({ nullable: true, default: false })
-    isTirAuxButs?: boolean;
+  @Column({ nullable: true, default: false })
+  isTirAuxButs?: boolean;
 
-    @Column({ nullable: true, default: 0 })
-    homePenalty?: number;
+  @Column({ nullable: true, default: 0 })
+  homePenalty?: number;
 
-    @Column({ nullable: true, default: 0 })
-    awayPenalty?: number;
+  @Column({ nullable: true, default: 0 })
+  awayPenalty?: number;
 
-    @Column({ nullable: true })
-    teamQualify?: string;
+  @Column({ nullable: true })
+  teamQualify?: string;
 
-    // @Column({ default: false })
-    // isHalfTime: boolean;
+  // @Column({ default: false })
+  // isHalfTime: boolean;
 
-    @Column({
-        type: 'enum',
-        enum: HalfPauseState,
-        nullable: true,
-        default: HalfPauseState.FIRST_HALF
-    })
-    halfPauseState?: HalfPauseState;
+  @Column({
+    type: 'enum',
+    enum: HalfPauseState,
+    nullable: true,
+    default: HalfPauseState.FIRST_HALF,
+  })
+  halfPauseState?: HalfPauseState;
 }

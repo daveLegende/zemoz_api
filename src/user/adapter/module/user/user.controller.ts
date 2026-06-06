@@ -24,7 +24,10 @@ import {
 } from '@nestjs/swagger';
 import { IDParamDTO } from '../../../../_shared/adapter/dto/param.dto';
 import { AccessEnum } from '../../../../user/domain';
-import { IUserController, IUserService } from '../../../../user/app/module/user';
+import {
+  IUserController,
+  IUserService,
+} from '../../../../user/app/module/user';
 import { User } from '../../../../user/domain/user.model';
 import { HasPermission } from '../../../../_shared/adapter/decorator';
 import { GetAccount } from '../../../../user/adapter/decorator';
@@ -51,21 +54,19 @@ import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
 // @UseGuards(UserGuard, AdminGuard)
 @Controller('users')
 export class UserController implements IUserController {
-  constructor(
-    private readonly userService: IUserService,
-  ) { }
+  constructor(private readonly userService: IUserService) {}
 
   @Get('tournoi-coupon/:id')
   getUserTournoiCoupons(@Param() { id }: IDParamDTO): Promise<TournoiCoupon[]> {
     return this.userService.getUserTournoiCoupons(id);
   }
 
-  @Get("current/:id")
+  @Get('current/:id')
   async getCurrentUser(@Param() { id }: IDParamDTO): Promise<User> {
     return await this.userService.getCurrentUser(id);
   }
 
-  @Get("profile")
+  @Get('profile')
   async getProfile(@Req() req): Promise<User> {
     console.log(req);
 
@@ -137,17 +138,16 @@ export class UserController implements IUserController {
    * @method POST
    */
 
-  @Post("register")
+  @Post('register')
   // @HasPermission(AccessEnum.CAN_CREATE_USER)
-  @UseInterceptors(
-    // FileInterceptor('avatar', {
-    //   storage: diskStorage({
-    //     destination: BaseConfig.setFilePath,
-    //     filename: BaseConfig.editFileName,
-    //   }),
-    //   fileFilter: BaseConfig.imageFileFilter,
-    // }),
-  )
+  @UseInterceptors()
+  // FileInterceptor('avatar', {
+  //   storage: diskStorage({
+  //     destination: BaseConfig.setFilePath,
+  //     filename: BaseConfig.editFileName,
+  //   }),
+  //   fileFilter: BaseConfig.imageFileFilter,
+  // }),
   @ApiConsumes('application/json')
   @ApiOperation({
     summary: 'Create account user',
@@ -167,17 +167,16 @@ export class UserController implements IUserController {
    * @method PATCH
    */
 
-  @Patch("update")
+  @Patch('update')
   @HasPermission(AccessEnum.CAN_UPDATE_USER)
-  @UseInterceptors(
-    // FileInterceptor('avatar', {
-    //   storage: diskStorage({
-    //     destination: BaseConfig.setFilePath,
-    //     filename: BaseConfig.editFileName,
-    //   }),
-    //   fileFilter: BaseConfig.fileFilter,
-    // }),
-  )
+  @UseInterceptors()
+  // FileInterceptor('avatar', {
+  //   storage: diskStorage({
+  //     destination: BaseConfig.setFilePath,
+  //     filename: BaseConfig.editFileName,
+  //   }),
+  //   fileFilter: BaseConfig.fileFilter,
+  // }),
   @ApiConsumes('application/json')
   @ApiOperation({ summary: 'Update user account' })
   @ApiBody({ type: UpdateUserDTO })
@@ -215,13 +214,12 @@ export class UserController implements IUserController {
     return this.userService.remove(id);
   }
 
-
   /**
    *
    * @method POST
    */
 
-  @Post("reinitialise-pass")
+  @Post('reinitialise-pass')
   @ApiConsumes('multipart/form-data', 'application/json')
   @ApiOperation({
     summary: 'Réinitialise mot de passe',
@@ -233,24 +231,20 @@ export class UserController implements IUserController {
     return user;
   }
 
-
   /**
    *
    * @method POST
    */
 
-  @Post("change-pass")
+  @Post('change-pass')
   @ApiConsumes('multipart/form-data', 'application/json')
   @ApiOperation({
     summary: 'Changement de mot de passe',
   })
-  async changePass(
-    @Body() data: ChangePassAccountDTO,
-  ): Promise<User> {
+  async changePass(@Body() data: ChangePassAccountDTO): Promise<User> {
     const user = await this.userService.changePass(data);
     return user;
   }
-
 
   @Get('tickets/:id')
   // @ApiResponse({ type: DocUserOutputDTO })

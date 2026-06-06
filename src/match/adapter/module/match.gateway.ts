@@ -49,7 +49,6 @@
 // // //     }
 // // //   }
 
-
 // // //   @SubscribeMessage('updateState')
 // // //   async handleStateUpdate(@MessageBody() updateStateDto: UpdateStateDto) {
 // // //     const updatedMatch = this.matchService.updateState(updateStateDto);
@@ -60,8 +59,6 @@
 // // //     this.server.emit('couponStatusCheck', couponStatus);
 // // //   }
 // // // }
-
-
 
 // // @WebSocketGateway(81, { transports: ['websocket'] })
 // // export class MatchGateway {
@@ -83,7 +80,7 @@
 // //       console.log('Match mis à jour:', updatedMatch);
 
 // //       // Diffuser l'événement à tous les clients
-// //       this.server.emit('scoreUpdated', updatedMatch); 
+// //       this.server.emit('scoreUpdated', updatedMatch);
 
 // //       // Vérifier les coupons en attente
 // //       // const couponStatus = await this.couponService.validatePendingCoupons();
@@ -131,7 +128,7 @@
 // //       const { home: homeScore, away: awayScore } = match.scores;
 
 // //       // Déterminer le résultat une seule fois
-// //       const matchResult = homeScore > awayScore ? 'V1' : 
+// //       const matchResult = homeScore > awayScore ? 'V1' :
 // //                         homeScore < awayScore ? 'V2' : 'X';
 
 // //       if (match.etat === MatchState.TERMINER) {
@@ -171,7 +168,7 @@
 
 // //     } catch (error) {
 // //       console.error('Erreur dans handleCustomState:', error);
-// //       this.server.emit('error', { 
+// //       this.server.emit('error', {
 // //         message: 'Erreur lors du traitement des paris',
 // //         details: error.message
 // //       });
@@ -179,7 +176,10 @@
 // //   }
 // // }
 
-
+// import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer } from '@nestjs/websockets';
+// import { Server } from 'socket.io';
+// import { UpdateHalfTimeDto, UpdateMatchScoreEventDto, UpdateStateDto } from '../dto';
+// import { IMatchService } from '../../../match/app/module';
 
 // @WebSocketGateway(81, { transports: ['websocket'] })
 // export class MatchGateway {
@@ -227,26 +227,35 @@
 //   }
 // }
 
-
-import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer } from '@nestjs/websockets';
+import {
+  WebSocketGateway,
+  SubscribeMessage,
+  MessageBody,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { UpdateHalfTimeDto, UpdateMatchScoreEventDto, UpdateStateDto } from '../dto';
+import {
+  UpdateHalfTimeDto,
+  UpdateMatchScoreEventDto,
+  UpdateStateDto,
+} from '../dto';
 import { IMatchService } from '../../../match/app/module';
 
 @WebSocketGateway({
   transports: ['websocket'],
   cors: {
-    origin: '*',
+    origin: [
+      // 'http://localhost:5173',
+      'https://www.petitpoto.pro',
+    ],
+    credentials: true,
   },
 })
 export class MatchGateway {
-
   @WebSocketServer()
   server: Server;
 
-  constructor(
-    private readonly matchService: IMatchService,
-  ) {}
+  constructor(private readonly matchService: IMatchService) {}
 
   @SubscribeMessage('updateScore')
   async handleScoreUpdate(@MessageBody() dto: UpdateMatchScoreEventDto) {
@@ -262,7 +271,10 @@ export class MatchGateway {
 
   @SubscribeMessage('updateHalfTimeState')
   async handleHalfTimeStateUpdate(@MessageBody() dto: UpdateHalfTimeDto) {
-    const updatedMatch = await this.matchService.updateHalfTimeState(dto.id, dto.halfPauseState);
+    const updatedMatch = await this.matchService.updateHalfTimeState(
+      dto.id,
+      dto.halfPauseState,
+    );
     this.server.emit('halfTimeStateUpdated', updatedMatch);
   }
 }

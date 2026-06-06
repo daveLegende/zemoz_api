@@ -11,11 +11,12 @@ import {
 
 export class DBGenericRepository<T>
   implements
-  IFindGeneric<T>,
-  IFindOneGeneric<T>,
-  ICreateGeneric<T>,
-  IUpdateGeneric<T>,
-  IRemoveGeneric<T> {
+    IFindGeneric<T>,
+    IFindOneGeneric<T>,
+    ICreateGeneric<T>,
+    IUpdateGeneric<T>,
+    IRemoveGeneric<T>
+{
   private _repository: Repository<T>;
 
   constructor(repository: Repository<T>) {

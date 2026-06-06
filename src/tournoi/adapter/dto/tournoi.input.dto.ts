@@ -21,7 +21,7 @@ export class TournoiAccoutDTO {
   @ApiProperty({
     type: String,
     name: 'editionName',
-    description: 'nom d\' édition',
+    description: "nom d' édition",
   })
   @IsString()
   @IsOptional()
@@ -31,7 +31,7 @@ export class TournoiAccoutDTO {
     type: Number,
     name: 'edition',
     description: 'Quellième edition du Tournoi',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsInt()
@@ -41,7 +41,7 @@ export class TournoiAccoutDTO {
     type: Date,
     name: 'annee',
     description: 'Année du tournoi',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsDate()

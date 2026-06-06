@@ -14,22 +14,24 @@ import { UserRepositoryModule } from '../../../user/framework/database/user.repo
 import { MatchEventController } from './match.event.controller';
 import { MatchEventService } from './match.event.service';
 
-
 @Module({
   imports: [
-    MatchRepositoryModule, 
-    ArbitreRepositoryModule, 
-    TeamRepositoryModule, 
-    PouleRepositoryModule, 
+    MatchRepositoryModule,
+    ArbitreRepositoryModule,
+    TeamRepositoryModule,
+    PouleRepositoryModule,
     PlayerRepositoryModule,
     MatchEventRepositoryModule,
     UserRepositoryModule,
     AuthApiModule,
-    AdminRepositoryModule, 
+    AdminRepositoryModule,
     AdminAuthApiModule,
   ],
   controllers: [MatchEventController],
-  providers: [MatchGateway, { provide: IMatchEventService, useClass: MatchEventService }],
+  providers: [
+    MatchGateway,
+    { provide: IMatchEventService, useClass: MatchEventService },
+  ],
   exports: [IMatchEventService, MatchEventRepositoryModule, MatchGateway],
 })
 export class MatchEventModule {}

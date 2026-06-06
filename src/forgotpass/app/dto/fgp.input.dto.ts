@@ -1,13 +1,11 @@
 export interface ICreateForgotPassDTO {
-    
   code: string;
 
   email: string;
-
 }
 
 // export interface IVerifyCodeDTO {
-    
+
 //   code: string;
 
 //   email: string;

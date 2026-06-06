@@ -20,8 +20,7 @@ export class TournoiCouponBetService implements ITournoiCouponBetService {
     private tournoiCouponBetsRepository: ITournoiCouponBetRepository,
     private tournoiCouponRepository: ITournoiCouponRepository,
     private betRepository: IBetRepository,
-  ) { }
-
+  ) {}
 
   setState(id: string): Promise<boolean> {
     throw new Error('Method not implemented.');
@@ -34,10 +33,11 @@ export class TournoiCouponBetService implements ITournoiCouponBetService {
   }
 
   async fetchOne(id: string): Promise<TournoiCouponBet> {
-    const couponBet = await this.tournoiCouponBetsRepository.tournoiCouponBets.findOne({
-      where: { id },
-      relations: { bet: true, tournoiCoupon: true },
-    });
+    const couponBet =
+      await this.tournoiCouponBetsRepository.tournoiCouponBets.findOne({
+        where: { id },
+        relations: { bet: true, tournoiCoupon: true },
+      });
 
     if (!couponBet) {
       throw new NotFoundException('Tournoi CouponBet non trouvé');
@@ -58,18 +58,15 @@ export class TournoiCouponBetService implements ITournoiCouponBetService {
       const bet = await this.betRepository.bets.findOneByID(betId);
       if (!bet) throw new NotFoundException('Bet non trouvé');
 
-      const coupon = await this.tournoiCouponRepository.tournoiCoupons.findOneByID(couponId);
+      const coupon =
+        await this.tournoiCouponRepository.tournoiCoupons.findOneByID(couponId);
       if (!coupon) throw new NotFoundException('Coupon non trouvé');
 
       /* ✅ Validation bookmaker */
       this.validateSelectedOptions(bet.odds, selectedOptions);
 
       return await this.tournoiCouponBetsRepository.tournoiCouponBets.create(
-        TournoiCouponBetFactory.create(
-          bet,
-          coupon,
-          selectedOptions,
-        ),
+        TournoiCouponBetFactory.create(bet, coupon, selectedOptions),
       );
     } catch (error) {
       this.logger.error(error.message, 'ERROR::CouponBetService.add');
@@ -83,10 +80,11 @@ export class TournoiCouponBetService implements ITournoiCouponBetService {
     try {
       const { id, status } = data;
 
-      const couponBet = await this.tournoiCouponBetsRepository.tournoiCouponBets.findOne({
-        where: { id },
-        relations: { bet: true, tournoiCoupon: true },
-      });
+      const couponBet =
+        await this.tournoiCouponBetsRepository.tournoiCouponBets.findOne({
+          where: { id },
+          relations: { bet: true, tournoiCoupon: true },
+        });
 
       if (!couponBet) {
         throw new NotFoundException('Tournoi CouponBet non trouvé');
@@ -108,9 +106,10 @@ export class TournoiCouponBetService implements ITournoiCouponBetService {
   /* ================= REMOVE ================= */
 
   async remove(id: string): Promise<boolean> {
-    const couponBet = await this.tournoiCouponBetsRepository.tournoiCouponBets.findOne({
-      where: { id },
-    });
+    const couponBet =
+      await this.tournoiCouponBetsRepository.tournoiCouponBets.findOne({
+        where: { id },
+      });
 
     if (!couponBet) return false;
 

@@ -1,20 +1,31 @@
 import {
   BadRequestException,
-    ConflictException,
-    Injectable,
-    Logger,
-    NotFoundException,
-  } from '@nestjs/common';
+  ConflictException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { IAdminService } from '../../../app/module';
 import { Admin, IAdminRepository } from '../../../domain';
 import { AdminFactory } from '../../admin.factory';
-import { AdminAccountDto, UpdateAdminDTO } from '../../dto';
+import {
+  AdminAccountDto,
+  UpdateAdminDTO,
+  ChangeAdminPasswordDTO,
+} from '../../dto';
+import { HashFactory } from '../../guard/hash.factory';
 import { ICouponRepository } from '../../../../coupon/domain/data.abstract';
 import { ITournoiCouponRepository } from '../../../../tournoiCoupon/domain/data.abstract';
-import { ITransactionRepository, TransactionType } from '../../../../transactions/domain';
+import {
+  ITransactionRepository,
+  TransactionType,
+} from '../../../../transactions/domain';
 import { Coupon, CouponState } from '../../../../coupon/domain';
-import { TournoiCoupon, TournoiCouponState } from '../../../../tournoiCoupon/domain';
-  
+import {
+  TournoiCoupon,
+  TournoiCouponState,
+} from '../../../../tournoiCoupon/domain';
+
 @Injectable()
 export class AdminService implements IAdminService {
   private readonly logger = new Logger();
@@ -55,12 +66,12 @@ export class AdminService implements IAdminService {
   async add(data: AdminAccountDto): Promise<Admin> {
     try {
       const { nom, password, email } = data;
-      
+
       // Vérifier que tous les champs requis sont présents
       if (!nom || !password || !email) {
-        throw new BadRequestException("Tous les champs sont requis");
+        throw new BadRequestException('Tous les champs sont requis');
       }
-      
+
       const existed = await this.adminRepository.admins.findOneBy({ email });
       if (existed) {
         throw new ConflictException('Cet admin existe déjà');
@@ -88,6 +99,35 @@ export class AdminService implements IAdminService {
     } catch (error) {
       this.logger.error(error.message, 'ERROR::AdminService.editAdmin');
 
+      throw error;
+    }
+  }
+
+  async changePassword(data: ChangeAdminPasswordDTO): Promise<boolean> {
+    try {
+      const { id, oldPassword, newPassword } = data;
+      const admin = await this.adminRepository.admins.findOneByID(id);
+
+      if (!admin) {
+        throw new NotFoundException('Admin non trouvé');
+      }
+
+      if (oldPassword) {
+        const isMatch = await HashFactory.isRightPwd(
+          oldPassword,
+          admin.password,
+        );
+        if (!isMatch) {
+          throw new BadRequestException('Ancien mot de passe incorrect');
+        }
+      }
+
+      admin.password = await HashFactory.hashPwd(newPassword);
+      await this.adminRepository.admins.update(admin);
+
+      return true;
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::AdminService.changePassword');
       throw error;
     }
   }
@@ -151,7 +191,6 @@ export class AdminService implements IAdminService {
     }
   }
 
-
   /**
    * RAPPORT 2: Gains et pertes sur les coupons
    * Gains = mises des coupons perdus
@@ -174,23 +213,15 @@ export class AdminService implements IAdminService {
         (c) => c.etat === CouponState.WIN && c.isPaid === true,
       );
 
-      const loseCoupons = coupons.filter(
-        (c) => c.etat === CouponState.LOOSE,
-      );
+      const loseCoupons = coupons.filter((c) => c.etat === CouponState.LOOSE);
 
       const pendingCoupons = coupons.filter(
         (c) => c.etat === CouponState.PENDING,
       );
 
-      const winMises = winCoupons.reduce(
-        (sum, c) => sum + Number(c.amount),
-        0,
-      );
+      const winMises = winCoupons.reduce((sum, c) => sum + Number(c.amount), 0);
 
-      const winGains = winCoupons.reduce(
-        (sum, c) => sum + Number(c.gains),
-        0,
-      );
+      const winGains = winCoupons.reduce((sum, c) => sum + Number(c.gains), 0);
 
       const loseMises = loseCoupons.reduce(
         (sum, c) => sum + Number(c.amount),
@@ -219,7 +250,6 @@ export class AdminService implements IAdminService {
     }
   }
 
-
   /**
    * RAPPORT 3: Gains et pertes sur les coupons tournoi
    */
@@ -234,7 +264,8 @@ export class AdminService implements IAdminService {
     pendingCount: number;
   }> {
     try {
-      const tournoiCoupons = await this.tournoicouponRepository.tournoiCoupons.find();
+      const tournoiCoupons =
+        await this.tournoicouponRepository.tournoiCoupons.find();
 
       let winMises = 0;
       let winGains = 0;
@@ -277,11 +308,13 @@ export class AdminService implements IAdminService {
         pendingCount,
       };
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::AdminService.getTournoiCouponsProfitLossReport');
+      this.logger.error(
+        error.message,
+        'ERROR::AdminService.getTournoiCouponsProfitLossReport',
+      );
       throw error;
     }
   }
-
 
   /**
    * RAPPORT 4: Rapport combiné (coupons + tournoi coupons)
@@ -300,16 +333,23 @@ export class AdminService implements IAdminService {
       const tournoiReport = await this.getTournoiCouponsProfitLossReport();
 
       return {
-        totalBetsAmount: couponsReport.totalBetsAmount + tournoiReport.totalBetsAmount,
-        totalGainsPaid: couponsReport.totalGainsPaid + tournoiReport.totalGainsPaid,
+        totalBetsAmount:
+          couponsReport.totalBetsAmount + tournoiReport.totalBetsAmount,
+        totalGainsPaid:
+          couponsReport.totalGainsPaid + tournoiReport.totalGainsPaid,
         totalProfit: couponsReport.profit + tournoiReport.profit,
-        totalLostBetsAmount: couponsReport.lostBetsAmount + tournoiReport.lostBetsAmount,
-        totalWinBetsNetAmount: couponsReport.winBetsNetAmount + tournoiReport.winBetsNetAmount,
+        totalLostBetsAmount:
+          couponsReport.lostBetsAmount + tournoiReport.lostBetsAmount,
+        totalWinBetsNetAmount:
+          couponsReport.winBetsNetAmount + tournoiReport.winBetsNetAmount,
         coupons: couponsReport,
         tournoiCoupons: tournoiReport,
       };
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::AdminService.getCombinedProfitLossReport');
+      this.logger.error(
+        error.message,
+        'ERROR::AdminService.getCombinedProfitLossReport',
+      );
       throw error;
     }
   }
@@ -352,7 +392,8 @@ export class AdminService implements IAdminService {
       }
 
       // 3️⃣ Coupons tournoi (pertes)
-      const tournoiCoupons = await this.tournoicouponRepository.tournoiCoupons.find();
+      const tournoiCoupons =
+        await this.tournoicouponRepository.tournoiCoupons.find();
 
       let totalTournoiLosses = 0;
 
@@ -376,28 +417,26 @@ export class AdminService implements IAdminService {
         },
       };
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::AdminService.getNetProfitReport');
+      this.logger.error(
+        error.message,
+        'ERROR::AdminService.getNetProfitReport',
+      );
       throw error;
     }
   }
-
 
   /**
    * RAPPORT 6: Rapport complet avec tous les indicateurs
    */
   async getCompleteFinancialReport(): Promise<any> {
     try {
-      const [
-        depositsWithdrawals,
-        couponsReport,
-        tournoiReport,
-        netProfit,
-      ] = await Promise.all([
-        this.getDepositsAndWithdrawalsReport(),
-        this.getCouponsProfitLossReport(),
-        this.getTournoiCouponsProfitLossReport(),
-        this.getNetProfitReport(),
-      ]);
+      const [depositsWithdrawals, couponsReport, tournoiReport, netProfit] =
+        await Promise.all([
+          this.getDepositsAndWithdrawalsReport(),
+          this.getCouponsProfitLossReport(),
+          this.getTournoiCouponsProfitLossReport(),
+          this.getNetProfitReport(),
+        ]);
 
       const totalBetsAmount =
         couponsReport.totalBetsAmount + tournoiReport.totalBetsAmount;
@@ -405,12 +444,10 @@ export class AdminService implements IAdminService {
       const totalGainsPaid =
         couponsReport.totalGainsPaid + tournoiReport.totalGainsPaid;
 
-      const totalProfit =
-        couponsReport.profit + tournoiReport.profit;
-
+      const totalProfit = couponsReport.profit + tournoiReport.profit;
 
       return {
-        period: { from: "Début Tournoi", to: new Date().toISOString() },
+        period: { from: 'Début Tournoi', to: new Date().toISOString() },
         depositsWithdrawals,
         bettingActivity: {
           coupons: couponsReport,
@@ -434,7 +471,10 @@ export class AdminService implements IAdminService {
         },
       };
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::AdminService.getCompleteFinancialReport');
+      this.logger.error(
+        error.message,
+        'ERROR::AdminService.getCompleteFinancialReport',
+      );
       throw error;
     }
   }
@@ -453,17 +493,15 @@ export class AdminService implements IAdminService {
 
       return coupons;
     } catch (error) {
-      this.logger.error(
-        error.message,
-        'ERROR::AdminService.getAllCoupons',
-      );
+      this.logger.error(error.message, 'ERROR::AdminService.getAllCoupons');
       throw error;
     }
   }
 
   async getAllTournoiCoupons(): Promise<TournoiCoupon[]> {
     try {
-      const tournoiCoupons = await this.tournoicouponRepository.tournoiCoupons.find();
+      const tournoiCoupons =
+        await this.tournoicouponRepository.tournoiCoupons.find();
 
       return tournoiCoupons;
     } catch (error) {

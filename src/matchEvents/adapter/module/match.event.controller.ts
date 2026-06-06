@@ -28,13 +28,16 @@ import { BaseConfig } from '../../../_shared/config/base.config';
 import { MatchEvent } from '../../../matchEvents/domain';
 import { MatchEventDTO, UpdateMatchEventDto } from '../dto';
 import { MatchEventFactory } from '../match.events.factory';
-import { IMatchEventController, IMatchEventService } from '../../../matchEvents/app/module';
+import {
+  IMatchEventController,
+  IMatchEventService,
+} from '../../../matchEvents/app/module';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 
 @ApiTags('matchs management')
 @Controller('matchs_events')
 export class MatchEventController implements IMatchEventController {
-  constructor(private readonly eventService: IMatchEventService) { }
+  constructor(private readonly eventService: IMatchEventService) {}
 
   @Get()
   // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
@@ -51,11 +54,10 @@ export class MatchEventController implements IMatchEventController {
     return matchs?.map((match) => MatchEventFactory.getMatch(match));
   }
 
-
   @Get('search')
   async search(@Query() param: MatchEvent): Promise<MatchEvent> {
     if (param) {
-      const match = new MatchEvent()
+      const match = new MatchEvent();
       return MatchEventFactory.getMatch(await this.eventService.search(match));
     }
   }
@@ -89,19 +91,17 @@ export class MatchEventController implements IMatchEventController {
   })
   @ApiBody({ type: MatchEventDTO })
   // @ApiResponse({ type: DocArbitreOutputDto })
-  async create(
-    @Body() data: MatchEventDTO,
-  ): Promise<MatchEvent> {
+  async create(@Body() data: MatchEventDTO): Promise<MatchEvent> {
     // data.logo = file?.filename;
-    console.log("creation de match");
+    console.log('creation de match');
 
     const match = await this.eventService.add(data);
     if (match) return MatchEventFactory.getMatch(match);
   }
 
-    /**
-     * @method PATCH
-     */@ApiBearerAuth()
+  /**
+   * @method PATCH
+   */ @ApiBearerAuth()
   @UseGuards(AdminGuard)
   @Patch()
   // @HasPermission(AccessEnum.CAN_UPDATE_USER)
@@ -118,9 +118,7 @@ export class MatchEventController implements IMatchEventController {
   @ApiOperation({ summary: 'Update match account' })
   @ApiBody({ type: UpdateMatchEventDto })
   // @ApiResponse({ type: MatchDocOutputDTO })
-  async update(
-    @Body() data: UpdateMatchEventDto
-  ): Promise<MatchEvent> {
+  async update(@Body() data: UpdateMatchEventDto): Promise<MatchEvent> {
     return MatchEventFactory.getMatch(await this.eventService.edit(data));
   }
 

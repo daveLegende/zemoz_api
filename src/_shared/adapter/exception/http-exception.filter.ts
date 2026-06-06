@@ -22,10 +22,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
         status === 400
           ? message['message']
           : typeof message == 'string'
-          ? message
-          : typeof message == 'object'
-          ? message['error'] ?? message['message']
-          : undefined,
+            ? message
+            : typeof message == 'object'
+              ? (message['error'] ?? message['message'])
+              : undefined,
       timestamp: new Date().toISOString(),
       path: request.url,
     };

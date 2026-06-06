@@ -5,7 +5,6 @@ import { PlayerEntity } from './schema/player.entity';
 import { IPlayerRepository } from '../../domain';
 import { PlayerRepository } from './player.repository';
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([PlayerEntity])],
   providers: [

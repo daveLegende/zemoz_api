@@ -1,4 +1,3 @@
 export class CreatePasswordDto {
-    pass: string;
+  pass: string;
 }
-  

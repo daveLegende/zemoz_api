@@ -8,14 +8,14 @@ import { OtpEntity } from './schema/otp.entity';
 
 @Injectable()
 export class OtpRepository implements IOtpRepository, OnApplicationBootstrap {
-    otps: IGenericRepository<Otp>;
-    
-    constructor(
-        @InjectRepository(OtpEntity)
-        private otpRepository: Repository<OtpEntity>,
-    ) {}
+  otps: IGenericRepository<Otp>;
 
-    onApplicationBootstrap(): void {
-        this.otps = new DBGenericRepository<OtpEntity>(this.otpRepository);
-    }
+  constructor(
+    @InjectRepository(OtpEntity)
+    private otpRepository: Repository<OtpEntity>,
+  ) {}
+
+  onApplicationBootstrap(): void {
+    this.otps = new DBGenericRepository<OtpEntity>(this.otpRepository);
+  }
 }

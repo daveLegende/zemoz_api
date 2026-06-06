@@ -8,14 +8,14 @@ import { InfoEntity } from './schema/info.entity';
 
 @Injectable()
 export class InfoRepository implements IInfoRepository, OnApplicationBootstrap {
-    infos: IGenericRepository<Info>;
-    
-    constructor(
-        @InjectRepository(InfoEntity)
-        private InfoRepository: Repository<InfoEntity>,
-    ) {}
+  infos: IGenericRepository<Info>;
 
-    onApplicationBootstrap(): void {
-        this.infos = new DBGenericRepository<InfoEntity>(this.InfoRepository);
-    }
+  constructor(
+    @InjectRepository(InfoEntity)
+    private InfoRepository: Repository<InfoEntity>,
+  ) {}
+
+  onApplicationBootstrap(): void {
+    this.infos = new DBGenericRepository<InfoEntity>(this.InfoRepository);
+  }
 }

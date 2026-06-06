@@ -1,6 +1,10 @@
 import { IIDParamDTO } from '../../../../_shared/app/dto';
 import { Admin } from '../../../../admin/domain';
-import { ICreateAdminDTO, IUpdateAdminDTO } from '../../dto';
+import {
+  IChangeAdminPasswordDTO,
+  ICreateAdminDTO,
+  IUpdateAdminDTO,
+} from '../../dto';
 import { Coupon } from '../../../../coupon/domain';
 import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
 
@@ -14,6 +18,8 @@ export abstract class IAdminController {
   abstract search(data: Partial<Admin>, file?: any): Promise<Admin>;
 
   abstract update(data: IUpdateAdminDTO, file?: any): Promise<Admin>;
+
+  abstract changePassword(data: IChangeAdminPasswordDTO): Promise<boolean>;
 
   abstract setState(param: IIDParamDTO): Promise<boolean>;
 

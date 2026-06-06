@@ -1,4 +1,10 @@
-import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { ATimestamp } from '../../../../_shared/framework/timestamp.abstract';
 import { User } from '../../../domain';
@@ -49,18 +55,27 @@ export class UserEntity extends ATimestamp implements User {
   @Column({ nullable: true })
   avatar: string;
 
-  @OneToMany(() => PrononsticEntity, pronostic => pronostic.user)
+  @OneToMany(() => PrononsticEntity, (pronostic) => pronostic.user)
   pronostics: PrononsticEntity[];
 
   @OneToMany(() => TicketEntity, (ticket) => ticket.user)
   tickets: TicketEntity[];
 
-  @OneToMany(() => CouponEntity, (coupon) => coupon.user, { nullable: true, onDelete: 'CASCADE' })
+  @OneToMany(() => CouponEntity, (coupon) => coupon.user, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
   bets?: CouponEntity[];
 
-  @OneToMany(() => ParisEntity, (paris) => paris.user, { nullable: true, onDelete: 'CASCADE' })
+  @OneToMany(() => ParisEntity, (paris) => paris.user, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
   paris?: ParisEntity[];
 
-  @OneToMany(() => TransactionEntity, (transaction) => transaction.user, { nullable: true, onDelete: 'CASCADE' })
+  @OneToMany(() => TransactionEntity, (transaction) => transaction.user, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
   transactions?: TransactionEntity[];
 }

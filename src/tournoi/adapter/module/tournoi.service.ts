@@ -1,9 +1,9 @@
 import {
-    ConflictException,
-    Injectable,
-    Logger,
-    NotFoundException,
-  } from '@nestjs/common';
+  ConflictException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { ITournoiService } from '../../app/module';
 import { ITournoiRepository, Tournoi } from '../../domain';
 import { TournoiAccoutDTO, UpdateTournoiDTO } from '../dto';
@@ -11,7 +11,7 @@ import { TournoiFactory } from '../tournoi.factory';
 import { PlayerFactory } from '../../../player/adapter/player.factory';
 import { PlayerAccoutDTO } from '../../../player/adapter/dto';
 import { IPlayerRepository } from '../../../player/domain';
-  
+
 @Injectable()
 export class TournoiService implements ITournoiService {
   private readonly logger = new Logger();
@@ -28,11 +28,9 @@ export class TournoiService implements ITournoiService {
 
   async fetchOne(id: string): Promise<Tournoi> {
     try {
-      const tournoi = await this.tournoiRepository.tournois.findOne(
-        {
-          where: { id: id },
-        }
-      );
+      const tournoi = await this.tournoiRepository.tournois.findOne({
+        where: { id: id },
+      });
       if (tournoi) {
         return tournoi;
       }
@@ -52,7 +50,7 @@ export class TournoiService implements ITournoiService {
       const { name, editionName, edition, annee } = data;
       const existed = await this.tournoiRepository.tournois.findOneBy({ name });
       if (existed) throw new ConflictException('Tournoi already exist');
-      
+
       const tournoi = await this.tournoiRepository.tournois.create(
         await TournoiFactory.create(data),
       );
@@ -69,11 +67,11 @@ export class TournoiService implements ITournoiService {
   async edit(data: UpdateTournoiDTO): Promise<Tournoi> {
     try {
       const { id } = data;
-      const tournoi = id && (await this.tournoiRepository.tournois.findOne(
-        {
+      const tournoi =
+        id &&
+        (await this.tournoiRepository.tournois.findOne({
           where: { id: id },
-        }
-      ));
+        }));
       if (tournoi) {
         return await this.tournoiRepository.tournois.update(
           TournoiFactory.update(tournoi, data),
@@ -93,13 +91,13 @@ export class TournoiService implements ITournoiService {
 
   async remove(id: string): Promise<boolean> {
     try {
-      const tournoi = await this.tournoiRepository.tournois.findOne(
-        {
-          where: { id: id },
-        }
-      );
+      const tournoi = await this.tournoiRepository.tournois.findOne({
+        where: { id: id },
+      });
       if (tournoi) {
-        return await this.tournoiRepository.tournois.remove(tournoi).then(() => true);
+        return await this.tournoiRepository.tournois
+          .remove(tournoi)
+          .then(() => true);
       }
       return false;
     } catch (error) {

@@ -1,7 +1,6 @@
-import { Team } from "../../domain";
-import { ICreateTeamDTO, IUpdateTeamDTO } from "../dto";
-import { Express } from "express";
-
+import { Team } from '../../domain';
+import { ICreateTeamDTO, IUpdateTeamDTO } from '../dto';
+import { Express } from 'express';
 
 export abstract class ITeamService {
   abstract add(data: ICreateTeamDTO, file?: Express.Multer.File): Promise<Team>;
@@ -10,7 +9,10 @@ export abstract class ITeamService {
 
   abstract fetchOne(id: string): Promise<Team>;
 
-  abstract edit(data: IUpdateTeamDTO, file?: Express.Multer.File): Promise<Team>;
+  abstract edit(
+    data: IUpdateTeamDTO,
+    file?: Express.Multer.File,
+  ): Promise<Team>;
 
   abstract setState(id: string): Promise<boolean>;
 

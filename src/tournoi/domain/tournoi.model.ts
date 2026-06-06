@@ -1,5 +1,6 @@
 import { ITimestamp } from '../../_shared/domain/interface';
 import { Team } from '../../team/domain';
+import { Bet } from '../../bet/domain';
 
 export class Tournoi extends ITimestamp {
   id: string;
@@ -8,4 +9,5 @@ export class Tournoi extends ITimestamp {
   edition?: number;
   annee?: Date;
   winner?: Team;
+  bets?: Bet[];
 }

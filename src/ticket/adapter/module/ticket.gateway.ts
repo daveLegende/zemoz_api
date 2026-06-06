@@ -1,4 +1,9 @@
-import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer } from '@nestjs/websockets';
+import {
+  WebSocketGateway,
+  SubscribeMessage,
+  MessageBody,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { UpdateTicketDTO } from '../dto';
 import { ITicketService } from '../../app/module';
@@ -16,10 +21,9 @@ export class TicketGateway {
     this.server.emit('ticketScanned', updatedMatch);
   }
 
-
-//   @SubscribeMessage('updateState')
-//   handleStateUpdate(@MessageBody() updateStateDto: UpdateStateDto) {
-//     const updatedMatch = this.ticketService.updateState(updateStateDto);
-//     this.server.emit('stateUpdated', updatedMatch);
-//   }
+  //   @SubscribeMessage('updateState')
+  //   handleStateUpdate(@MessageBody() updateStateDto: UpdateStateDto) {
+  //     const updatedMatch = this.ticketService.updateState(updateStateDto);
+  //     this.server.emit('stateUpdated', updatedMatch);
+  //   }
 }

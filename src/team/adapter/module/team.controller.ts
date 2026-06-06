@@ -1,30 +1,30 @@
 import {
-    Controller,
-    Get,
-    Post,
-    Body,
-    Patch,
-    Param,
-    Query,
-    Delete,
-    UseGuards,
-    UseInterceptors,
-    UploadedFile,
-  } from '@nestjs/common';
-  import {
-    ApiTags,
-    ApiOperation,
-    ApiBody,
-    ApiResponse,
-    ApiParam,
-    ApiConsumes,
-    ApiBearerAuth,
-  } from '@nestjs/swagger';
-  import { FileInterceptor } from '@nestjs/platform-express';
-  import { memoryStorage } from 'multer';
-  import { Express } from 'express';
-  import { IDParamDTO } from '../../../_shared/adapter/dto';
-  import { BaseConfig } from '../../../_shared/config/base.config';
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  Delete,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBody,
+  ApiResponse,
+  ApiParam,
+  ApiConsumes,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
+import { Express } from 'express';
+import { IDParamDTO } from '../../../_shared/adapter/dto';
+import { BaseConfig } from '../../../_shared/config/base.config';
 import { UpdateTeamDTO } from '../dto';
 import { Team } from '../../domain';
 import { RegisterAccoutDTO, DocUserOutputDTO } from '../../../user/adapter/dto';
@@ -33,7 +33,7 @@ import { ITeamController, ITeamService } from '../../app/module';
 import { TeamAccoutDTO } from '../dto';
 import { DocTeamOutputDTO } from '../dto/doc.team.dto';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
-  
+
 @ApiTags('teams management')
 @Controller('teams')
 export class TeamController implements ITeamController {
@@ -51,7 +51,6 @@ export class TeamController implements ITeamController {
     const teams = await this.teamService.fetchAll();
     return teams?.map((team) => TeamFactory.getTeam(team));
   }
-
 
   @Get('search')
   async search(@Query() param: TeamAccoutDTO): Promise<Team> {

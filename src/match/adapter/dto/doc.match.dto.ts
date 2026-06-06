@@ -17,7 +17,10 @@ import { Team } from '../../../team/domain';
 import { OddsDTO } from './odds.dto';
 
 export class MatchDocOutputDTO {
-  @ApiProperty({ description: 'Identifiant du match', example: '123e4567-e89b-12d3-a456-426614174000' })
+  @ApiProperty({
+    description: 'Identifiant du match',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
   @IsString()
   id: string;
 
@@ -29,17 +32,28 @@ export class MatchDocOutputDTO {
   @IsEnum(MatchType)
   type: MatchType;
 
-  @ApiProperty({ description: 'État du match', enum: MatchState, required: false })
+  @ApiProperty({
+    description: 'État du match',
+    enum: MatchState,
+    required: false,
+  })
   @IsOptional()
   @IsEnum(MatchState)
   etat?: MatchState;
 
-  @ApiProperty({ description: 'Numéro de la journée', example: 1, required: false })
+  @ApiProperty({
+    description: 'Numéro de la journée',
+    example: 1,
+    required: false,
+  })
   @IsOptional()
   @IsInt()
   journee?: number;
 
-  @ApiProperty({ description: 'Date du match', example: '2024-08-25T14:00:00Z' })
+  @ApiProperty({
+    description: 'Date du match',
+    example: '2024-08-25T14:00:00Z',
+  })
   @IsDate()
   @Type(() => Date)
   date: Date;
@@ -49,18 +63,26 @@ export class MatchDocOutputDTO {
   @Type(() => Team)
   home: Team;
 
-  @ApiProperty({ description: 'Équipe à l\'extérieur', type: Team })
+  @ApiProperty({ description: "Équipe à l'extérieur", type: Team })
   @ValidateNested({ each: true })
   @Type(() => Team)
   away: Team;
 
-  @ApiProperty({ description: 'Scores du match', type: MatchScores, required: false })
+  @ApiProperty({
+    description: 'Scores du match',
+    type: MatchScores,
+    required: false,
+  })
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => MatchScores)
   scores?: MatchScores;
 
-  @ApiProperty({ description: 'Événements du match', type: [MatchEvent], required: false })
+  @ApiProperty({
+    description: 'Événements du match',
+    type: [MatchEvent],
+    required: false,
+  })
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => MatchEvent)
@@ -72,22 +94,25 @@ export class MatchDocOutputDTO {
   @Type(() => Poule)
   poule?: Poule;
 
-  @ApiProperty({ description: 'Si il y a prolongation ou tirs aux buts', type: Boolean })
-    // @ValidateNested()
-    // @Type(() => Team)
+  @ApiProperty({
+    description: 'Si il y a prolongation ou tirs aux buts',
+    type: Boolean,
+  })
+  // @ValidateNested()
+  // @Type(() => Team)
   @IsOptional()
-    @IsBoolean()
-    isProlongation: boolean;
-  
-    @ApiProperty({ description: 'Id de team qui est qualifiée', type: String })
-    @IsString()
-    @IsOptional()
-    @IsUUID()
-    teamQualify: string;
+  @IsBoolean()
+  isProlongation: boolean;
+
+  @ApiProperty({ description: 'Id de team qui est qualifiée', type: String })
+  @IsString()
+  @IsOptional()
+  @IsUUID()
+  teamQualify: string;
 
   @ApiProperty({ description: 'les cotes du match', type: OddsDTO })
-  @ValidateNested()  // Valide l'objet imbriqué
-  @Type(() => OddsDTO)  // Nécessaire pour la transformation class-transformer
+  @ValidateNested() // Valide l'objet imbriqué
+  @Type(() => OddsDTO) // Nécessaire pour la transformation class-transformer
   @IsOptional()
-  odds?: OddsDTO;  // Plus optionnel
+  odds?: OddsDTO; // Plus optionnel
 }

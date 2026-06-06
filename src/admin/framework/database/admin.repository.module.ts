@@ -5,7 +5,6 @@ import { IAdminRepository } from '../../domain';
 import { AdminRepository } from './admin.repository';
 import { AdminEntity } from './schema/admin.entity';
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([AdminEntity])],
   providers: [
@@ -16,4 +15,4 @@ import { AdminEntity } from './schema/admin.entity';
   ],
   exports: [IAdminRepository],
 })
-export class AdminRepositoryModule { }
+export class AdminRepositoryModule {}

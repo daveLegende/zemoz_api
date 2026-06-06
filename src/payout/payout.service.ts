@@ -13,7 +13,6 @@ export class PayoutService {
   async payoutUser(couponId: string): Promise<void> {
     try {
       await this.dataSource.transaction(async (manager) => {
-
         const lockedCoupon = await manager.findOne(CouponEntity, {
           where: { id: couponId },
           lock: { mode: 'pessimistic_write' },
@@ -43,7 +42,6 @@ export class PayoutService {
         await manager.save(lockedCoupon);
 
         this.logger.log(`💰 Paiement ${gains} FCFA au user ${user.id}`);
-
       });
     } catch (error) {
       this.logger.error(`❌ payout error: ${error.message}`);

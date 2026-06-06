@@ -5,7 +5,6 @@ import { ITournoiRepository } from '../../domain';
 import { TournoiRepository } from './tournoi.repository';
 import { TournoiEntity } from './schema/tournoi.entity';
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([TournoiEntity])],
   providers: [

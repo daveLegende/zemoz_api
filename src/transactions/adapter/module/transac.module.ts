@@ -11,15 +11,14 @@ import { PasswordModule } from '../../../password/password.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PasswordEntity } from '../../../password/entity/pwd.entity';
 
-
 @Module({
   imports: [
-    TransactionRepositoryModule, 
+    TransactionRepositoryModule,
     PasswordModule,
     TypeOrmModule.forFeature([PasswordEntity]),
     UserRepositoryModule,
     AuthApiModule,
-    AdminRepositoryModule, 
+    AdminRepositoryModule,
     AdminAuthApiModule,
   ],
   controllers: [TransactionController],

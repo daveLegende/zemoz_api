@@ -13,7 +13,7 @@ export class UserRepository implements IUserRepository, OnApplicationBootstrap {
   constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
-  ) { }
+  ) {}
 
   onApplicationBootstrap(): void {
     this.users = new DBGenericRepository<UserEntity>(this.userRepository);

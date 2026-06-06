@@ -1,6 +1,5 @@
-import { ICreateTeamDTO, IUpdateTeamDTO } from "../app/dto";
-import { Team } from '../domain'
-
+import { ICreateTeamDTO, IUpdateTeamDTO } from '../app/dto';
+import { Team } from '../domain';
 
 export abstract class TeamFactory {
   static async create(data: ICreateTeamDTO): Promise<Team> {
@@ -14,12 +13,11 @@ export abstract class TeamFactory {
     team.butMarques = data.butMarques;
     team.butConcedes = data.butConcedes;
     team.joueurs = data.joueurs;
-    
+
     return team;
   }
 
   static update(team: Team, data: IUpdateTeamDTO): Team {
-
     team.name = data.name ?? team.name;
     team.logo = data.logo ?? team.logo;
     team.coach = data.coach ?? team.coach;
@@ -55,7 +53,7 @@ export abstract class TeamFactory {
         poule: team.poule,
         createdAt: team.createdAt,
         updatedAt: team.updatedAt,
-        deletedAt: team.deletedAt
+        deletedAt: team.deletedAt,
       };
     }
   }

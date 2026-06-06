@@ -5,17 +5,21 @@ import { Admin } from '../../../domain';
 
 @Controller('admins')
 export class AuthController {
-    constructor(private authService: AdminAuthService) {}
+  constructor(private authService: AdminAuthService) {}
 
   @Post('login')
-  async login(@Body() loginDto: AdminAccountDto): Promise<{ accessToken: string; refreshToken: string; admin: Admin }> {
-    const admin = await this.authService.validateAdmin(loginDto.email, loginDto.password);
+  async login(
+    @Body() loginDto: AdminAccountDto,
+  ): Promise<{ accessToken: string; refreshToken: string; admin: Admin }> {
+    const admin = await this.authService.validateAdmin(
+      loginDto.email,
+      loginDto.password,
+    );
     if (!admin) {
       throw new BadRequestException('Invalid credentials');
     }
     return this.authService.login(admin);
   }
-
 
   @Post('refresh_token')
   async refreshToken(@Body() body: { refresh_token: string }) {
@@ -23,13 +27,10 @@ export class AuthController {
     return this.authService.refreshTokens(refresh_token);
   }
 
-
   @Post('register')
-  async register(
-    @Body() data: AdminAccountDto
-  ) {
-    console.log("register");
-    
+  async register(@Body() data: AdminAccountDto) {
+    console.log('register');
+
     return await this.authService.register(data);
   }
 

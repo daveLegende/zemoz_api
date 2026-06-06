@@ -1,6 +1,5 @@
-import { Paris } from "../../domain";
-import { ICreateParisDTO, IUpdateParisDTO } from "../dto";
-
+import { Paris } from '../../domain';
+import { ICreateParisDTO, IUpdateParisDTO } from '../dto';
 
 export abstract class IParisService {
   abstract add(data: ICreateParisDTO): Promise<Paris>;
@@ -19,5 +18,9 @@ export abstract class IParisService {
 
   abstract getPendingParisForMatch(matchId: string): Promise<Paris[]>;
 
-  abstract updateParisStatus(parisId: string, status: string, isWon: boolean): Promise<boolean>;
+  abstract updateParisStatus(
+    parisId: string,
+    status: string,
+    isWon: boolean,
+  ): Promise<boolean>;
 }

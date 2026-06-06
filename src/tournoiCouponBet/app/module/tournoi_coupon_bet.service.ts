@@ -1,5 +1,5 @@
-import { TournoiCouponBet } from "../../domain/tournoi_coupon_bet.model";
-import { ICreateTournoiCouponBetDTO, IUpdateTournoiCouponBetDTO } from "../dto";
+import { TournoiCouponBet } from '../../domain/tournoi_coupon_bet.model';
+import { ICreateTournoiCouponBetDTO, IUpdateTournoiCouponBetDTO } from '../dto';
 
 export abstract class ITournoiCouponBetService {
   abstract add(data: ICreateTournoiCouponBetDTO): Promise<TournoiCouponBet>;

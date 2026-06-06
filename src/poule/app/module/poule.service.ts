@@ -1,5 +1,5 @@
-import { Poule } from "../../domain";
-import { ICreatePouleDTO, IUpdatePouleDTO } from "../dto";
+import { Poule } from '../../domain';
+import { ICreatePouleDTO, IUpdatePouleDTO } from '../dto';
 
 export abstract class IPouleService {
   abstract add(data: ICreatePouleDTO): Promise<Poule>;

@@ -7,11 +7,11 @@ import {
 } from 'domain/abstract';
 
 interface IGenericRepository<T>
-  extends IFindGeneric<T>,
+  extends
+    IFindGeneric<T>,
     IFindOneGeneric<T>,
     ICreateGeneric<T>,
     IUpdateGeneric<T>,
-    IRemoveGeneric<T> {
-}
+    IRemoveGeneric<T> {}
 
 export { IGenericRepository };

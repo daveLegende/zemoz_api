@@ -87,8 +87,6 @@
 //   id: string;
 // }
 
-
-
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer'; // ✅ ajouter cet import
 import {
@@ -100,33 +98,30 @@ import {
 } from 'class-validator';
 
 export class PlayerAccoutDTO {
-  @ApiProperty({ type: String, name: 'firstname' })
+  @ApiProperty({ type: String, name: 'name' })
   @IsString()
-  firstname: string;
-
-  @ApiProperty({ type: String, name: 'lastname' })
-  @IsString()
-  lastname: string;
+  name: string;
 
   @ApiProperty({ type: Number, name: 'age', required: false })
   @IsOptional()
-  @Type(() => Number)   // ✅ convertit "18" → 18
+  @Type(() => Number) // ✅ convertit "18" → 18
   @IsInt()
   age?: number;
 
   @ApiProperty({ type: String, name: 'phone' })
+  @IsOptional()
   @IsPhoneNumber()
-  phone: string;
+  phone?: string;
 
   @ApiProperty({ type: Number, name: 'buts' })
   @IsOptional()
-  @Type(() => Number)   // ✅
+  @Type(() => Number) // ✅
   @IsInt()
   buts?: number;
 
   @ApiProperty({ type: Number, name: 'passes' })
   @IsOptional()
-  @Type(() => Number)   // ✅
+  @Type(() => Number) // ✅
   @IsInt()
   passes?: number;
 

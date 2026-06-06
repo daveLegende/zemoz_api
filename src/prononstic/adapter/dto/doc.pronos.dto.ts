@@ -2,11 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsDate,
-    IsEnum,
-    IsNumber,
-    IsOptional,
-    IsString,
-    IsUUID,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
 } from 'class-validator';
 import { PronoState } from '../../domain';
 
@@ -23,7 +23,7 @@ export class DocPrononsticOutputDTO {
   @ApiProperty({
     type: String,
     name: 'user',
-    description: 'id de l\'user',
+    description: "id de l'user",
   })
   @IsString()
   @IsUUID()
@@ -32,7 +32,7 @@ export class DocPrononsticOutputDTO {
   @ApiProperty({
     type: String,
     name: 'match',
-    description: 'id de l\'user',
+    description: "id de l'user",
   })
   @IsString()
   @IsUUID()
@@ -58,7 +58,7 @@ export class DocPrononsticOutputDTO {
     type: Date,
     name: 'date',
     description: 'La date du prononstic',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsDate()

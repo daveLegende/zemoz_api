@@ -9,14 +9,13 @@ import { AdminRepositoryModule } from '../../../admin/framework/database/admin.r
 import { AuthApiModule } from '../../../user/framework/API';
 import { UserRepositoryModule } from '../../../user/framework/database/user.repository.module';
 
-
 @Module({
   imports: [
-    PouleRepositoryModule, 
+    PouleRepositoryModule,
     TeamRepositoryModule,
     UserRepositoryModule,
     AuthApiModule,
-    AdminRepositoryModule, 
+    AdminRepositoryModule,
     AdminAuthApiModule,
   ],
   controllers: [PouleController],

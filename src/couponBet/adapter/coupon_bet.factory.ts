@@ -1,6 +1,6 @@
-import { BetStatus, CouponBet } from "../domain";
-import { Bet } from "../../bet/domain";
-import { Coupon } from "../../coupon/domain";
+import { BetStatus, CouponBet } from '../domain';
+import { Bet } from '../../bet/domain';
+import { Coupon } from '../../coupon/domain';
 
 // export abstract class CouponBetFactory {
 //     static async create(data: ICreateCouponBetDTO, bet: Bet, coupon: Coupon, selectedOptions: Record<string, number>): Promise<CouponBet> {
@@ -16,10 +16,10 @@ import { Coupon } from "../../coupon/domain";
 //     static update(coupon: CouponBet, data: IUpdateCouponBetDTO): CouponBet {
 
 //       coupon.status = data.status ?? coupon.status;
-  
+
 //       return coupon;
 //     }
-    
+
 //     static getCouponBet(coupon: CouponBet): CouponBet {
 //       if (coupon) {
 //         return {
@@ -35,7 +35,6 @@ import { Coupon } from "../../coupon/domain";
 //       }
 //     }
 // }
-
 
 export abstract class CouponBetFactory {
   static create(
@@ -53,14 +52,10 @@ export abstract class CouponBetFactory {
     return couponBet;
   }
 
-  static updateStatus(
-    couponBet: CouponBet,
-    status: BetStatus,
-  ): CouponBet {
+  static updateStatus(couponBet: CouponBet, status: BetStatus): CouponBet {
     couponBet.status = status;
     return couponBet;
   }
-
 
   static getCouponBet(coupon: CouponBet): CouponBet {
     if (coupon) {
@@ -72,7 +67,7 @@ export abstract class CouponBetFactory {
         status: coupon.status,
         createdAt: coupon.createdAt,
         updatedAt: coupon.updatedAt,
-        deletedAt: coupon.deletedAt
+        deletedAt: coupon.deletedAt,
       };
     }
   }

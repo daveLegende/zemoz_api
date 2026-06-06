@@ -1,24 +1,36 @@
-import { Team } from "../../team/domain";
-import { ICreateMatchDTO, IUpdateMatchDTO } from "../app/dto";
-import { Match, MatchScores } from "../domain";
-import { Arbitre } from "../../arbitre/domain";
-import { Poule } from "../../poule/domain";
-import {  UpdateMatchPenaltyScoreDto, UpdateMatchPenaltyStateDto, UpdateMatchScoreEventDto, UpdateOddsStateDto, UpdateStateDto } from "./dto";
+import { Team } from '../../team/domain';
+import { ICreateMatchDTO, IUpdateMatchDTO } from '../app/dto';
+import { Match, MatchScores } from '../domain';
+import { Arbitre } from '../../arbitre/domain';
+import { Poule } from '../../poule/domain';
+import {
+  UpdateMatchPenaltyScoreDto,
+  UpdateMatchPenaltyStateDto,
+  UpdateMatchScoreEventDto,
+  UpdateOddsStateDto,
+  UpdateStateDto,
+} from './dto';
 
 export abstract class MatchFactory {
-  static async create(data: ICreateMatchDTO, referees: Arbitre[], home: Team, away: Team, poule: Poule): Promise<Match> {
+  static async create(
+    data: ICreateMatchDTO,
+    referees: Arbitre[],
+    home: Team,
+    away: Team,
+    poule: Poule,
+  ): Promise<Match> {
     const match = new Match();
-    
+
     match.type = data.type;
     match.lieu = data.lieu;
     match.date = data.date;
     match.etat = data.etat;
     match.isProlongation = data.isProlongation;
     match.teamQualify = data.teamQualify;
-    // 
-    
+    //
+
     match.arbitres = referees;
-    
+
     match.home = home;
     match.away = away;
     match.journee = data.journee;
@@ -35,12 +47,17 @@ export abstract class MatchFactory {
     }
 
     console.log(match.away);
-    
+
     return match;
   }
 
-  static update(match: Match, data: IUpdateMatchDTO, referees: Arbitre[], home: Team, away: Team): Match {
-
+  static update(
+    match: Match,
+    data: IUpdateMatchDTO,
+    referees: Arbitre[],
+    home: Team,
+    away: Team,
+  ): Match {
     match.type = data.type ?? match.type;
     match.lieu = data.lieu ?? match.lieu;
     // match.etat = data.etat ?? match.etat;
@@ -71,7 +88,10 @@ export abstract class MatchFactory {
     return match;
   }
 
-  static updatePenaltyScore(match: Match, data: UpdateMatchPenaltyScoreDto): Match {
+  static updatePenaltyScore(
+    match: Match,
+    data: UpdateMatchPenaltyScoreDto,
+  ): Match {
     // match.events = data.events ?? match.events;
     match.homePenalty = data.homePenalty ?? match.homePenalty;
     match.awayPenalty = data.awayPenalty ?? match.awayPenalty;
@@ -80,7 +100,10 @@ export abstract class MatchFactory {
     return match;
   }
 
-  static updatePenaltyState(match: Match, data: UpdateMatchPenaltyStateDto): Match {
+  static updatePenaltyState(
+    match: Match,
+    data: UpdateMatchPenaltyStateDto,
+  ): Match {
     // match.events = data.events ?? match.events;
     match.isTirAuxButs = true;
     // match.poule = data.poule ?? match.poule;
@@ -96,13 +119,11 @@ export abstract class MatchFactory {
     return match;
   }
 
-
   static updateOdds(match: Match, data: UpdateOddsStateDto): Match {
     match.odds = data.odds ?? match.odds;
 
     return match;
   }
-
 
   static getMatch(match: Match): Match {
     if (match) {
@@ -128,7 +149,7 @@ export abstract class MatchFactory {
         odds: match.odds,
         createdAt: match.createdAt,
         updatedAt: match.updatedAt,
-        deletedAt: match.deletedAt
+        deletedAt: match.deletedAt,
       };
     }
   }

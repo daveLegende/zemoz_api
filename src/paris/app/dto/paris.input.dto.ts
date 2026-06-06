@@ -9,7 +9,6 @@ export interface ICreateParisDTO {
   user: string;
   isWon: boolean;
   isPaid: boolean;
-
 }
 
 export interface IUpdateParisDTO extends Partial<ICreateParisDTO> {

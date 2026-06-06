@@ -16,15 +16,13 @@ export interface ICreateUserDTO {
   avatar?: string;
 
   password: string;
-  
-  solde?: number;
 
+  solde?: number;
 }
 
 export interface IUpdateUserDTO extends Partial<ICreateUserDTO> {
   id: string;
 }
-
 
 export interface IReinitialisePassDTO {
   password: string;
@@ -35,7 +33,6 @@ export interface IReinitialisePassDTO {
 }
 
 export interface IChangePasswordDTO {
-
   oldpass: string;
 
   newpass: string;
@@ -46,7 +43,6 @@ export interface IChangePasswordDTO {
 }
 
 export interface IDeleteUserBetOrTicketDTO {
-
   id: string;
 
   userId: string;

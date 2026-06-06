@@ -29,7 +29,7 @@ import { TournoiCouponRepositoryModule } from '../../../../tournoiCoupon/framewo
     ForgotPassRepositoryModule,
     UserRepositoryModule,
     AuthApiModule,
-    AdminRepositoryModule, 
+    AdminRepositoryModule,
     AdminAuthApiModule,
     TicketRepositoryModule,
     CouponRepositoryModule,

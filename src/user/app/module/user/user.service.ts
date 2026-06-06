@@ -2,11 +2,17 @@ import { Coupon } from '../../../../coupon/domain';
 import { Paris } from '../../../../paris/domain';
 import { Ticket } from '../../../../ticket/domain';
 import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
-import { IChangePasswordDTO, ICreateUserDTO, IDeleteUserBetOrTicketDTO, IReinitialisePassDTO, IUpdateUserDTO } from '../../dto';
+import {
+  IChangePasswordDTO,
+  ICreateUserDTO,
+  IDeleteUserBetOrTicketDTO,
+  IReinitialisePassDTO,
+  IUpdateUserDTO,
+} from '../../dto';
 import { User } from '../../../domain';
 
 export abstract class IUserService {
-  abstract getCurrentUser(id: string): Promise<User>
+  abstract getCurrentUser(id: string): Promise<User>;
 
   abstract add(data: ICreateUserDTO): Promise<User>;
 
@@ -41,5 +47,4 @@ export abstract class IUserService {
   abstract getUserTournoiCoupons(id: string): Promise<TournoiCoupon[]>;
 
   abstract deleteUserTicket(data: IDeleteUserBetOrTicketDTO): Promise<boolean>;
-
 }

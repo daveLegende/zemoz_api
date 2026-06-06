@@ -1,39 +1,38 @@
-import { Otp } from "../domain";
-import { ICreateOtpDTO, IUpdateOtpDTO } from "../app/dto";
+import { Otp } from '../domain';
+import { ICreateOtpDTO, IUpdateOtpDTO } from '../app/dto';
 
 export abstract class OtpFactory {
-    static async create(data: ICreateOtpDTO): Promise<Otp> {
-        const otp = new Otp();
+  static async create(data: ICreateOtpDTO): Promise<Otp> {
+    const otp = new Otp();
 
-        otp.code = data.code;
-        otp.phone = data.phone;
-        otp.expiresAt = data.expiresAt;
+    otp.code = data.code;
+    otp.phone = data.phone;
+    otp.expiresAt = data.expiresAt;
 
-        return otp;
+    return otp;
+  }
+
+  static update(otp: Otp, data: IUpdateOtpDTO): Otp {
+    otp.code = data.code ?? otp.code;
+    otp.phone = data.phone ?? otp.phone;
+    otp.isVerified = data.isVerified ?? otp.isVerified;
+    otp.expiresAt = data.expiresAt ?? otp.expiresAt;
+
+    return otp;
+  }
+
+  static getOtp(otp: Otp): Otp {
+    if (otp) {
+      return {
+        id: otp.id,
+        phone: otp.phone,
+        code: otp.code,
+        isVerified: otp.isVerified,
+        expiresAt: otp.expiresAt,
+        createdAt: otp.createdAt,
+        updatedAt: otp.updatedAt,
+        deletedAt: otp.deletedAt,
+      };
     }
-
-    static update(otp: Otp, data: IUpdateOtpDTO): Otp {
-
-        otp.code = data.code ?? otp.code;
-        otp.phone = data.phone ?? otp.phone;
-        otp.isVerified = data.isVerified ?? otp.isVerified;
-        otp.expiresAt = data.expiresAt ?? otp.expiresAt;
-    
-        return otp;
-      }
-
-      static getOtp(otp: Otp): Otp {
-        if (otp) {
-          return {
-            id: otp.id,
-            phone: otp.phone,
-            code: otp.code,
-            isVerified: otp.isVerified,
-            expiresAt: otp.expiresAt,
-            createdAt: otp.createdAt,
-            updatedAt: otp.updatedAt,
-            deletedAt: otp.deletedAt
-          };
-        }
-      }
+  }
 }

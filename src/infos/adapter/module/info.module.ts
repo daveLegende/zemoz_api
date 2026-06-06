@@ -9,13 +9,12 @@ import { AdminAuthApiModule } from '../../../admin/framework/API';
 import { AdminRepositoryModule } from '../../../admin/framework/database/admin.repository.module';
 import { CloudinaryModule } from '../../../shared/infrastructure/cloudinary/cloudinary.module';
 
-
 @Module({
   imports: [
-    InfoRepositoryModule, 
-    UserRepositoryModule, 
+    InfoRepositoryModule,
+    UserRepositoryModule,
     AuthApiModule,
-    AdminRepositoryModule, 
+    AdminRepositoryModule,
     AdminAuthApiModule,
     CloudinaryModule,
   ],

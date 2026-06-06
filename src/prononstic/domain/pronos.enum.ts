@@ -1,5 +1,5 @@
 export enum PronoState {
-    GAGNER = "GAGNER",
-    PERDU = "PERDU",
-    UNKNOW = "UNKNOW"
+  GAGNER = 'GAGNER',
+  PERDU = 'PERDU',
+  UNKNOW = 'UNKNOW',
 }

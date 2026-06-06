@@ -1,5 +1,5 @@
-import { ForgotPass } from "../../../forgotpass/domain";
-import { ICreateForgotPassDTO } from "../dto";
+import { ForgotPass } from '../../../forgotpass/domain';
+import { ICreateForgotPassDTO } from '../dto';
 
 export abstract class IForgotPassService {
   abstract add(data: ICreateForgotPassDTO): Promise<ForgotPass>;

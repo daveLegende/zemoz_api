@@ -1,9 +1,8 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsNumber, Min } from "class-validator";
-import { Double } from "typeorm";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber, Min } from 'class-validator';
+import { Double } from 'typeorm';
 
 export class OddsDTO {
-
   @ApiProperty({ description: 'Victoire du home', type: Number, example: 'V1' })
   @IsNumber()
   @Min(1, { message: 'La cote V1 doit être ≥ 1' })

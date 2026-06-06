@@ -1,12 +1,12 @@
-import { ITimestamp } from "../../_shared/domain/interface";
-import { Poule } from "../../poule/domain";
-import { Team } from "../../team/domain";
-import { MatchType, MatchState, HalfPauseState } from "./match.enum";
-import { MatchScores } from "./match.other.dto";
-import { Arbitre } from "../../arbitre/domain";
-import { MatchEvent } from "../../matchEvents/domain";
-import { Bet } from "../../bet/domain";
-import { Paris } from "../../paris/domain";
+import { ITimestamp } from '../../_shared/domain/interface';
+import { Poule } from '../../poule/domain';
+import { Team } from '../../team/domain';
+import { MatchType, MatchState, HalfPauseState } from './match.enum';
+import { MatchScores } from './match.other.dto';
+import { Arbitre } from '../../arbitre/domain';
+import { MatchEvent } from '../../matchEvents/domain';
+import { Bet } from '../../bet/domain';
+import { Paris } from '../../paris/domain';
 
 export class Match extends ITimestamp {
   id: string;
@@ -32,14 +32,12 @@ export class Match extends ITimestamp {
 
   // A supprimer après
   odds?: {
-    V1: number;  // Cote pour la victoire à domicile
-    X: number;   // Cote pour le match nul
-    V2: number;  // Cote pour la victoire à l'extérieur
-  }
+    V1: number; // Cote pour la victoire à domicile
+    X: number; // Cote pour le match nul
+    V2: number; // Cote pour la victoire à l'extérieur
+  };
 
   // getArbitreIds(): string[] {
   //   return this.arbitres.map(arbitre => arbitre.id);
   // }
 }
-
-

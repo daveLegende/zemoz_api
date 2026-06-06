@@ -21,22 +21,22 @@ import { EntityManager } from 'typeorm';
 import { CouponBetRepositoryModule } from '../../../couponBet/framework/coupon.module.repository';
 import { CouponBetModule } from '../../../couponBet/adapter/module';
 import { CouponModule } from '../../../coupon/adapter/module';
-import { CloudinaryModule } from '../../../shared/infrastructure/cloudinary/cloudinary.module';
-
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
-    MatchRepositoryModule, 
-    ArbitreRepositoryModule, 
-    TeamRepositoryModule, 
-    PouleRepositoryModule, 
+    BullModule.registerQueue({ name: 'payout-queue' }),
+    MatchRepositoryModule,
+    ArbitreRepositoryModule,
+    TeamRepositoryModule,
+    PouleRepositoryModule,
     PlayerRepositoryModule,
     MatchEventRepositoryModule,
     CouponRepositoryModule,
     CouponBetRepositoryModule,
     UserRepositoryModule,
     AuthApiModule,
-    AdminRepositoryModule, 
+    AdminRepositoryModule,
     AdminAuthApiModule,
     CouponRepositoryModule,
     ParisRepositoryModule,
@@ -45,7 +45,6 @@ import { CloudinaryModule } from '../../../shared/infrastructure/cloudinary/clou
     EntityManager,
     CouponBetModule,
     CouponModule,
-    // CloudinaryModule,
   ],
   controllers: [MatchController],
   providers: [MatchGateway, { provide: IMatchService, useClass: MatchService }],

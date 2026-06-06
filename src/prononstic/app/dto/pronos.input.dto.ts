@@ -1,20 +1,19 @@
-import { PronoState } from "../../domain";
+import { PronoState } from '../../domain';
 
 export interface ICreatePronosDTO {
-    user: string;
+  user: string;
 
-    match: string;
+  match: string;
 
-    homeScore: number;
+  homeScore: number;
 
-    awayScore: number;
+  awayScore: number;
 
-    date: Date;
+  date: Date;
 
-    etat?: PronoState;
+  etat?: PronoState;
 }
 
 export interface IUpdatePronosDTO extends Partial<ICreatePronosDTO> {
-    id: string;
-    
+  id: string;
 }

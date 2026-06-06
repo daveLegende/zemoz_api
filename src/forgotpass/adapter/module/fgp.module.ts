@@ -8,13 +8,12 @@ import { AdminRepositoryModule } from '../../../admin/framework/database/admin.r
 import { IForgotPassService } from '../../../forgotpass/app/module';
 import { ForgotPassRepositoryModule } from '../../../forgotpass/framework/database/fgp.repository.module';
 
-
 @Module({
   imports: [
-    ForgotPassRepositoryModule, 
-    UserRepositoryModule, 
+    ForgotPassRepositoryModule,
+    UserRepositoryModule,
     AuthApiModule,
-    AdminRepositoryModule, 
+    AdminRepositoryModule,
     AdminAuthApiModule,
   ],
   controllers: [ForgotPassController],

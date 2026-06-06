@@ -1,6 +1,5 @@
-import { Tournoi } from "../../domain";
-import { ICreateTournoiDTO, IUpdateTournoiDTO } from "../dto";
-
+import { Tournoi } from '../../domain';
+import { ICreateTournoiDTO, IUpdateTournoiDTO } from '../dto';
 
 export abstract class ITournoiService {
   abstract add(data: ICreateTournoiDTO): Promise<Tournoi>;

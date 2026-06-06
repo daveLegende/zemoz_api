@@ -1,5 +1,5 @@
-import { ICreateMatchEventDTO, IUpdateMatchEventDTO } from "../dto";
-import { MatchEvent } from "../../../matchEvents/domain";
+import { ICreateMatchEventDTO, IUpdateMatchEventDTO } from '../dto';
+import { MatchEvent } from '../../../matchEvents/domain';
 
 export abstract class IMatchEventService {
   abstract add(data: ICreateMatchEventDTO): Promise<MatchEvent>;
@@ -15,5 +15,4 @@ export abstract class IMatchEventService {
   abstract search(data: Partial<MatchEvent>): Promise<MatchEvent>;
 
   abstract remove(id: string): Promise<boolean>;
-
 }

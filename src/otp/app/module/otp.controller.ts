@@ -3,7 +3,6 @@ import { Otp } from '../../../otp/domain';
 import { ICreateOtpDTO } from '../dto';
 
 export abstract class IOtpController {
-
   abstract show(param: IIDParamDTO): Promise<Otp>;
 
   abstract create(data: ICreateOtpDTO, file?: any): Promise<Otp>;

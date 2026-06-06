@@ -1,30 +1,30 @@
 import {
-    Controller,
-    Get,
-    Post,
-    Body,
-    Patch,
-    Param,
-    Query,
-    Delete,
-    UseGuards,
-    UseInterceptors,
-    UploadedFile,
-  } from '@nestjs/common';
-  import {
-    ApiTags,
-    ApiOperation,
-    ApiBody,
-    ApiResponse,
-    ApiParam,
-    ApiConsumes,
-    ApiBearerAuth,
-  } from '@nestjs/swagger';
-  import { FileInterceptor } from '@nestjs/platform-express';
-  import { diskStorage } from 'multer';
-  import { Express } from 'express';
-  import { IDParamDTO } from '../../../_shared/adapter/dto';
-  import { BaseConfig } from '../../../_shared/config/base.config';
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  Delete,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBody,
+  ApiResponse,
+  ApiParam,
+  ApiConsumes,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { Express } from 'express';
+import { IDParamDTO } from '../../../_shared/adapter/dto';
+import { BaseConfig } from '../../../_shared/config/base.config';
 import { UpdateTournoiDTO } from '../dto';
 import { Tournoi } from '../../domain';
 import { RegisterAccoutDTO, DocUserOutputDTO } from '../../../user/adapter/dto';
@@ -33,7 +33,7 @@ import { ITournoiController, ITournoiService } from '../../app/module';
 import { TournoiAccoutDTO } from '../dto';
 import { DocTournoiOutputDTO } from '../dto/doc.tournoi.dto';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
-  
+
 @ApiTags('Tournois management')
 @Controller('tournois')
 export class TournoiController implements ITournoiController {
@@ -51,7 +51,6 @@ export class TournoiController implements ITournoiController {
     const tournois = await this.tournoiService.fetchAll();
     return tournois?.map((tournoi) => TournoiFactory.getTournoi(tournoi));
   }
-
 
   @Get('search')
   async search(@Query() param: TournoiAccoutDTO): Promise<Tournoi> {
@@ -99,9 +98,7 @@ export class TournoiController implements ITournoiController {
   })
   @ApiBody({ type: RegisterAccoutDTO })
   @ApiResponse({ type: DocUserOutputDTO })
-  async create(
-    @Body() data: TournoiAccoutDTO,
-  ): Promise<Tournoi> {
+  async create(@Body() data: TournoiAccoutDTO): Promise<Tournoi> {
     const tournoi = await this.tournoiService.add(data);
     if (tournoi) return TournoiFactory.getTournoi(tournoi);
   }
@@ -116,9 +113,7 @@ export class TournoiController implements ITournoiController {
   @ApiOperation({ summary: 'Update user account' })
   @ApiBody({ type: UpdateTournoiDTO })
   @ApiResponse({ type: DocTournoiOutputDTO })
-  async update(
-    @Body() data: UpdateTournoiDTO,
-  ): Promise<Tournoi> {
+  async update(@Body() data: UpdateTournoiDTO): Promise<Tournoi> {
     return TournoiFactory.getTournoi(await this.tournoiService.edit(data));
   }
 

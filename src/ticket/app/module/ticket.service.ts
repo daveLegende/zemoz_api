@@ -1,6 +1,5 @@
-import { Ticket } from "../../domain";
-import { ICreateTicketDTO, IUpdateTicketDTO } from "../dto";
-
+import { Ticket } from '../../domain';
+import { ICreateTicketDTO, IUpdateTicketDTO } from '../dto';
 
 export abstract class ITicketService {
   abstract add(data: ICreateTicketDTO): Promise<Ticket>;
