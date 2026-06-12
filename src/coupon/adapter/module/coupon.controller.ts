@@ -138,7 +138,7 @@ export class CouponController implements ICouponController {
     description: 'ID of the user to delete',
   })
   @ApiResponse({ type: Boolean })
-  remove(@Body() { id }: IDParamDTO): Promise<boolean> {
+  remove(@Param() { id }: IDParamDTO): Promise<boolean> {
     return this.couponService.remove(id);
   }
   

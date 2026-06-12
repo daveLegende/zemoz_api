@@ -1,7 +1,8 @@
 import { Module, OnModuleInit } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
@@ -71,8 +72,8 @@ export class IAppModule {}
 @Module({
   imports: [
     ConfigModule.forRoot({
-      // envFilePath: '.dev.env', //.dev.env, .prod.env
-      envFilePath: '.prod.env', //.dev.env, .prod.env
+      envFilePath: '.dev.env', //.dev.env, .prod.env
+      // envFilePath: '.prod.env', //.dev.env, .prod.env
       expandVariables: true,
       isGlobal: true,
     }),
@@ -115,10 +116,14 @@ export class IAppModule {}
       password: process.env.DB_PASSWORD,
       logger: 'advanced-console',
       logging: ['error'],
-      synchronize: true,
+      synchronize: process.env.NODE_ENV !== 'production',
       autoLoadEntities: true,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
     }),
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 50,
+    }]),
     ScheduleModule.forRoot(),
     SeedsModule,
     IAppModule,
@@ -127,6 +132,7 @@ export class IAppModule {}
   providers: [
     AppService,
     { provide: APP_FILTER, useClass: HttpExceptionFilter },
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })
 

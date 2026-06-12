@@ -167,11 +167,22 @@ export class TournoiCouponService implements ITournoiCouponService {
     return false;
   }
 
-  /* ================= REMOVE ================= */
+  /* ================= REMOVE (Soft Delete) ================= */
   async remove(id: string): Promise<boolean> {
-    const coupon = await this.tournoiCouponsRepository.tournoiCoupons.findOne({ where: { id } });
-    if (!coupon) return false;
-    await this.tournoiCouponsRepository.tournoiCoupons.remove(coupon);
+    const coupon = await this.tournoiCouponsRepository.tournoiCoupons.findOne({
+      where: { id },
+      relations: { tournoiCouponBets: true },
+    });
+    if (!coupon) {
+      this.logger.warn(`remove: TournoiCoupon ${id} non trouvé`);
+      return false;
+    }
+
+    // Soft delete au lieu de suppression physique
+    coupon.isDeleted = true;
+    await this.tournoiCouponsRepository.tournoiCoupons.update(coupon);
+
+    this.logger.log(`🗑️ TournoiCoupon ${id} marqué comme supprimé (soft delete)`);
     return true;
   }
 

@@ -1,5 +1,6 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
-import { IsArray, IsBoolean, IsEnum, IsInt, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from "class-validator";
+import { Type } from "class-transformer";
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsBoolean, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, IsUUID, Max, Min, ValidateNested } from "class-validator";
 import { OddsDto } from "../../../bet/adapter/dto";
 import { BetCoupon } from "../../../coupon/app/dto";
 import { CouponState } from "../../../coupon/domain";
@@ -26,10 +27,16 @@ export class CouponAccountDto {
         example: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
     })
     @IsString()
+    @IsNotEmpty()
+    @IsUUID()
     user: string;
 
     @ApiProperty({ description: 'Les cotes avec les options', type: BetCoupon })
     @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => BetCoupon)
+    @ArrayMinSize(1)
+    @ArrayMaxSize(20)
     couponBets: CouponBet[];
 
     @ApiProperty({
@@ -45,6 +52,9 @@ export class CouponAccountDto {
         name: 'amount',
     })
     @IsInt()
+    @IsPositive()
+    @Min(100)
+    @Max(100000)
     amount: number;
 
     @ApiProperty({
@@ -90,4 +100,4 @@ export class UpdateCouponDTO extends PartialType(CouponAccountDto) {
     @IsString()
     @IsUUID()
     id: string;
-}
+}

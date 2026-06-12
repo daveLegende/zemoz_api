@@ -1,9 +1,13 @@
+import { IsObject, IsString } from "class-validator";
 import { OddsClass } from "../../../bet/domain";
 import { CouponState } from "../../../coupon/domain";
 import { CouponBet } from "../../../couponBet/domain";
 
 export class BetCoupon {
+  @IsString()
   bet: string;
+
+  @IsObject()
   selectedOptions: OddsClass;
 }
 

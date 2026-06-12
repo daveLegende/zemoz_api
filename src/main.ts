@@ -83,18 +83,24 @@ async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule);
     
-    const helmetOptions = {};
-    // app.enableCors({
-    //   origin: true, // ou ['http://localhost:3001', 'http://127.0.0.1:3001']
-    //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    //   credentials: true,
-    //   allowedHeaders: 'Content-Type, Accept, Authorization',
-    // });
+    const helmetOptions = {
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          scriptSrc: ["'self'"],
+          imgSrc: ["'self'", 'data:', 'https:'],
+        },
+      },
+      hsts: {
+        maxAge: 31536000, // 1 year
+        includeSubDomains: true,
+      },
+    };
     app.enableCors({
-      origin: [
-        'https://www.petitpoto.pro',
-        'http://localhost:8080',
-      ],
+      origin: process.env.NODE_ENV === 'production'
+        ? ['https://www.petitpoto.pro']
+        : ['https://www.petitpoto.pro', 'http://localhost:8080', 'http://127.0.0.1:8080'],
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
       credentials: true,
       allowedHeaders: [

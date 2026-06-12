@@ -12,16 +12,25 @@ import { CouponFactory } from '../coupon.factory';
 import { IBetRepository } from '../../../bet/domain/data.abstract';
 import { ICouponBetRepository } from '../../../couponBet/domain/data.abstract';
 import { BetStatus, CouponBet } from '../../../couponBet/domain';
+import { DataSource } from 'typeorm';
+import { CouponEntity } from '../../../coupon/framework/schema/coupon.entity';
+import { UserEntity } from '../../../user/framework/database/schema/user.entity';
+import { CouponBetEntity } from '../../../couponBet/framework/schema/coupon_bet.entity';
+import { IUpdateMatchDTO } from '../../../match/app/dto';
+
+// Limite maximale des gains pour éviter les calculs aberrants
+const MAX_GAINS = 10_000_000;
 
 @Injectable()
 export class CouponService {
-  private readonly logger = new Logger();
+  private readonly logger = new Logger(CouponService.name);
 
   constructor(
     private couponsRepository: ICouponRepository,
     private userRepository: IUserRepository,
     private betRepository: IBetRepository,
     private cpRepository: ICouponBetRepository,
+    private dataSource: DataSource,
   ) { }
 
   // Récupérer tous les coupons avec relations
@@ -49,7 +58,12 @@ export class CouponService {
     return coupon;
   }
 
-  // Ajouter un coupon avec ses CouponBets
+  /* ================= SEARCH ================= */
+  async search(data: Partial<Coupon>): Promise<Coupon> {
+    return await this.couponsRepository.coupons.findOneBy(data);
+  }
+
+  // Ajouter un coupon avec ses CouponBets (TRANSACTIONNEL)
   async add(data: CouponAccountDto): Promise<Coupon> {
     const { amount, user, couponBets } = data;
 
@@ -72,6 +86,11 @@ export class CouponService {
       const betExisted = await this.betRepository.bets.findOneByID(betId);
       if (!betExisted) throw new NotFoundException('Bet non trouvé');
 
+      // Vérification null/undefined pour selectedOptions
+      if (!cp.selectedOptions || Object.keys(cp.selectedOptions).length === 0) {
+        throw new BadRequestException('selectedOptions est requis pour chaque bet');
+      }
+
       // Vérification des options sélectionnées
       for (const key of Object.keys(cp.selectedOptions)) {
         if (!(key in betExisted.odds))
@@ -90,22 +109,50 @@ export class CouponService {
 
     const gains = totalOdds * amount;
 
-    // Débiter le solde utilisateur
-    userExisted.solde -= amount;
-    await this.userRepository.users.update(userExisted);
-
-    // Création du coupon
-    const couponEntity = await this.couponsRepository.coupons.create(
-      await CouponFactory.create({ ...data, totalOdds, gains }, userExisted),
-    );
-
-    // Création des CouponBets
-    for (const cp of betsEntities) {
-      cp.coupon = couponEntity;
-      await this.cpRepository.couponBets.create(cp);
+    // Vérification des gains maximums pour éviter les calculs aberrants
+    if (gains > MAX_GAINS) {
+      throw new BadRequestException(`Gains potentiels trop élevés (max: ${MAX_GAINS} FCFA)`);
     }
 
-    return couponEntity;
+    this.logger.log(`📝 Création coupon: user=${user}, mise=${amount}, totalOdds=${totalOdds.toFixed(2)}, gains=${gains.toFixed(2)}`);
+
+    // TRANSACTION SÉCURISÉE: Débit + Création coupon + Création bets
+    return await this.dataSource.transaction(async (manager) => {
+      // Verrouiller l'utilisateur pour éviter les races
+      const lockedUser = await manager.findOne(UserEntity, {
+        where: { id: userExisted.id },
+        lock: { mode: 'pessimistic_write' },
+      });
+
+      if (!lockedUser) throw new NotFoundException('Utilisateur non trouvé');
+
+      // Re-vérifier le solde après verrouillage
+      if (amount > lockedUser.solde) {
+        throw new BadRequestException('Solde insuffisant');
+      }
+
+      // Débiter le solde utilisateur
+      lockedUser.solde -= amount;
+      await manager.save(lockedUser);
+
+      this.logger.log(`💰 Débit de ${amount} FCFA pour l'utilisateur ${lockedUser.id} (nouveau solde: ${lockedUser.solde})`);
+
+      // Création du coupon
+      const couponData = await CouponFactory.create({ ...data, totalOdds, gains }, lockedUser);
+      const couponEntity = await manager.save(CouponEntity, couponData as any);
+
+      this.logger.log(`✅ Coupon ${couponEntity.id} créé avec succès`);
+
+      // Création des CouponBets
+      for (const cp of betsEntities) {
+        cp.coupon = couponEntity;
+        await manager.save(CouponBetEntity, cp as any);
+      }
+
+      this.logger.log(`✅ ${betsEntities.length} CouponBets créés pour le coupon ${couponEntity.id}`);
+
+      return couponEntity;
+    });
   }
 
   // Modifier un coupon
@@ -115,6 +162,8 @@ export class CouponService {
       relations: { user: true, couponBets: true },
     });
     if (!coupon) throw new NotFoundException();
+
+    this.logger.log(`📝 Modification coupon ${data.id}`);
 
     return await this.couponsRepository.coupons.update(
       CouponFactory.update(coupon, data),
@@ -136,139 +185,200 @@ export class CouponService {
     });
   }
 
-  // Récupérer tous les coupons en attente pour un match spécifique
-  // async getMatchPendingCoupons(matchId: string): Promise<Coupon[]> {
-  //   try {
-  //     // Vérifier si le match existe
-  //     const match = await this.matchRepository.matchs.findOne({
-  //       where: { id: matchId },
-  //     });
+  /* ================= SET STATE ================= */
+  async setState(id: string): Promise<boolean> {
+    const coupon = await this.couponsRepository.coupons.findOne({
+      where: { id },
+    });
+    if (!coupon) {
+      this.logger.warn(`setState: Coupon ${id} non trouvé`);
+      return false;
+    }
 
-  //     if (!match) {
-  //       throw new NotFoundException('Match non trouvé');
-  //     }
+    this.logger.log(`🔄 setState appelé pour coupon ${id}, état actuel: ${coupon.etat}`);
+    return false;
+  }
 
-  //     // Récupérer les coupons en attente pour ce match
-  //     const coupons = await this.couponsRepository.coupons.find({
-  //       where: {
-  //         etat: CouponState.PENDING,
-  //         match: { id: matchId },
-  //       },
-  //       relations: {
-  //         user: true,
-  //         couponBets: {
-  //           bet: {
-  //             match: true
-  //           }
-  //         }
-  //       },
-  //       order: { createdAt: 'DESC' },
-  //     });
+  /* ================= REMOVE (Soft Delete) ================= */
+  async remove(id: string): Promise<boolean> {
+    const coupon = await this.couponsRepository.coupons.findOne({
+      where: { id },
+      relations: { couponBets: true },
+    });
+    if (!coupon) {
+      this.logger.warn(`remove: Coupon ${id} non trouvé`);
+      return false;
+    }
 
-  //     return coupons;
+    // Soft delete au lieu de suppression physique
+    coupon.isDeleted = true;
+    await this.couponsRepository.coupons.update(coupon);
 
-  //   } catch (error) {
-  //     // Log l'erreur pour le débogage
-  //     this.logger.error(
-  //       `Erreur lors de la récupération des coupons en attente pour le match ${matchId}: ${error.message}`,
-  //       error.stack
-  //     );
+    this.logger.log(`🗑️ Coupon ${id} marqué comme supprimé (soft delete)`);
+    return true;
+  }
 
-  //     // Relancer l'erreur ou retourner un tableau vide selon votre logique métier
-  //     throw error;
+  /* ================= CHECK COUPONS ================= */
+  async checkCoupons(data: IUpdateMatchDTO): Promise<any> {
+    this.logger.log(`🔍 Vérification des coupons pour le match ${data?.id ?? 'N/A'}`);
 
-  //     // Alternative: retourner un tableau vide en cas d'erreur
-  //     // return [];
-  //   }
-  // }
+    const pendingCoupons = await this.couponsRepository.coupons.find({
+      where: { etat: CouponState.PENDING },
+      relations: {
+        couponBets: { bet: { match: true } },
+        user: true,
+      },
+    });
 
-  // Vérification et mise à jour en temps réel des coupons
-  // async validatePendingCoupons(): Promise<void> {
-  //   const coupons = await this.couponsRepository.coupons.find({
-  //     where: { etat: CouponState.PENDING },
-  //     relations: { couponBets: { bet: { match: true } }, user: true },
-  //   });
+    if (!pendingCoupons || pendingCoupons.length === 0) {
+      this.logger.log('Aucun coupon en attente à vérifier');
+      return { success: true, message: 'Aucun coupon en attente', processedCount: 0 };
+    }
 
-  //   for (const coupon of coupons) {
-  //     let couponUpdated = false;
+    let processedCount = 0;
+    let winnersCount = 0;
+    let losersCount = 0;
+    let paidCount = 0;
 
-  //     for (const cb of coupon.couponBets) {
-  //       const match = cb.bet.match;
-  //       if (!match) continue;
+    for (const coupon of pendingCoupons) {
+      try {
+        let isWinner = false;
 
-  //       // Validation en temps réel si possible
-  //       if (this.canBetBeValidatedEarly(cb, match)) {
-  //         cb.status = this.isBetWinning(cb, match) ? BetStatus.GAGNE : BetStatus.PERDU;
-  //         await this.cpRepository.couponBets.update(cb);
-  //         couponUpdated = true;
-  //         continue;
-  //       }
+        await this.dataSource.transaction(async (manager) => {
+          // Verrouiller le coupon
+          const lockedCoupon = await manager.findOne(CouponEntity, {
+            where: { id: coupon.id },
+            lock: { mode: 'pessimistic_write' },
+          });
 
-  //       if (match.etat === MatchState.TERMINER) {
-  //         cb.status = this.isBetWinning(cb, match) ? BetStatus.GAGNE : BetStatus.PERDU;
-  //         await this.cpRepository.couponBets.update(cb);
-  //         couponUpdated = true;
-  //       }
-  //     }
+          if (!lockedCoupon || lockedCoupon.isPaid || lockedCoupon.etat !== CouponState.PENDING) {
+            return;
+          }
 
-  //     if (couponUpdated) {
-  //       await this.updateCouponStatus(coupon);
-  //     }
-  //   }
-  // }
+          // Charger les relations séparément
+          const couponWithBets = await manager.findOne(CouponEntity, {
+            where: { id: coupon.id },
+            relations: {
+              couponBets: { bet: { match: true } },
+              user: true,
+            },
+          });
 
-  // private canBetBeValidatedEarly(cb: CouponBet, match: Match): boolean {
-  //   switch (cb.bet.category) {
-  //     case CategoryName.DEUX_MARQUENT:
-  //       return match.scores.home > 0 && match.scores.away > 0;
-  //     case CategoryName.CARTON_ROUGE:
-  //       return match.events.some((e) => e.type === 'CARTON_ROUGE');
-  //     default:
-  //       return false;
-  //   }
-  // }
+          if (!couponWithBets) return;
 
-  // private isBetWinning(cb: CouponBet, match: Match): boolean {
-  //   const key = Object.keys(cb.selectedOptions)[0];
+          let hasLost = false;
+          let hasPending = false;
 
-  //   switch (cb.bet.category) {
-  //     case CategoryName.VICTOIRE:
-  //       if (match.etat !== MatchState.TERMINER) return false;
-  //       if (key === 'V1') return match.scores.home > match.scores.away;
-  //       if (key === 'V2') return match.scores.away > match.scores.home;
-  //       if (key === 'X') return match.scores.home === match.scores.away;
-  //       break;
+          for (const couponBet of couponWithBets.couponBets) {
+            const bet = couponBet.bet;
 
-  //     case CategoryName.DEUX_MARQUENT:
-  //       return match.scores.home > 0 && match.scores.away > 0;
+            // Sécurité sur les options sélectionnées
+            if (!couponBet.selectedOptions || Object.keys(couponBet.selectedOptions).length === 0) {
+              hasPending = true;
+              continue;
+            }
 
-  //     case CategoryName.CARTON_ROUGE:
-  //       return match.events.some((e) => e.type === 'CARTON_ROUGE');
+            // Skip les bets dont le match n'est pas terminé
+            if (!bet?.match) {
+              hasPending = true;
+              continue;
+            }
 
-  //     default:
-  //       return false;
-  //   }
+            // La logique de vérification sera étendue selon les catégories de bet
+            // Pour l'instant, on marque comme pending si pas de résultat
+            hasPending = true;
 
-  //   return false;
-  // }
+            await manager.save(couponBet);
+          }
 
-  // private async updateCouponStatus(coupon: Coupon) {
-  //   const allBetsWon = coupon.couponBets.every((b) => b.status === BetStatus.GAGNE);
-  //   const anyBetLost = coupon.couponBets.some((b) => b.status === BetStatus.PERDU);
+          if (hasLost) {
+            lockedCoupon.etat = CouponState.LOOSE;
+            await manager.save(lockedCoupon);
+            losersCount++;
+            this.logger.log(`📉 Coupon ${lockedCoupon.id} marqué comme PERDU`);
+          } else if (!hasPending) {
+            lockedCoupon.etat = CouponState.WIN;
+            await manager.save(lockedCoupon);
+            winnersCount++;
+            isWinner = true;
+            this.logger.log(`🏆 Coupon ${lockedCoupon.id} marqué comme GAGNÉ`);
+          }
 
-  //   const user = await this.userRepository.users.findOneByID(coupon.user.id);
-  //   if (!user) throw new NotFoundException('User not found');
+          processedCount++;
+        });
 
-  //   if (allBetsWon) {
-  //     coupon.etat = CouponState.WIN;
-  //     user.solde += coupon.gains;
-  //   } else if (anyBetLost) {
-  //     coupon.etat = CouponState.LOOSE;
-  //   } else {
-  //     coupon.etat = CouponState.PENDING;
-  //   }
+        // Payer le coupon si gagnant
+        if (isWinner) {
+          await this.payoutUser(coupon);
+          paidCount++;
+        }
+      } catch (error) {
+        this.logger.error(`❌ Erreur lors du traitement du coupon ${coupon.id}: ${error.message}`);
+      }
+    }
 
-  //   await this.couponsRepository.coupons.update(coupon);
-  //   await this.userRepository.users.update(user);
-  // }
+    return {
+      success: true,
+      message: `${processedCount} coupons traités, ${winnersCount} gagnants, ${losersCount} perdants, ${paidCount} payés`,
+      processedCount,
+      winnersCount,
+      losersCount,
+      paidCount,
+    };
+  }
+
+  /* ================= VALIDATE PENDING COUPONS ================= */
+  async validatePendingCoupons(): Promise<any> {
+    this.logger.log('🔍 Validation des coupons en attente...');
+    return await this.checkCoupons(null);
+  }
+
+  /* ================= PAYOUT (privé) ================= */
+  private async payoutUser(coupon: Coupon): Promise<void> {
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        // Verrouiller le coupon
+        const lockedCoupon = await manager.findOne(CouponEntity, {
+          where: { id: coupon.id },
+          lock: { mode: 'pessimistic_write' },
+        });
+
+        if (!lockedCoupon) throw new Error('Coupon introuvable');
+        if (lockedCoupon.isPaid) {
+          this.logger.warn(`⚠️ Coupon ${coupon.id} déjà payé`);
+          return;
+        }
+
+        if (lockedCoupon.etat !== CouponState.WIN) {
+          this.logger.warn(`⚠️ Coupon ${coupon.id} non gagnant, état: ${lockedCoupon.etat}`);
+          return;
+        }
+
+        // Récupérer l'ID utilisateur
+        const userId = lockedCoupon.user?.id ?? coupon.user?.id;
+        if (!userId) throw new Error('userId introuvable sur le coupon');
+
+        // Verrouiller l'utilisateur
+        const user = await manager.findOne(UserEntity, {
+          where: { id: userId },
+          lock: { mode: 'pessimistic_write' },
+        });
+
+        if (!user) throw new Error('Utilisateur non trouvé');
+
+        // Effectuer le paiement
+        const gains = lockedCoupon.gains || 0;
+        user.solde += gains;
+        lockedCoupon.isPaid = true;
+
+        await manager.save(user);
+        await manager.save(lockedCoupon);
+
+        this.logger.log(`✅ Paiement de ${gains} FCFA à l'utilisateur ${user.id} pour le coupon ${lockedCoupon.id}`);
+      });
+    } catch (error) {
+      this.logger.error(`❌ Erreur lors du paiement du coupon ${coupon.id}: ${error.message}`);
+      throw error;
+    }
+  }
 }

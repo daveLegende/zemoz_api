@@ -26,12 +26,12 @@ export class AuthService {
       private jwtService: JwtService,
     ) {
       this.twilioClient = Twilio(
-        "ACaab292a400368b3d485298278b4e405c",
-        "f0986bf192238941bc68cf7935ad3463",
+        process.env.TWILIO_ACCOUNT_SID,
+        process.env.TWILIO_AUTH_TOKEN,
       );
 
-      // this.whatsappFrom = 'whatsapp:+15559493875';
-      this.smsFrom = '+14784436649';
+      // this.whatsappFrom = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+15559493875';
+      this.smsFrom = process.env.TWILIO_PHONE_NUMBER || '+14784436649';
     }
     
       // async validateUser(email: string, pass: string): Promise<any> {

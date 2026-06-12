@@ -3,13 +3,13 @@ import {
   ExecutionContext,
   Injectable,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { AccessEnum } from '../../domain';
 import { IUserRepository } from '../../domain/data.abstract';
-// import { IAuthAPIDataServices } from 'user/app/abstract';
-import { AuthAPIService } from '../../framework/API/auth.api.service';
+import { JwtService } from '@nestjs/jwt';
 
 export const _extractTokenFromHeader = (
   request: Request,
@@ -20,10 +20,12 @@ export const _extractTokenFromHeader = (
 
 @Injectable()
 export class UserGuard implements CanActivate {
+  private readonly logger = new Logger(UserGuard.name);
+
   constructor(
     private dataServices: IUserRepository,
-    private authAPIServices: AuthAPIService,
     private reflector: Reflector,
+    private jwtService: JwtService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -31,31 +33,32 @@ export class UserGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-    const permission = this.reflector.getAllAndOverride<AccessEnum>(
-      'permission',
-      [context.getHandler(), context.getClass()],
-    );
+    
     if (isPublic) {
       return true;
     }
 
     const request = context.switchToHttp().getRequest();
     const token = _extractTokenFromHeader(request);
+    
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Token manquant');
     }
+    
     try {
-      const user = await this.authAPIServices.api.tokenLogin(token, permission);
-      if (user) {
-        const account = await this.dataServices.users.findOneBy({
-          email: user.email,
-          phone: user.phone,
-        });
-        if (account) request['user'] = account;
+      const decoded = this.jwtService.verify(token, { secret: process.env.JWT_SECRET });
+      const user = await this.dataServices.users.findOneBy({ id: decoded.sub });
+      
+      if (!user) {
+        throw new UnauthorizedException('Utilisateur introuvable');
       }
+      
+      request['user'] = user;
+      return true;
     } catch (error) {
-      throw new UnauthorizedException();
+      this.logger.warn(`Auth failed: ${error.message}`);
+      throw new UnauthorizedException(error.message);
     }
-    return true;
   }
 }
+
