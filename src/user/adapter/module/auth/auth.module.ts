@@ -15,6 +15,7 @@ import { TwilioModule } from '../../../../twilio/twilio.module';
     UserRepositoryModule, OtpRepositoryModule, UserModule, TwilioModule, 
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
+      global: true,
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({

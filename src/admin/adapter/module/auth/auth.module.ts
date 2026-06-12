@@ -15,6 +15,7 @@ import { UserRepositoryModule } from '../../../../user/framework/database/user.r
     AdminRepositoryModule, AdminModule, TwilioModule, 
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
+      global: true,
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({

@@ -18,6 +18,7 @@ import { TournoiCouponRepositoryModule } from '../../../../tournoiCoupon/framewo
 @Module({
   imports: [
     JwtModule.registerAsync({
+      global: true,
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
