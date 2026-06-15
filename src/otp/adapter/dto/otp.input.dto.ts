@@ -12,12 +12,19 @@ export class OtpAccountDto {
     @IsString()
     code: string;
 
+    // @ApiProperty({
+    //     type: String,
+    //     name: 'phone',
+    // })
+    // @IsString()
+    // phone: string;
+
     @ApiProperty({
         type: String,
-        name: 'phone',
+        name: 'email',
     })
     @IsString()
-    phone: string;
+    email: string;
 
     @ApiProperty({
         type: Boolean,
@@ -53,20 +60,34 @@ export class SendOtpDTo {
 
     @ApiProperty({
         type: String,
-        name: 'phone',
+        name: 'email',
     })
     @IsString()
-    phone: string;
+    email: string;
+
+    // @ApiProperty({
+    //     type: String,
+    //     name: 'phone',
+    // })
+    // @IsString()
+    // phone: string;
 }
 
 export class VerifyOtpDTo {
 
+    // @ApiProperty({
+    //     type: String,
+    //     name: 'phone',
+    // })
+    // @IsString()
+    // phone: string;
+
     @ApiProperty({
         type: String,
-        name: 'phone',
+        name: 'email',
     })
     @IsString()
-    phone: string;
+    email: string;
 
     @ApiProperty({
         type: String,

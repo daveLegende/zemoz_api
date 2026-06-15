@@ -34,8 +34,9 @@ import { TwilioService } from '../../../twilio/twilio.service';
   
     async add(data: OtpAccountDto): Promise<Otp> {
       try {
-        const { phone } = data;
-        const existed = await this.otpRepository.otps.findOneBy({ phone });
+        // const { phone } = data;
+        const { email } = data;
+        const existed = await this.otpRepository.otps.findOneBy({ email });
         if (existed)
           throw new ConflictException('Otp already exist');
 
@@ -76,9 +77,9 @@ import { TwilioService } from '../../../twilio/twilio.service';
       }
     }
 
-    async verifyOtp(phone: string, code: string): Promise<boolean> {
+    async verifyOtp(/*phone*/email: string, code: string): Promise<boolean> {
   
-      const otp = await this.otpRepository.otps.findOne({ where: { phone: phone, code: code } });
+      const otp = await this.otpRepository.otps.findOne({ where: { email: email, code: code } });
   
       if (!code) {
         throw new BadRequestException('Code incorrecte');

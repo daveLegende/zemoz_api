@@ -1,8 +1,20 @@
+// export interface ICreateOtpDTO {
+    
+//   code: string;
+
+//   phone: string;
+
+//   isVerified?: boolean;
+  
+//   expiresAt: Date;
+
+// }
+
 export interface ICreateOtpDTO {
     
   code: string;
 
-  phone: string;
+  email: string;
 
   isVerified?: boolean;
   

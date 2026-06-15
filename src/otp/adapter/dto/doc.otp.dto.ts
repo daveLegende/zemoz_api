@@ -18,12 +18,19 @@ export class DocOtpOutputDto {
     @IsString()
     code: string;
 
+    // @ApiProperty({
+    //     type: String,
+    //     name: 'phone',
+    // })
+    // @IsString()
+    // phone: string;
+
     @ApiProperty({
         type: String,
-        name: 'phone',
+        name: 'email',
     })
     @IsString()
-    phone: string;
+    email: string;
 
     @ApiProperty({
         type: Date,

@@ -30,8 +30,6 @@ export class AuthController {
   async sendOTP(
     @Body() data: SendOtpDTo
   ) {
-    console.log("cdfcxch c v");
-    
     return await this.authService.sendOTP(data);
   }
 

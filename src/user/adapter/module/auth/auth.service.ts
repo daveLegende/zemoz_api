@@ -11,6 +11,7 @@ import { OtpAccountDto, SendOtpDTo, VerifyOtpDTo } from '../../../../otp/adapter
 import { IUserRepository, User } from '../../../domain';
 import * as Twilio from 'twilio';
 import { log } from 'console';
+import { Resend } from 'resend';
 
 
 @Injectable()
@@ -18,6 +19,7 @@ export class AuthService {
     private twilioClient: Twilio.Twilio;
     private whatsappFrom: string;
     private smsFrom: string;
+    private resend = new Resend(process.env.RESEND_API_KEY);
     constructor(
       private usersService: IUserService,
       private userRepository: IUserRepository,
@@ -25,13 +27,13 @@ export class AuthService {
       private twilioService: TwilioService,
       private jwtService: JwtService,
     ) {
-      this.twilioClient = Twilio(
-        process.env.TWILIO_ACCOUNT_SID,
-        process.env.TWILIO_AUTH_TOKEN,
-      );
+      // this.twilioClient = Twilio(
+      //   process.env.TWILIO_ACCOUNT_SID,
+      //   process.env.TWILIO_AUTH_TOKEN,
+      // );
 
       // this.whatsappFrom = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+15559493875';
-      this.smsFrom = process.env.TWILIO_PHONE_NUMBER || '+14784436649';
+      // this.smsFrom = process.env.TWILIO_PHONE_NUMBER || '+14784436649';
     }
     
       // async validateUser(email: string, pass: string): Promise<any> {
@@ -231,12 +233,13 @@ export class AuthService {
   //   }
   // }
 
-  async sendOTP(data: { phone: string }): Promise<any> {
+  async sendOTP(data: { /*phone*/email: string }): Promise<any> {
     try {
-      const { phone } = data;
+      // const { phone } = data;
+      const { email } = data;
 
       // Vérifie si user existe
-      const user = await this.userRepository.users.findOneBy({ phone });
+      const user = await this.userRepository.users.findOneBy({ email });
       if (user) {
         throw new ConflictException(
           'Cet utilisateur existe déjà, veuillez vous connecter',
@@ -244,12 +247,12 @@ export class AuthService {
       }
 
       // Vérifie OTP existant
-      const existed = await this.otpRepository.otps.findOneBy({ phone });
+      const existed = await this.otpRepository.otps.findOneBy({ email });
       if (existed) {
         const now = new Date();
         if (existed.expiresAt > now) {
           throw new BadRequestException(
-            "Un code a déjà été envoyé. Veuillez attendre 30 minutes avant de réessayer.",
+            "Un code a déjà été envoyé. Veuillez attendre 5 minutes avant de réessayer.",
           );
         }
         await this.otpRepository.otps.remove(existed);
@@ -257,28 +260,54 @@ export class AuthService {
 
       // Génère OTP 4 chiffres
       const otp = Math.floor(1000 + Math.random() * 9000).toString();
-      const otpExpirationTime = moment().add(30, 'minutes').toDate();
+      const otpExpirationTime = moment().add(5, 'minutes').toDate();
 
       // Message OTP
-      const message = `Votre code de vérification est: ${otp}\nExpire dans 30 minutes.`;
+      const message = `Votre code de vérification est: ${otp}\nExpire dans 5 minutes.`;
 
       // Envoi SMS uniquement
+      // Logique d'envoie de otp via email noreply
       try {
-        await this.twilioClient.messages.create({
-          from: this.smsFrom,
-          to: phone,
-          body: message,
+        // await this.twilioClient.messages.create({
+        //   from: this.smsFrom,
+        //   to: phone,
+        //   body: message,
+        // });
+        const { data, error } = await this.resend.emails.send({
+          from: 'noreply@petitpoto.pro',
+          to: email,
+          subject: 'Votre code de vérification',
+          html: `
+            <div style="font-family: sans-serif; max-width: 400px; margin: auto; padding: 24px;">
+              <h2 style="color: #047930;">Code de vérification</h2>
+              <p>Utilisez ce code pour vous connecter :</p>
+              <div style="font-size: 36px; font-weight: bold; letter-spacing: 10px; color: #0f2550; margin: 24px 0;">
+                ${otp}
+              </div>
+              <p>Ce code expire dans <strong>5 minutes</strong>.</p>
+              <p style="color: #999; font-size: 12px;">
+                Si vous n'avez pas demandé ce code, ignorez cet email.
+              </p>
+            </div>
+          `,
         });
-        console.log(`✅ OTP envoyé via SMS à ${phone}: ${otp}`);
+        if (error) {
+          console.error('❌ Resend Error:', error);
+          throw new BadRequestException(
+            "Impossible d'envoyer l'OTP par email",
+          );
+        }
+
+        console.log('✅ Email envoyé:', data);
       } catch (error) {
-        console.error('❌ Erreur envoi SMS:', error);
-        throw new BadRequestException('Impossible d’envoyer l’OTP par SMS');
+        console.error('❌ Erreur envoi email:', error);
+        throw new BadRequestException('Impossible d’envoyer l’OTP par email');
       }
 
       // Sauvegarde OTP en DB
       const datas = new OtpAccountDto();
       datas.code = otp;
-      datas.phone = phone;
+      datas.email = email;
       datas.isVerified = false;
       datas.expiresAt = otpExpirationTime;
 
@@ -294,10 +323,11 @@ export class AuthService {
 
   async verifyOtp(data: VerifyOtpDTo): Promise<boolean> {
     try {
-      const { code, phone } = data;
+      // change phone by email
+      const { code, email } = data;
 
       const otp = await this.otpRepository.otps.findOne({
-        where: { phone, code },
+        where: { email, code },
       });
 
       if (!otp) {

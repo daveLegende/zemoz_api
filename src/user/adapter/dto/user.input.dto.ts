@@ -143,14 +143,23 @@ export class UserRegisterDTO extends UserAccoutDTO {
 
 
 export class UserLoginDTO {
+  // @ApiProperty({
+  //   type: String,
+  //   name: 'phone',
+  //   description:
+  //     'The phone number on which contact the account user or send an OTP information',
+  // })
+  // @IsPhoneNumber()
+  // phone: string;
+
   @ApiProperty({
     type: String,
-    name: 'phone',
+    name: 'email',
     description:
-      'The phone number on which contact the account user or send an OTP information',
+      'The email on which contact the account user or send an OTP information',
   })
-  @IsPhoneNumber()
-  phone: string;
+  @IsEmail()
+  email: string;
 
   @ApiProperty({
     type: String,

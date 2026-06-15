@@ -6,7 +6,8 @@ export abstract class OtpFactory {
         const otp = new Otp();
 
         otp.code = data.code;
-        otp.phone = data.phone;
+        // otp.phone = data.phone;
+        otp.email = data.email;
         otp.expiresAt = data.expiresAt;
 
         return otp;
@@ -15,7 +16,8 @@ export abstract class OtpFactory {
     static update(otp: Otp, data: IUpdateOtpDTO): Otp {
 
         otp.code = data.code ?? otp.code;
-        otp.phone = data.phone ?? otp.phone;
+        // otp.phone = data.phone ?? otp.phone;
+        otp.email = data.email ?? otp.email;
         otp.isVerified = data.isVerified ?? otp.isVerified;
         otp.expiresAt = data.expiresAt ?? otp.expiresAt;
     
@@ -26,7 +28,8 @@ export abstract class OtpFactory {
         if (otp) {
           return {
             id: otp.id,
-            phone: otp.phone,
+            // phone: otp.phone,
+            email: otp.email,
             code: otp.code,
             isVerified: otp.isVerified,
             expiresAt: otp.expiresAt,
