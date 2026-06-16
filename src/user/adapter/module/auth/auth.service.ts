@@ -45,18 +45,18 @@ export class AuthService {
       //   return null;
       // }
 
-  async validateUser(phone: string, password: string): Promise<any> {
-    console.log('Validating user credentials for:', phone);
-    const user = await this.usersService.fetchByPhone(phone);
+  async validateUser(email: string, password: string): Promise<any> {
+    console.log('Validating user credentials for:', email);
+    const user = await this.usersService.fetchByEmail(email);
 
     if (!user) {
-        console.log(`User not found for email: ${phone}`);
+        console.log(`User not found for email: ${email}`);
         throw new BadRequestException('User not found');
     }
 
     const isPasswordValid = await HashFactory.isRightPwd(password, user.password);
     if (!isPasswordValid) {
-        console.log(`Invalid password for phone: ${phone}`);
+        console.log(`Invalid password for email: ${email}`);
         throw new BadRequestException('Invalid credentials');
     }
 

@@ -11,7 +11,7 @@ export class AuthController {
 //   @UseGuards(LocalAuthGuard) 
   @Post('login')
   async login(@Body() loginDto: SigninAccoutDTO): Promise<{ accessToken: string; refreshToken: string; user: User }> {
-    const user = await this.authService.validateUser(loginDto.phone, loginDto.password);
+    const user = await this.authService.validateUser(loginDto.email, loginDto.password);
     if (!user) {
       throw new BadRequestException('Invalid credentials');
     }

@@ -22,9 +22,9 @@ export abstract class IUserService {
 
   abstract remove(id: string): Promise<boolean>;
 
-  // abstract fetchByEmail(email: string): Promise<User>;
-
   abstract fetchByPhone(phone: string): Promise<User>;
+
+  abstract fetchByEmail(email: string): Promise<User>;
 
   abstract reinitialisePass(data: IReinitialisePassDTO): Promise<User>;
 
