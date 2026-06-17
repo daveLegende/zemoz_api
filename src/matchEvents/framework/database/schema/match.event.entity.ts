@@ -1,3 +1,4 @@
+import { ATimestamp } from "framework/timestamp.abstract";
 import { MatchEntity } from "../../../../match/framework/database/schema/match.entity";
 import { MatchEvent } from "../../../../matchEvents/domain";
 import { PlayerEntity } from "../../../../player/framework/database/schema/player.entity";
@@ -5,7 +6,7 @@ import { TeamEntity } from "../../../../team/framework/database/schema/team.enti
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
 
 @Entity('match_events')
-export class MatchEventEntity extends MatchEvent {
+export class MatchEventEntity extends ATimestamp implements MatchEvent {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
