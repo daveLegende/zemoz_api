@@ -1,4 +1,4 @@
-import { ATimestamp } from "framework/timestamp.abstract";
+import { ATimestamp } from '../../../../_shared/framework/timestamp.abstract';
 import { MatchEntity } from "../../../../match/framework/database/schema/match.entity";
 import { MatchEvent } from "../../../../matchEvents/domain";
 import { PlayerEntity } from "../../../../player/framework/database/schema/player.entity";
