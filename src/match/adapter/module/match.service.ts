@@ -58,7 +58,7 @@ export class MatchService implements IMatchService {
           // events: { joueur: true, equipe: true },
           bets: true,
         },
-        withDeleted: true
+        // withDeleted: true
       });
       // Ajouter les URLs complets pour les images
       return matches;
@@ -100,7 +100,7 @@ export class MatchService implements IMatchService {
           bets: true,
           // events: { joueur: true, equipe: true }
         },
-        withDeleted: true
+        // withDeleted: true
       });
       if (match) {
         // const referee = await this.arbitreRepository.arbitres.findByIds(match.arbitres);
