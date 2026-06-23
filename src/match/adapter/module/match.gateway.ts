@@ -240,7 +240,7 @@ import { IMatchService } from '../../../match/app/module';
   transports: ['websocket'],
   cors: {
     origin: [
-      // 'http://localhost:5173',
+      'http://localhost:8080',
       'https://www.petitpoto.pro',
     ],
     credentials: true,
