@@ -23,7 +23,7 @@ import { Express } from 'express';
       try {
         return await this.playerRepository.players.find({
           relations: { team: true },
-          withDeleted: true
+          // withDeleted: true
         });
       } catch (error) {
         this.logger.error(error.message, 'ERROR::playerService.fetchAll');

@@ -29,7 +29,7 @@ import { Express } from 'express';
       try {
         return await this.teamRepository.teams.find({
           relations: { joueurs: true, poule: true },
-          withDeleted: true
+          // withDeleted: true
         });
       } catch (error) {
         this.logger.error(error.message, 'ERROR::TeamService.fetchAll');
@@ -43,7 +43,7 @@ import { Express } from 'express';
           {
             where: { id: id },
             relations: { poule: true, joueurs: true },
-            withDeleted: true
+            // withDeleted: true
           }
         );
         if (team) {
