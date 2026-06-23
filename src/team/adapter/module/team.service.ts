@@ -191,7 +191,10 @@ import { Express } from 'express';
         const Team = await this.teamRepository.teams.findOne(
           {
             where: { id: id },
-            relations: { poule: true, joueurs: true }
+            relations: { poule: true, joueurs: true },
+            order:{
+              createdAt: 'ASC',
+            }
           }
         );
         if (Team) {

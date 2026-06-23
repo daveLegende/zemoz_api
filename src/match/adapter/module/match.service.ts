@@ -58,6 +58,9 @@ export class MatchService implements IMatchService {
           // events: { joueur: true, equipe: true },
           bets: true,
         },
+        order:{
+          createdAt: 'ASC',
+        }
         // withDeleted: true
       });
       // Ajouter les URLs complets pour les images

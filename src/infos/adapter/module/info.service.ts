@@ -22,7 +22,11 @@ import { IFileStorage } from '../../../shared/domain/file-storage.interface';
   
     async fetchAll(): Promise<Info[]> {
       try {
-        return await this.infoRepository.infos.find();
+        return await this.infoRepository.infos.find({    
+          order:{
+            createdAt: 'ASC',
+          }
+        });
       } catch (error) {
         this.logger.error(error.message, 'ERROR::InfoService.fetchAll');
         throw error;

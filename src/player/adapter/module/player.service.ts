@@ -56,7 +56,10 @@ import { Express } from 'express';
         const { name, team } = data;
         const existed = await this.playerRepository.players.findOne({
           where: { name: name },
-            relations: { team: true }
+          relations: { team: true },
+          order:{
+            createdAt: 'ASC',
+          },
         });
         if (existed)
           throw new ConflictException('Player already exist');

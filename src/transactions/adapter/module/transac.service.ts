@@ -25,7 +25,10 @@ import { HashFactory } from '../../../admin/adapter/guard/hash.factory';
     async fetchAll(): Promise<Transaction[]> {
       try {
         return await this.transactionRepository.transactions.find({
-          relations: { admin: true, user: true }
+          relations: { admin: true, user: true },
+          order: {
+            createdAt: 'ASC',
+          },
         });
       } catch (error) {
         this.logger.error(error.message, 'ERROR::TransactionService.fetchAll');
