@@ -5,15 +5,15 @@ import { PasswordService } from './password.service';
 export class CronController {
   constructor(private readonly passwordService: PasswordService) {}
 
-  @Get('daily-password')
-  async runCron(@Headers('x-cron-key') key: string) {
-    if (key !== process.env.CRON_SECRET) {
-      throw new UnauthorizedException();
-    }
+  // @Get('daily-password')
+  // async runCron(@Headers('x-cron-key') key: string) {
+  //   if (key !== process.env.CRON_SECRET) {
+  //     throw new UnauthorizedException();
+  //   }
 
-    await this.passwordService.deleteOldPasswords();
-    await this.passwordService.generateAndSendPassword();
+  //   await this.passwordService.deleteOldPasswords();
+  //   await this.passwordService.generateAndSendPassword();
 
-    return { message: 'Cron exécuté avec succès' };
-  }
+  //   return { message: 'Cron exécuté avec succès' };
+  // }
 }
