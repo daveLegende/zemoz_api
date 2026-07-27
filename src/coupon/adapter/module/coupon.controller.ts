@@ -103,6 +103,7 @@ export class CouponController implements ICouponController {
   ): Promise<Coupon> {
     const coupon = await this.couponService.add(data);
     if (coupon) return CouponFactory.getCoupon(coupon);
+    return null;
   }
 
   /**

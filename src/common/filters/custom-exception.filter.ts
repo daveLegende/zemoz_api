@@ -10,6 +10,7 @@ import { Response, Request } from 'express';
 @Catch()
 export class CustomExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
+    console.error('CRITICAL UNHANDLED EXCEPTION:', exception);
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();

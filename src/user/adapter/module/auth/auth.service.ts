@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { IUserService } from '../../../app/module/user';
 
 import { HashFactory } from '../../guard/hash.factory';
-import * as moment from 'moment';
+import moment from 'moment';
 import { IOtpRepository } from '../../../../otp/domain';
 import { TwilioService } from '../../../../twilio/twilio.service';
 import { OtpFactory } from '../../../../otp/adapter/otp.factory';
@@ -75,7 +75,7 @@ export class AuthService {
     
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
-      expiresIn: '15m',  // L'access token expire après 15 minutes
+      expiresIn: '30d',  // L'access token expire après 30 jours
     });
 
     const refreshToken = this.jwtService.sign(payload, {

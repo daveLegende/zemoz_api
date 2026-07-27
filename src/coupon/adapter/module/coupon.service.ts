@@ -114,7 +114,7 @@ export class CouponService {
       throw new BadRequestException(`Gains potentiels trop élevés (max: ${MAX_GAINS} FCFA)`);
     }
 
-    this.logger.log(`📝 Création coupon: user=${user}, mise=${amount}, totalOdds=${totalOdds.toFixed(2)}, gains=${gains.toFixed(2)}`);
+    // this.logger.log(`📝 Création coupon: user=${user}, mise=${amount}, totalOdds=${totalOdds.toFixed(2)}, gains=${gains.toFixed(2)}`);
 
     // TRANSACTION SÉCURISÉE: Débit + Création coupon + Création bets
     return await this.dataSource.transaction(async (manager) => {
@@ -135,22 +135,19 @@ export class CouponService {
       lockedUser.solde -= amount;
       await manager.save(lockedUser);
 
-      this.logger.log(`💰 Débit de ${amount} FCFA pour l'utilisateur ${lockedUser.id} (nouveau solde: ${lockedUser.solde})`);
+      // this.logger.log(`💰 Débit de ${amount} FCFA pour l'utilisateur ${lockedUser.id} (nouveau solde: ${lockedUser.solde})`);
 
       // Création du coupon
       const couponData = await CouponFactory.create({ ...data, totalOdds, gains }, lockedUser);
       const couponEntity = await manager.save(CouponEntity, couponData as any);
 
-      this.logger.log(`✅ Coupon ${couponEntity.id} créé avec succès`);
+      // this.logger.log(`✅ Coupon ${couponEntity.id} créé avec succès`);
 
       // Création des CouponBets
       for (const cp of betsEntities) {
         cp.coupon = couponEntity;
         await manager.save(CouponBetEntity, cp as any);
       }
-
-      this.logger.log(`✅ ${betsEntities.length} CouponBets créés pour le coupon ${couponEntity.id}`);
-
       return couponEntity;
     });
   }
