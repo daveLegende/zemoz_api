@@ -12,6 +12,8 @@ import { IMatchEventRepository, MatchEvent } from '../../../matchEvents/domain';
 import { IMatchEventService } from '../../../matchEvents/app/module';
 import { MatchEventFactory } from '../match.events.factory';
   
+import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_shared/domain/pagination';
+
   @Injectable()
   export class MatchEventService implements IMatchEventService {
     private readonly logger = new Logger();
@@ -22,9 +24,9 @@ import { MatchEventFactory } from '../match.events.factory';
       private matchRepository: IMatchRepository,
     ) {}
   
-    async fetchAll(): Promise<MatchEvent[]> {
+    async fetchAll(query?: PaginationQuery): Promise<PaginatedResult<MatchEvent>> {
       try {
-        return await this.eventRepository.events.find({
+        return await paginateQuery(this.eventRepository.events, query, {
             relations: { match: true, joueur: true, equipe: true }
         });
       } catch (error) {
@@ -32,6 +34,7 @@ import { MatchEventFactory } from '../match.events.factory';
         throw error;
       }
     }
+
   
     async fetchOne(id: string): Promise<MatchEvent> {
       try {

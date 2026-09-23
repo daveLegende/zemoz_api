@@ -11,7 +11,7 @@ export abstract class IPlayerController {
 
   abstract show(param: IIDParamDTO): Promise<Player>;
 
-  abstract byTournoi(param: { tournoiId: string }): Promise<TeamPlayer[]>;
+  abstract byTournoi(tournoiId: string): Promise<TeamPlayer[]>;
 
   abstract history(param: IIDParamDTO): Promise<TeamPlayer[]>;
 

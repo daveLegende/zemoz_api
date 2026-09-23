@@ -28,6 +28,8 @@ import { MVPService } from './mvp.service';
 import { DocMvpOutputDto, MvpAccountDto } from '../dto';
 import { UserGuard } from '../../../user/adapter/guard/auth.guard';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
+import { PaginationQueryDTO } from '../../../_shared/adapter/dto';
+import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
 
 @ApiTags('Mvps management')
 @UseGuards(UserGuard)
@@ -60,9 +62,11 @@ export class MVPController implements IMVPController {
     description: 'Fetch all mvps',
   })
   @ApiResponse({ type: [DocMvpOutputDto] })
-  async fetchAll(): Promise<MVP[]> {
-    return this.mvpService.fetchAll();
+  async fetchAll(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<MVP>> {
+    const mvps = await this.mvpService.fetchAll(query);
+    return mapPaginated(mvps, (mvp) => MVPFactory.getMvp(mvp));
   }
+
 
   /**
    *

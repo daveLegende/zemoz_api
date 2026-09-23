@@ -12,6 +12,7 @@ import { TournoiCouponController } from './tournoi_coupon.controller';
 import { ITournoiCouponService } from '../../../tournoiCoupon/app/module';
 import { TournoiCouponService } from './tournoi_coupon.service';
 import { PlayerRepositoryModule } from '../../../player/framework/database/player.repository.module';
+import { TeamPlayerRepositoryModule } from '../../../player/framework/database/team-player.repository.module';
 
 
 import { TournoiCouponGateway } from './tournoi_coupon.gateway';
@@ -21,6 +22,7 @@ import { TournoiCouponGateway } from './tournoi_coupon.gateway';
     TournoiCouponRepositoryModule,
     MatchRepositoryModule,
     PlayerRepositoryModule,
+    TeamPlayerRepositoryModule,
     BetRepositoryModule,
     TournoiCouponBetRepositoryModule,
     MatchRepositoryModule,

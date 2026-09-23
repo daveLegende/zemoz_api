@@ -13,6 +13,7 @@ import { ICouponBetRepository } from '../../../couponBet/domain/data.abstract';
 import { ICouponRepository } from '../../../coupon/domain/data.abstract';
 import { ICouponBetService } from '../../../couponBet/app/module';
 import { IMatchRepository } from '../../../match/domain';
+import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_shared/domain/pagination';
 
 @Injectable()
 export class CouponBetService implements ICouponBetService {
@@ -29,11 +30,12 @@ export class CouponBetService implements ICouponBetService {
     throw new Error('Method not implemented.');
   }
 
-  async fetchAll(): Promise<CouponBet[]> {
-    return this.couponBetsRepository.couponBets.find({
+  async fetchAll(query?: PaginationQuery): Promise<PaginatedResult<CouponBet>> {
+    return await paginateQuery(this.couponBetsRepository.couponBets, query, {
       relations: { bet: true, coupon: true },
     });
   }
+
 
   async fetchOne(id: string): Promise<CouponBet> {
     const couponBet = await this.couponBetsRepository.couponBets.findOne({

@@ -22,16 +22,17 @@ export class ParisService implements IParisService {
     private matchRepository: IMatchRepository
   ) {}
 
-  async fetchAll(): Promise<Paris[]> {
+  async fetchAll(query?: PaginationQuery): Promise<PaginatedResult<Paris>> {
     try {
-      return await this.parisRepository.paris.find({
-        relations: { match: true, user: true, }
+      return await paginateQuery(this.parisRepository.paris, query, {
+        relations: { match: true, user: true }
       });
     } catch (error) {
       this.logger.error(error.message, 'ERROR::betsService.fetchAll');
       throw error;
     }
   }
+
 
   async fetchOne(id: string): Promise<Paris> {
     try {

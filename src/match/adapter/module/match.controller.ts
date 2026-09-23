@@ -38,6 +38,8 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 import * as multer from 'multer';
 import { MatchEventFactory } from '../../../matchEvents/adapter/match.events.factory';
 import { MatchEvent } from '../../../matchEvents/domain';
+import { PaginationQueryDTO } from '../../../_shared/adapter/dto';
+import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
 
   
   @ApiTags('matchs management')
@@ -53,12 +55,11 @@ import { MatchEvent } from '../../../matchEvents/domain';
       description: 'Fetch all matchs in the DB',
     })
     // @ApiResponse({ type: [MatchAccountDTO] })
-    async all(): Promise<Match[]> {
-      const matchs = await this.matchService.fetchAll();
-      // console.log(matchs);
-      
-      return matchs?.map((match) => MatchFactory.getMatch(match));
+    async all(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<Match>> {
+      const matchs = await this.matchService.fetchAll(query);
+      return mapPaginated(matchs, (match) => MatchFactory.getMatch(match));
     }
+
     
     
     @Get('events/:id')

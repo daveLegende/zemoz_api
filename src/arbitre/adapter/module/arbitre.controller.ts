@@ -30,6 +30,8 @@ import { ArbitreFactory } from '../arbitre.factory';
 import { ArbitreAccountDto, DocArbitreOutputDto, UpdateArbitreDTO } from '../dto';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 import { memoryStorage } from 'multer';
+import { PaginationQueryDTO } from '../../../_shared/adapter/dto';
+import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
   
   @ApiTags('Arbitres management')
   @UseGuards(AdminGuard)
@@ -46,10 +48,11 @@ import { memoryStorage } from 'multer';
       description: 'Fetch all Arbitres in the DB',
     })
     // @ApiResponse({ type: [ArbitreAccountDTO] })
-    async all(): Promise<Arbitre[]> {
-      const Arbitres = await this.arbitreService.fetchAll();
-      return Arbitres?.map((Arbitre) => ArbitreFactory.getArbitre(Arbitre));
+    async all(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<Arbitre>> {
+      const Arbitres = await this.arbitreService.fetchAll(query);
+      return mapPaginated(Arbitres, (Arbitre) => ArbitreFactory.getArbitre(Arbitre));
     }
+
 
   
     @Get('search')

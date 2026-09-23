@@ -28,6 +28,9 @@ import { ParisAccountDto, UpdateParisDTO } from '../dto';
 import { ParisFactory } from '../paris.factory';
 import { DocParisOutputDto } from '../dto/doc.output.dto';
 
+import { PaginationQueryDTO } from '../../../_shared/adapter/dto';
+import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
+
 @ApiTags('Bet management')
 @UseGuards(AdminGuard)
 @ApiBearerAuth()
@@ -43,10 +46,11 @@ export class ParisController implements IParisController {
     description: 'Fetch all Bets in the DB',
   })
   // @ApiResponse({ type: [BetAccountDTO] })
-  async all(): Promise<Paris[]> {
-    const bets = await this.parisService.fetchAll();
-    return bets?.map((bet) => ParisFactory.getParis(bet));
+  async all(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<Paris>> {
+    const bets = await this.parisService.fetchAll(query);
+    return mapPaginated(bets, (bet) => ParisFactory.getParis(bet));
   }
+
 
 
   @Get('search')

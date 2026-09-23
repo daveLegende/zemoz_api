@@ -26,6 +26,8 @@ import { CouponBet } from '../../../couponBet/domain';
 import { ICouponBetController, ICouponBetService } from '../../../couponBet/app/module';
 import { UserGuard } from '../../../user/adapter/guard/auth.guard';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
+import { PaginationQueryDTO } from '../../../_shared/adapter/dto';
+import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
 
 @ApiTags('Coupon management')
 @ApiBearerAuth()
@@ -42,10 +44,11 @@ export class CouponBetController implements ICouponBetController {
     description: 'Fetch all Coupons in the DB',
   })
   // @ApiResponse({ type: [CouponAccountDTO] })
-  async all(): Promise<CouponBet[]> {
-    const coupons = await this.couponBetService.fetchAll();
-    return coupons?.map((coupon) => CouponBetFactory.getCouponBet(coupon));
+  async all(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<CouponBet>> {
+    const coupons = await this.couponBetService.fetchAll(query);
+    return mapPaginated(coupons, (coupon) => CouponBetFactory.getCouponBet(coupon));
   }
+
 
 
   @Get('search')

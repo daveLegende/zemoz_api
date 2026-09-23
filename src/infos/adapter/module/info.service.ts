@@ -12,6 +12,8 @@ import { InfoFactory } from '../info.factory';
 import { Express } from 'express';
 import { IFileStorage } from '../../../shared/domain/file-storage.interface';
   
+import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_shared/domain/pagination';
+
   @Injectable()
   export class InfoService implements IInfoService {
     private readonly logger = new Logger();
@@ -20,10 +22,10 @@ import { IFileStorage } from '../../../shared/domain/file-storage.interface';
       @Inject('IFileStorage') private cloudinaryService: IFileStorage,
     ) {}
   
-    async fetchAll(): Promise<Info[]> {
+    async fetchAll(query?: PaginationQuery): Promise<PaginatedResult<Info>> {
       try {
-        return await this.infoRepository.infos.find({    
-          order:{
+        return await paginateQuery(this.infoRepository.infos, query, {    
+          order: {
             createdAt: 'ASC',
           }
         });
@@ -32,6 +34,7 @@ import { IFileStorage } from '../../../shared/domain/file-storage.interface';
         throw error;
       }
     }
+
   
     async fetchOne(id: string): Promise<Info> {
       try {

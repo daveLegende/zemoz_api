@@ -28,6 +28,8 @@ import { DocAdminOutputDto, AdminAccountDto, UpdateAdminDTO, ChangeAdminPassword
 import { AdminGuard } from '../../guard/auth.guard';
 import { Coupon } from '../../../../coupon/domain';
 import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
+import { PaginationQueryDTO } from '../../../../_shared/adapter/dto';
+import { PaginatedResult, mapPaginated } from '../../../../_shared/domain/pagination';
 
 @ApiTags('Admins management')
 @UseGuards(AdminGuard)
@@ -45,10 +47,11 @@ export class AdminController implements IAdminController {
     description: 'Fetch all Admins in the DB',
   })
   // @ApiResponse({ type: [AdminAccountDTO] })
-  async all(): Promise<Admin[]> {
-    const admins = await this.adminService.fetchAll();
-    return admins?.map((admin) => AdminFactory.getAdmin(admin));
+  async all(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<Admin>> {
+    const admins = await this.adminService.fetchAll(query);
+    return mapPaginated(admins, (admin) => AdminFactory.getAdmin(admin));
   }
+
 
 
   @Get('search')

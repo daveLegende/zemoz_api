@@ -30,6 +30,8 @@ import { Poule } from '../../domain';
 import { UpdatePouleDTO } from '../dto';
 import { DocPouleOutputDto, PouleAccountDto } from '../dto';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
+import { PaginationQueryDTO } from '../../../_shared/adapter/dto';
+import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
   
   @ApiTags('poules management')
   @Controller('poules')
@@ -44,10 +46,11 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
       description: 'Fetch all poules in the DB',
     })
     // @ApiResponse({ type: [pouleAccountDTO] })
-    async all(): Promise<Poule[]> {
-      const poules = await this.pouleService.fetchAll();
-      return poules?.map((poule) => PouleFactory.getPoule(poule));
+    async all(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<Poule>> {
+      const poules = await this.pouleService.fetchAll(query);
+      return mapPaginated(poules, (poule) => PouleFactory.getPoule(poule));
     }
+
 
   
     @Get('search')

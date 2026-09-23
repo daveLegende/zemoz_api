@@ -25,6 +25,8 @@ import { IForgotPassController, IForgotPassService } from '../../../forgotpass/a
 import { ForgotPass } from '../../../forgotpass/domain';
 import { ForgotPassAccountDto } from '../dto';
 import { ForgotPassFactory } from '../fgp.factory';
+import { PaginationQueryDTO } from '../../../_shared/adapter/dto';
+import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
 
 @ApiTags('forgot pass management')
 @Controller('forgotpass')
@@ -39,10 +41,11 @@ export class ForgotPassController implements IForgotPassController {
     description: 'Fetch all ForgotPasss in the DB',
   })
   // @ApiResponse({ type: [ForgotPassAccountDTO] })
-  async all(): Promise<ForgotPass[]> {
-    const fgps = await this.fgpService.fetchAll();
-    return fgps?.map((fgp) => ForgotPassFactory.getFgp(fgp));
+  async all(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<ForgotPass>> {
+    const fgps = await this.fgpService.fetchAll(query);
+    return mapPaginated(fgps, (fgp) => ForgotPassFactory.getFgp(fgp));
   }
+
 
   @Get(':id')
   // @HasPermission(AccessEnum.CAN_SHOW_USER)

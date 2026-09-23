@@ -12,6 +12,7 @@ import { ArbitreAccountDto, UpdateArbitreDTO } from '../dto';
 import { CloudinaryService } from '../../../shared/infrastructure/cloudinary/cloudinary.service';
 import { Express } from 'express';
 import { IFileStorage } from '../../../shared/domain/file-storage.interface';
+import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_shared/domain/pagination';
   
   @Injectable()
   export class ArbitreService implements IArbitreService {
@@ -21,9 +22,9 @@ import { IFileStorage } from '../../../shared/domain/file-storage.interface';
       @Inject('IFileStorage') private cloudinaryService: IFileStorage,
     ) {}
   
-    async fetchAll(): Promise<Arbitre[]> {
+    async fetchAll(query?: PaginationQuery): Promise<PaginatedResult<Arbitre>> {
       try {
-        return await this.arbitresRepository.arbitres.find({
+        return await paginateQuery(this.arbitresRepository.arbitres, query, {
           relations: { matchs: true }
         });
       } catch (error) {

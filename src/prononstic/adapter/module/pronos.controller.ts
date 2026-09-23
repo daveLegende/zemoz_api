@@ -31,6 +31,8 @@ import { Prononstic } from '../../domain';
 import { DocPrononsticOutputDTO } from '../dto/doc.pronos.dto';
 import { UserGuard } from '../../../user/adapter/guard/auth.guard';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
+import { PaginationQueryDTO } from '../../../_shared/adapter/dto';
+import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
 
 @ApiTags('pronos management')
 @ApiBearerAuth()
@@ -47,10 +49,11 @@ export class PrononsticController implements IPrononsticController {
     description: 'Fetch all Prononstics in the DB',
   })
   // @ApiResponse({ type: [pronoAccountDTO] })
-  async all(): Promise<Prononstic[]> {
-    const pronos = await this.pronoService.fetchAll();
-    return pronos?.map((prono) => PrononsticFactory.getPronos(prono));
+  async all(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<Prononstic>> {
+    const pronos = await this.pronoService.fetchAll(query);
+    return mapPaginated(pronos, (prono) => PrononsticFactory.getPronos(prono));
   }
+
 
   @Get(':id')
   // @HasPermission(AccessEnum.CAN_SHOW_USER)

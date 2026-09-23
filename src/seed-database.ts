@@ -21,6 +21,7 @@ import { TournoiEntity } from './tournoi/framework/database/schema/tournoi.entit
 import { TeamEntity } from './team/framework/database/schema/team.entity';
 import { PouleEntity } from './poule/framework/database/schema/poule.entity';
 import { PlayerEntity } from './player/framework/database/schema/player.entity';
+import { TeamPlayerEntity } from './player/framework/database/schema/team-player.entity';
 import { ArbitreEntity } from './arbitre/framework/database/schema/arbitre.entity';
 import { MatchEntity } from './match/framework/database/schema/match.entity';
 import { MatchEventEntity } from './matchEvents/framework/database/schema/match.event.entity';
@@ -86,6 +87,7 @@ async function seed() {
   const teamRepo = AppDataSource.getRepository(TeamEntity);
   const pouleRepo = AppDataSource.getRepository(PouleEntity);
   const playerRepo = AppDataSource.getRepository(PlayerEntity);
+  const teamPlayerRepo = AppDataSource.getRepository(TeamPlayerEntity);
   const arbitreRepo = AppDataSource.getRepository(ArbitreEntity);
   const matchRepo = AppDataSource.getRepository(MatchEntity);
   const eventRepo = AppDataSource.getRepository(MatchEventEntity);
@@ -236,23 +238,34 @@ async function seed() {
 
   // Joueurs
   console.log('🏃‍♂️ Création des Joueurs pour les équipes...');
-  const playersToSave: Partial<PlayerEntity>[] = [];
+  const savedPlayers: PlayerEntity[] = [];
   for (const team of savedTeams) {
     for (let j = 1; j <= 6; j++) {
       const fn = FIRST_NAMES[(j * 7) % FIRST_NAMES.length];
       const ln = LAST_NAMES[(j * 11) % LAST_NAMES.length];
-      playersToSave.push({
-        name: `${fn} ${ln}`,
-        age: 18 + (j % 12),
-        phone: `+22891${String(300000 + j).padStart(6, '0')}`,
-        buts: Math.floor(Math.random() * 5),
-        passes: Math.floor(Math.random() * 3),
-        avatar: `https://api.dicebear.com/7.x/person/svg?seed=${fn}${ln}`,
-        team: team,
-      });
+      const player = await playerRepo.save(
+        playerRepo.create({
+          name: `${fn} ${ln}`,
+          age: 18 + (j % 12),
+          phone: `+22891${String(300000 + j).padStart(6, '0')}`,
+          avatar: `https://api.dicebear.com/7.x/person/svg?seed=${fn}${ln}`,
+        }),
+      );
+      savedPlayers.push(player);
+      await teamPlayerRepo.save(
+        teamPlayerRepo.create({
+          player,
+          team,
+          numeroMaillot: j,
+          poste: j === 1 ? 'GARDIEN' : j <= 3 ? 'DEFENSEUR' : j <= 5 ? 'MILIEU' : 'ATTAQUANT',
+          buts: Math.floor(Math.random() * 5),
+          passes: Math.floor(Math.random() * 3),
+          statut: 'ACTIF',
+        }),
+      );
     }
   }
-  const savedPlayers = await playerRepo.save(playerRepo.create(playersToSave));
+
 
   // Matchs de Poule (Phase de Poule)
   console.log('🏟️ Création des Matchs et Événements...');

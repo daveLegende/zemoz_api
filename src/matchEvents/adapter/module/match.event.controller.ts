@@ -30,6 +30,8 @@ import { MatchEventDTO, UpdateMatchEventDto } from '../dto';
 import { MatchEventFactory } from '../match.events.factory';
 import { IMatchEventController, IMatchEventService } from '../../../matchEvents/app/module';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
+import { PaginationQueryDTO } from '../../../_shared/adapter/dto';
+import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
 
 @ApiTags('matchs management')
 @Controller('matchs_events')
@@ -44,12 +46,11 @@ export class MatchEventController implements IMatchEventController {
     description: 'Fetch all matchs in the DB',
   })
   // @ApiResponse({ type: [MatchAccountDTO] })
-  async all(): Promise<MatchEvent[]> {
-    const matchs = await this.eventService.fetchAll();
-    console.log(matchs);
-
-    return matchs?.map((match) => MatchEventFactory.getMatch(match));
+  async all(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<MatchEvent>> {
+    const matchs = await this.eventService.fetchAll(query);
+    return mapPaginated(matchs, (match) => MatchEventFactory.getMatch(match));
   }
+
 
 
   @Get('search')

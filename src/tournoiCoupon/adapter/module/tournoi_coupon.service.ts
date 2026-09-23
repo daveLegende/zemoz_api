@@ -16,7 +16,7 @@ import { ITournoiCouponRepository } from '../../../tournoiCoupon/domain/data.abs
 import { ITournoiCouponBetRepository, TournoiCouponBet } from '../../../tournoiCouponBet/domain';
 import { ITournoiCouponService } from '../../../tournoiCoupon/app/module';
 import { IMatchRepository, MatchType } from '../../../match/domain';
-import { IPlayerRepository } from '../../../player/domain';
+import { IPlayerRepository, ITeamPlayerRepository } from '../../../player/domain';
 import { TournoiCouponEntity } from '../../../tournoiCoupon/framework/schema/tournoi_coupon.entity';
 import { DataSource } from 'typeorm';
 import { UserEntity } from '../../../user/framework/database/schema/user.entity';
@@ -35,6 +35,7 @@ export class TournoiCouponService implements ITournoiCouponService {
     private tcpRepository: ITournoiCouponBetRepository,
     private matchRepository: IMatchRepository,
     private playerRepository: IPlayerRepository,
+    private teamPlayerRepository: ITeamPlayerRepository,
     private dataSource: DataSource,
     private tournoiCouponGateway: TournoiCouponGateway,
   ) { }
@@ -366,24 +367,27 @@ export class TournoiCouponService implements ITournoiCouponService {
     }
 
     // Meilleur buteur
-    const topScorerArr = await this.playerRepository.players.find({
+    const topScorerArr = await this.teamPlayerRepository.inscriptions.find({
       order: { buts: 'DESC' },
       take: 1,
+      relations: { player: true },
     }).catch(err => {
       this.logger.error(`Erreur lors de la recherche du topScorer: ${err.message}`);
       return [];
     });
-    const topScorer = topScorerArr[0] || null;
+    const topScorer = topScorerArr[0]?.player || null;
 
     // Meilleur passeur
-    const topAssistArr = await this.playerRepository.players.find({
+    const topAssistArr = await this.teamPlayerRepository.inscriptions.find({
       order: { passes: 'DESC' },
       take: 1,
+      relations: { player: true },
     }).catch(err => {
       this.logger.error(`Erreur lors de la recherche du topAssist: ${err.message}`);
       return [];
     });
-    const topAssist = topAssistArr[0] || null;
+    const topAssist = topAssistArr[0]?.player || null;
+
 
     let processedCount = 0;
     let winnersCount = 0;

@@ -14,6 +14,7 @@ import { BetFactory } from '../bet.factory';
 import { MARKET_CONFIG } from '../../../bet/domain/bet.mapping';
 import { ITournoiRepository, Tournoi } from '../../../tournoi/domain';
 import { isUUID } from 'class-validator';
+import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_shared/domain/pagination';
 
 @Injectable()
 export class BetService implements IBetService {
@@ -24,9 +25,9 @@ export class BetService implements IBetService {
     private tournoiRepository: ITournoiRepository
   ) {}
 
-  async fetchAll(): Promise<Bet[]> {
+  async fetchAll(query?: PaginationQuery): Promise<PaginatedResult<Bet>> {
     try {
-      return await this.betsRepository.bets.find({
+      return await paginateQuery(this.betsRepository.bets, query, {
         relations: { match: true, competition: true }
       });
     } catch (error) {

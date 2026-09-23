@@ -29,6 +29,8 @@ import { DocCouponOutputDto } from '../dto/doc.output.dto';
 import { UpdateMatchDTO } from '../../../match/adapter/dto';
 import { UserGuard } from '../../../user/adapter/guard/auth.guard';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
+import { PaginationQueryDTO } from '../../../_shared/adapter/dto';
+import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
 
 @ApiTags('Coupon management')
 @ApiBearerAuth()
@@ -45,10 +47,11 @@ export class CouponController implements ICouponController {
     description: 'Fetch all Coupons in the DB',
   })
   // @ApiResponse({ type: [CouponAccountDTO] })
-  async all(): Promise<Coupon[]> {
-    const coupons = await this.couponService.fetchAll();
-    return coupons?.map((coupon) => CouponFactory.getCoupon(coupon));
+  async all(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<Coupon>> {
+    const coupons = await this.couponService.fetchAll(query);
+    return mapPaginated(coupons, (coupon) => CouponFactory.getCoupon(coupon));
   }
+
 
 
   @Get("pending-coupons")

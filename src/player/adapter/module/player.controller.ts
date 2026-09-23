@@ -23,7 +23,8 @@ import {
   import { FileInterceptor } from '@nestjs/platform-express';
   import { memoryStorage } from 'multer';
   import { Express } from 'express';
-  import { IDParamDTO } from '../../../_shared/adapter/dto';
+  import { IDParamDTO, PaginationQueryDTO } from '../../../_shared/adapter/dto';
+  import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
   import { BaseConfig } from '../../../_shared/config/base.config';
   import {
     DocUserOutputDTO,
@@ -50,10 +51,11 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
       description: 'Fetch all players in the DB',
     })
     @ApiResponse({ type: [PlayerAccoutDTO] })
-    async all(): Promise<Player[]> {
-      const players = await this.playerService.fetchAll();
-      return players?.map((player) => PlayerFactory.getPlayer(player));
+    async all(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<Player>> {
+      const players = await this.playerService.fetchAll(query);
+      return mapPaginated(players, (player) => PlayerFactory.getPlayer(player));
     }
+
 
   
     @Get('search')

@@ -16,6 +16,7 @@ import { PlayerEntity } from '../../../player/framework/database/schema/player.e
 import { MVPEntity } from '../../../mvp/framework/database/schema/mvp.entity';
 import { UserEntity } from '../../../user/framework/database/schema/user.entity';
 import { DataSource } from 'typeorm';
+import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_shared/domain/pagination';
 
 @Injectable()
 export class MVPService implements IMVPService {
@@ -28,21 +29,20 @@ export class MVPService implements IMVPService {
     private dataSource: DataSource,
   ) { }
 
-  async fetchAll(): Promise<MVP[]> {
+  async fetchAll(query?: PaginationQuery): Promise<PaginatedResult<MVP>> {
     try {
-      return await this.mvpRepository.mvps.find(
-        {
-          relations: {
-            user: true,
-            player: true,
-          },
-        }
-      );
+      return await paginateQuery(this.mvpRepository.mvps, query, {
+        relations: {
+          user: true,
+          player: true,
+        },
+      });
     } catch (error) {
       this.logger.error(error.message, 'ERROR::MvpService.fetchAll');
       throw error;
     }
   }
+
 
   async fetchOne(id: string): Promise<MVP> {
     try {

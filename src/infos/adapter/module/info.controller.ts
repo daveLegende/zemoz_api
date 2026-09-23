@@ -30,6 +30,8 @@ import { InfoFactory } from '../info.factory';
 import { Info } from '../../../infos/domain';
 import { DocInfoOutputDto, InfoAccountDto, UpdateInfoDTO } from '../dto';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
+import { PaginationQueryDTO } from '../../../_shared/adapter/dto';
+import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
   
   @ApiTags('infos management')
   @Controller('infos')
@@ -44,10 +46,11 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
       description: 'Fetch all Infos in the DB',
     })
     // @ApiResponse({ type: [InfoAccountDTO] })
-    async all(): Promise<Info[]> {
-      const infos = await this.infoService.fetchAll();
-      return infos?.map((info) => InfoFactory.getInfo(info));
+    async all(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<Info>> {
+      const infos = await this.infoService.fetchAll(query);
+      return mapPaginated(infos, (info) => InfoFactory.getInfo(info));
     }
+
 
     
     @Get('search')

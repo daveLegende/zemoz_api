@@ -28,6 +28,9 @@ import { BetAccountDto, UpdateBetDTO } from '../dto';
 import { DocBetOutputDto } from '../dto/doc.output.dto';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 
+import { PaginationQueryDTO } from '../../../_shared/adapter/dto';
+import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
+
 @ApiTags('Bet management')
 @UseGuards(AdminGuard)
 @ApiBearerAuth()
@@ -43,10 +46,11 @@ export class BetController implements IBetController {
     description: 'Fetch all Bets in the DB',
   })
   // @ApiResponse({ type: [BetAccountDTO] })
-  async all(): Promise<Bet[]> {
-    const bets = await this.betService.fetchAll();
-    return bets?.map((bet) => BetFactory.getBet(bet));
+  async all(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<Bet>> {
+    const bets = await this.betService.fetchAll(query);
+    return mapPaginated(bets, (bet) => BetFactory.getBet(bet));
   }
+
 
 
   @Get('search')

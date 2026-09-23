@@ -12,6 +12,8 @@ import { IForgotPassService } from '../../../forgotpass/app/module';
 import { ForgotPass, IForgotPassRepository } from '../../../forgotpass/domain';
 import * as nodemailer from 'nodemailer';
   
+import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_shared/domain/pagination';
+
   @Injectable()
   export class ForgotPassService implements IForgotPassService {
     private readonly logger = new Logger();
@@ -20,14 +22,15 @@ import * as nodemailer from 'nodemailer';
       private userRepository: IUserRepository,
     ) {}
   
-    async fetchAll(): Promise<ForgotPass[]> {
+    async fetchAll(query?: PaginationQuery): Promise<PaginatedResult<ForgotPass>> {
       try {
-        return await this.fgpRepository.fgps.find();
+        return await paginateQuery(this.fgpRepository.fgps, query);
       } catch (error) {
         this.logger.error(error.message, 'ERROR::ForgotPassService.fetchAll');
         throw error;
       }
     }
+
   
     async fetchOne(id: string): Promise<ForgotPass> {
       try {
