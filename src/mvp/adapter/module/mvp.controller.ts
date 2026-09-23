@@ -26,14 +26,13 @@ import { MVPFactory } from '../mvp.factory';
 import { MVP } from '../../../mvp/domain';
 import { MVPService } from './mvp.service';
 import { DocMvpOutputDto, MvpAccountDto } from '../dto';
-import { UserGuard } from '../../../user/adapter/guard/auth.guard';
-import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
+import { AccountGuard } from '../../../account/adapter/guard/account.guard';
 import { PaginationQueryDTO } from '../../../_shared/adapter/dto';
 import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
 
 @ApiTags('Mvps management')
-@UseGuards(UserGuard)
-@UseGuards(AdminGuard)
+@ApiBearerAuth()
+@UseGuards(AccountGuard)
 @Controller('mvp')
 export class MVPController implements IMVPController {
   constructor(
@@ -53,7 +52,7 @@ export class MVPController implements IMVPController {
   })
   @ApiResponse({ type: DocMvpOutputDto })
   async fetchOne(@Param() { id }: IDParamDTO): Promise<MVP> {
-    return MVPFactory.getMvp(await this.mvpService.fetchOne(id));
+    return MVPFactory.getMvp(await this.mvpService.fetchOne(id)) as MVP;
   }
 
   @Get()
@@ -64,7 +63,43 @@ export class MVPController implements IMVPController {
   @ApiResponse({ type: [DocMvpOutputDto] })
   async fetchAll(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<MVP>> {
     const mvps = await this.mvpService.fetchAll(query);
-    return mapPaginated(mvps, (mvp) => MVPFactory.getMvp(mvp));
+    return mapPaginated(mvps, (mvp) => MVPFactory.getMvp(mvp) as MVP);
+  }
+
+  @Get('match/:id')
+  @ApiOperation({
+    summary: 'Mvps by match',
+    description: 'Fetch all mvps for a given match',
+  })
+  @ApiParam({
+    type: String,
+    name: 'id',
+    description: 'ID of the match',
+  })
+  async fetchByMatch(
+    @Param() { id }: IDParamDTO,
+    @Query() query?: PaginationQueryDTO,
+  ): Promise<PaginatedResult<MVP>> {
+    const mvps = await this.mvpService.fetchByMatch(id, query);
+    return mapPaginated(mvps, (mvp) => MVPFactory.getMvp(mvp) as MVP);
+  }
+
+  @Get('tournoi/:id')
+  @ApiOperation({
+    summary: 'Mvps by tournoi',
+    description: 'Fetch all mvps for a given tournament',
+  })
+  @ApiParam({
+    type: String,
+    name: 'id',
+    description: 'ID of the tournament',
+  })
+  async fetchByTournoi(
+    @Param() { id }: IDParamDTO,
+    @Query() query?: PaginationQueryDTO,
+  ): Promise<PaginatedResult<MVP>> {
+    const mvps = await this.mvpService.fetchByTournoi(id, query);
+    return mapPaginated(mvps, (mvp) => MVPFactory.getMvp(mvp) as MVP);
   }
 
 
@@ -85,7 +120,7 @@ export class MVPController implements IMVPController {
     @Body() data: MvpAccountDto,
   ): Promise<MVP> {
     const mvp = await this.mvpService.add(data);
-    if (mvp) return MVPFactory.getMvp(mvp);
+    if (mvp) return MVPFactory.getMvp(mvp) as MVP;
   }
 
   /**

@@ -9,6 +9,10 @@ export abstract class IMVPController {
 
   abstract fetchAll(query?: PaginationQuery): Promise<PaginatedResult<MVP>>;
 
+  abstract fetchByMatch(param: IIDParamDTO, query?: PaginationQuery): Promise<PaginatedResult<MVP>>;
+
+  abstract fetchByTournoi(param: IIDParamDTO, query?: PaginationQuery): Promise<PaginatedResult<MVP>>;
+
   abstract create(data: ICreateMVPDTO, file?: any): Promise<MVP>;
 
   abstract remove(param: IIDParamDTO): Promise<boolean>;

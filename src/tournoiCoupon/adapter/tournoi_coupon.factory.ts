@@ -39,6 +39,7 @@ export abstract class TournoiCouponFactory {
         isPaid: coupon.isPaid,
         tournoiCouponBets: coupon.tournoiCouponBets,
         isDeleted: coupon.isDeleted,
+        tournoi: coupon.tournoi,
         createdAt: coupon.createdAt,
         updatedAt: coupon.updatedAt,
         deletedAt: coupon.deletedAt

@@ -114,6 +114,17 @@ export class MatchAccoutDTO {
   @Type(() => OddsDTO)  // Nécessaire pour la transformation class-transformer
   @IsOptional()
   odds?: OddsDTO;  // Plus optionnel
+
+  @ApiProperty({
+    description: 'ID du tournoi auquel ce match appartient (optionnel — déduit de l\'équipe/poule si absent)',
+    type: String,
+    required: false,
+    example: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
+  })
+  @IsOptional()
+  @IsString()
+  @IsUUID()
+  tournoiId?: string;
 }
 
 export class UpdateMatchDTO extends PartialType(MatchAccoutDTO) {

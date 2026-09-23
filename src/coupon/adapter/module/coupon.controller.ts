@@ -27,14 +27,13 @@ import { CouponFactory } from '../coupon.factory';
 import { CouponAccountDto, UpdateCouponDTO } from '../dto';
 import { DocCouponOutputDto } from '../dto/doc.output.dto';
 import { UpdateMatchDTO } from '../../../match/adapter/dto';
-import { UserGuard } from '../../../user/adapter/guard/auth.guard';
-import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
+import { AccountGuard } from '../../../account/adapter/guard/account.guard';
 import { PaginationQueryDTO } from '../../../_shared/adapter/dto';
 import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
 
 @ApiTags('Coupon management')
 @ApiBearerAuth()
-@UseGuards(UserGuard, AdminGuard)
+@UseGuards(AccountGuard)
 @Controller('coupons')
 export class CouponController implements ICouponController {
   constructor(private readonly couponService: ICouponService) {}

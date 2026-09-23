@@ -24,7 +24,7 @@ import { CategoryName } from '../../../bet/domain';
 import { BetStatus, CouponBet, ICouponBetRepository } from '../../../couponBet/domain';
 import { CouponBetFactory } from '../../../couponBet/adapter/coupon_bet.factory';
 import { Coupon, CouponState } from '../../../coupon/domain';
-import { DataSource } from 'typeorm';
+import { DataSource, In } from 'typeorm';
 import { CouponEntity } from '../../../coupon/framework/schema/coupon.entity';
 import { UserEntity } from '../../../user/framework/database/schema/user.entity';
 import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_shared/domain/pagination';
@@ -123,24 +123,43 @@ export class MatchService implements IMatchService {
 
       const { away, home, arbitres, type, odds, poule } = data;
 
-      const referee = await this.arbitreRepository.arbitres.findByIds(arbitres);
+      const referee = (arbitres && arbitres.length > 0)
+        ? await this.arbitreRepository.arbitres.find({
+            where: { id: In(arbitres) as any },
+            relations: { tournoi: true },
+          })
+        : [];
 
       const domWhere: any = { id: home };
       if (tournoiId) domWhere.tournoi = { id: tournoiId };
       const domicile = await this.teamRepository.teams.findOne({
         where: domWhere,
-        relations: { poule: true }
+        relations: { poule: true, tournoi: true }
       });
 
       const extWhere: any = { id: away };
       if (tournoiId) extWhere.tournoi = { id: tournoiId };
       const exterieure = await this.teamRepository.teams.findOne({
         where: extWhere,
-        relations: { poule: true }
+        relations: { poule: true, tournoi: true }
       });
 
       if (!domicile || !exterieure) {
         throw new NotFoundException('L\'une des équipes spécifiées est introuvable.');
+      }
+
+      // Source de vérité : tournoi_id direct sur match (option b retenue).
+      // Résolution par priorité : 1) tournoiId explicite du DTO, 2) equipe.tournoi,
+      // 3) poule.tournoi (chargé ci-dessous si nécessaire).
+      let matchTournoiId = tournoiId || domicile.tournoi?.id;
+      if (matchTournoiId && referee.length > 0) {
+        for (const arbitre of referee) {
+          if (arbitre.tournoi && arbitre.tournoi.id !== matchTournoiId) {
+            throw new BadRequestException(
+              `L'arbitre ${arbitre.name} est rattaché au tournoi ${arbitre.tournoi.name || arbitre.tournoi.id} et ne peut pas officier sur ce match`,
+            );
+          }
+        }
       }
 
       if (type === MatchType.POULE) {
@@ -148,18 +167,25 @@ export class MatchService implements IMatchService {
           throw new NotFoundException("L'une des équipes n'a pas de poule associée.");
         } else {
           if (domicile.poule.id === exterieure.poule.id) {
-            if (tournoiId) {
-              const pouleEntity = await this.pouleRepository.poules.findOne({
-                where: { id: domicile.poule.id, tournoi: { id: tournoiId } }
-              });
-              if (!pouleEntity) {
-                throw new NotFoundException("La poule n'appartient pas à ce tournoi.");
-              }
+            // Charger la poule avec son tournoi pour le fallback (priorité 3)
+            const pouleEntity = await this.pouleRepository.poules.findOne({
+              where: { id: domicile.poule.id },
+              relations: { tournoi: true },
+            });
+            if (!pouleEntity) {
+              throw new NotFoundException("La poule est introuvable.");
             }
+            // Valider que la poule appartient bien au tournoi demandé
+            if (matchTournoiId && pouleEntity.tournoi && pouleEntity.tournoi.id !== matchTournoiId) {
+              throw new NotFoundException("La poule n'appartient pas à ce tournoi.");
+            }
+            // Compléter matchTournoiId avec poule.tournoi si encore absent
+            const resolvedTournoiId = matchTournoiId || pouleEntity.tournoi?.id;
+
             const match = await this.matchRepository.matchs.create(
-              await MatchFactory.create(data, referee, domicile, exterieure, domicile.poule),
+              await MatchFactory.create(data, referee, domicile, exterieure, pouleEntity),
             );
-            if (tournoiId) match.tournoi = { id: tournoiId } as any;
+            if (resolvedTournoiId) match.tournoi = { id: resolvedTournoiId } as any;
             return await this.matchRepository.save(match);
           } else {
             throw new NotFoundException("Les équipes ne sont pas dans la même poule", 'ERROR::MatchService.editMatch');
@@ -169,7 +195,7 @@ export class MatchService implements IMatchService {
         const match = await this.matchRepository.matchs.create(
           await MatchFactory.create(data, referee, domicile, exterieure, null),
         );
-        if (tournoiId) match.tournoi = { id: tournoiId } as any;
+        if (matchTournoiId) match.tournoi = { id: matchTournoiId } as any;
         return await this.matchRepository.save(match);
       };
     } catch (error) {
@@ -235,7 +261,23 @@ export class MatchService implements IMatchService {
           relations: { poule: true }
         });
 
-        const referee = await this.arbitreRepository.arbitres.findByIds(arbitres);
+        const referee = (arbitres && arbitres.length > 0)
+          ? await this.arbitreRepository.arbitres.find({
+              where: { id: In(arbitres) as any },
+              relations: { tournoi: true },
+            })
+          : [];
+
+        const targetTournoiId = tournoiId || match.tournoi?.id || (domicile as any)?.tournoi?.id;
+        if (targetTournoiId && referee.length > 0) {
+          for (const arbitre of referee) {
+            if (arbitre.tournoi && arbitre.tournoi.id !== targetTournoiId) {
+              throw new BadRequestException(
+                `L'arbitre ${arbitre.name} est rattaché au tournoi ${arbitre.tournoi.name || arbitre.tournoi.id} et ne peut pas officier sur ce match`,
+              );
+            }
+          }
+        }
 
         return await this.matchRepository.matchs.update(
           MatchFactory.update(match, data, referee, domicile, exterieure),
@@ -643,7 +685,7 @@ export class MatchService implements IMatchService {
         bet: {
           match: { home: true, away: true }
         },
-        coupon: { user: true }
+        coupon: { account: true }
       }
     });
 
@@ -1099,7 +1141,7 @@ export class MatchService implements IMatchService {
         where: { id: couponId },
         relations: {
           couponBets: { bet: { match: true } },
-          user: true
+          account: true
         }
       });
 
@@ -1173,7 +1215,7 @@ export class MatchService implements IMatchService {
 
         this.matchGateway.server.emit('couponStatusUpdated', {
           couponId: coupon.id,
-          userId: coupon.user?.id,
+          userId: (coupon as any).account?.id ?? (coupon as any).user?.id,
           newState: newCouponState,
           gains: coupon.gains,
           timestamp: new Date()
@@ -1270,7 +1312,7 @@ export class MatchService implements IMatchService {
         }
 
         // ✅ ÉTAPE 2 : Verrouiller l'utilisateur séparément via userId
-        const userId = lockedCoupon.user?.id ?? coupon.user?.id;
+        const userId = lockedCoupon.account?.id ?? (coupon as any).account?.id ?? (coupon as any).user?.id;
         if (!userId) throw new Error('userId introuvable sur le coupon');
 
         const user = await manager.findOne(UserEntity, {

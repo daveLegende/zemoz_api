@@ -18,7 +18,7 @@ import {
   ApiConsumes,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { IDParamDTO } from '../../../_shared/adapter/dto/param.dto';
+import { IDParamDTO, PaginationQueryDTO } from '../../../_shared/adapter/dto';
 import { TournoiCouponBetFactory } from '../tournoi_coupon_bet.factory';
 import { TournoiCouponBetAccountDto, UpdateTournoiCouponBetDTO } from '../dto';
 import { DocTournoiCouponBetOutputDto } from '../dto/doc.output_bet.dto';
@@ -26,6 +26,7 @@ import { TournoiCouponBet } from '../../../tournoiCouponBet/domain';
 import { ITournoiCouponBetController, ITournoiCouponBetService } from '../../../tournoiCouponBet/app/module';
 import { UserGuard } from '../../../user/adapter/guard/auth.guard';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
+import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
 
 @ApiTags('Coupon management')
 @ApiBearerAuth()
@@ -42,9 +43,9 @@ export class TournoiCouponBetController implements ITournoiCouponBetController {
     description: 'Fetch all Coupons in the DB',
   })
   // @ApiResponse({ type: [CouponAccountDTO] })
-  async all(): Promise<TournoiCouponBet[]> {
-    const coupons = await this.couponBetService.fetchAll();
-    return coupons?.map((coupon) => TournoiCouponBetFactory.getCouponBet(coupon));
+  async all(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<TournoiCouponBet>> {
+    const coupons = await this.couponBetService.fetchAll(query);
+    return mapPaginated(coupons, (coupon) => TournoiCouponBetFactory.getCouponBet(coupon));
   }
 
 

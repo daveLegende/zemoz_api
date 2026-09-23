@@ -9,10 +9,11 @@ export class OtpEntity extends Otp {
     @Column()
     code: string;
 
-    // @Column()
-    // phone: string;
-    @Column()
-    email: string;
+    @Column({ nullable: true })
+    phone?: string;
+
+    @Column({ nullable: true })
+    email?: string;
 
     @Column({ default: false })
     isVerified: boolean;

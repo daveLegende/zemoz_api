@@ -29,14 +29,13 @@ import { PrononsticAccoutDTO, UpdatePrononsticDTO } from '../dto';
 import { IPrononsticController, IPrononsticService } from '../../app/module';
 import { Prononstic } from '../../domain';
 import { DocPrononsticOutputDTO } from '../dto/doc.pronos.dto';
-import { UserGuard } from '../../../user/adapter/guard/auth.guard';
-import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
+import { AccountGuard } from '../../../account/adapter/guard/account.guard';
 import { PaginationQueryDTO } from '../../../_shared/adapter/dto';
 import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
 
 @ApiTags('pronos management')
 @ApiBearerAuth()
-@UseGuards(UserGuard, AdminGuard)
+@UseGuards(AccountGuard)
 @Controller('pronos')
 export class PrononsticController implements IPrononsticController {
   constructor(private readonly pronoService: IPrononsticService) { }

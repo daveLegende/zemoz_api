@@ -10,14 +10,14 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { DataSource } from 'typeorm';
-import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
+import { AccountGuard } from '../../../account/adapter/guard/account.guard';
 import { OrganizationGuard } from '../guard/organization.guard';
 import { OrganizationEntity } from '../../framework/database/schema/organization.entity';
 import { TournoiEntity } from '../../../tournoi/framework/database/schema/tournoi.entity';
 
 @ApiTags('Organizations')
 @Controller('organizations')
-@UseGuards(AdminGuard)
+@UseGuards(AccountGuard)
 @ApiBearerAuth()
 export class OrganizationController {
   constructor(private readonly dataSource: DataSource) {}

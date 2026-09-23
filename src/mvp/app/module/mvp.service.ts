@@ -10,4 +10,8 @@ export abstract class IMVPService {
   abstract remove(id: string): Promise<boolean>;
 
   abstract fetchAll(query?: PaginationQuery): Promise<PaginatedResult<MVP>>;
+
+  abstract fetchByMatch(matchId: string, query?: PaginationQuery): Promise<PaginatedResult<MVP>>;
+
+  abstract fetchByTournoi(tournoiId: string, query?: PaginationQuery): Promise<PaginatedResult<MVP>>;
 }

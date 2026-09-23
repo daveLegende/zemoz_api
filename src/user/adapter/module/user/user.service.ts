@@ -247,10 +247,10 @@ export class UserService implements IUserService {
 
       const tickets = await this.ticketRepository.tickets.find({
         where: {
-          user: { id: user.id },
+          account: { id: user.id },
           isDeleted: false,
         },
-        relations: { user: true }
+        relations: { account: true }
       });
 
       return tickets;
@@ -272,9 +272,9 @@ export class UserService implements IUserService {
         {
           where: {
             id: id,
-            user: { id: user.id },
+            account: { id: user.id },
           },
-          relations: { user: true }
+          relations: { account: true }
         }
       );
       if (ticket) {
@@ -299,11 +299,11 @@ export class UserService implements IUserService {
 
       const coupons = await this.couponRepository.coupons.find({
         where: {
-          user: { id: user.id },
+          account: { id: user.id },
           isDeleted: false,
         },
         relations: {
-          user: true,
+          account: true,
           couponBets: {
             bet: {
               match: {
@@ -332,11 +332,11 @@ export class UserService implements IUserService {
 
       const paris = await this.parisRepository.paris.find({
         where: {
-          user: { id: user.id } as User,
+          account: { id: user.id } as any,
           // isDeleted: false,
         },
         relations: {
-          user: true,
+          account: true,
         }
       });
 
@@ -383,9 +383,9 @@ export class UserService implements IUserService {
         {
           where: {
             id: id,
-            user: { id: user.id },
+            account: { id: user.id },
           },
-          relations: { user: true }
+          relations: { account: true }
         }
       );
       if (coupon) {

@@ -1,8 +1,8 @@
 import { ATimestamp } from "../../../../_shared/framework/timestamp.abstract";
 import { MatchEntity } from "../../../../match/framework/database/schema/match.entity";
 import { Prononstic, PronoState } from "../../../../prononstic/domain";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { UserEntity } from "../../../../user/framework/database/schema/user.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn } from "typeorm";
+import { AccountEntity } from "../../../../account/framework/database/schema/account.entity";
 
 
 @Entity('pronos')
@@ -26,8 +26,9 @@ export class PrononsticEntity extends ATimestamp implements Prononstic {
     })
     etat: PronoState;
 
-    @ManyToOne(() => UserEntity , (user) => user.pronostics, { nullable: false, onDelete: 'CASCADE' })
-    user: UserEntity;
+    @ManyToOne(() => AccountEntity , (account) => account.pronostics, { nullable: false, onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'account_id' })
+    account: AccountEntity;
 
     @ManyToOne(() => MatchEntity, (match) => match.pronostics, { nullable: false, onDelete: 'CASCADE' })
     match: MatchEntity;

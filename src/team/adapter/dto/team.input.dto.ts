@@ -88,6 +88,16 @@ export class TeamAccoutDTO {
   @ApiProperty({ type: String, format: 'binary', name: 'logo', required: false })
   logo?: string;
 
+  @ApiProperty({
+    type: String,
+    name: 'tournoiId',
+    description: 'ID du tournoi auquel rattacher l\'équipe (optionnel)',
+    required: false,
+  })
+  @IsOptional()
+  @IsUUID()
+  tournoiId?: string;
+
   // @ApiProperty({ type: String, name: 'pouke', required: false })
   // poule?: string;
 }

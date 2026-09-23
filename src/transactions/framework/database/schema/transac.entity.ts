@@ -1,7 +1,6 @@
-import { AdminEntity } from "../../../../admin/framework/database/schema/admin.entity";
+import { AccountEntity } from "../../../../account/framework/database/schema/account.entity";
 import { Transaction, TransactionType } from "../../../domain";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { UserEntity } from "../../../../user/framework/database/schema/user.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn } from "typeorm";
 import { ATimestamp } from "../../../../_shared/framework/timestamp.abstract";
 
 @Entity('transactions')
@@ -26,9 +25,7 @@ export class TransactionEntity extends ATimestamp implements Transaction {
     @Column()
     phone: string;
 
-    @ManyToOne(() => AdminEntity, (admin) => admin.transactions, { nullable: true })
-    admin?: AdminEntity;
-
-    @ManyToOne(() => UserEntity, (user) => user.transactions, { nullable: true })
-    user?: UserEntity;
+    @ManyToOne(() => AccountEntity, (account) => account.transactions, { nullable: true })
+    @JoinColumn({ name: 'account_id' })
+    account?: AccountEntity;
 }

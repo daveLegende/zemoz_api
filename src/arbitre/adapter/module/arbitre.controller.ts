@@ -47,7 +47,10 @@ import { PaginatedResult, mapPaginated } from '../../../_shared/domain/paginatio
       summary: 'Arbitres list',
       description: 'Fetch all Arbitres in the DB',
     })
-    // @ApiResponse({ type: [ArbitreAccountDTO] })
+    // @ApiResponse({ type: [ArbitreAccountDTO] })\
+    // NOTE: IArbitreService n'accepte pas de tournoiId — le filtrage par tournoi
+    // n'est pas implémenté côté service. Pour l'activer, ajouter tournoiId? aux
+    // méthodes de IArbitreService et de l'implémentation ArbitreService.
     async all(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<Arbitre>> {
       const Arbitres = await this.arbitreService.fetchAll(query);
       return mapPaginated(Arbitres, (Arbitre) => ArbitreFactory.getArbitre(Arbitre));

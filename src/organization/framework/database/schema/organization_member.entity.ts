@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn, Unique } from 'typeorm';
 import { OrganizationEntity } from './organization.entity';
-import { AdminEntity } from '../../../../admin/framework/database/schema/admin.entity';
+import { AccountEntity } from '../../../../account/framework/database/schema/account.entity';
 
 export enum OrganizationRole {
   OWNER = 'OWNER',
@@ -10,7 +10,7 @@ export enum OrganizationRole {
 }
 
 @Entity('organization_member')
-@Unique(['organization', 'admin'])
+@Unique(['organization', 'account'])
 export class OrganizationMemberEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -19,9 +19,9 @@ export class OrganizationMemberEntity {
   @JoinColumn({ name: 'organization_id' })
   organization: OrganizationEntity;
 
-  @ManyToOne(() => AdminEntity, { eager: true })
-  @JoinColumn({ name: 'admin_id' })
-  admin: AdminEntity;
+  @ManyToOne(() => AccountEntity, (acc) => acc.organizationMemberships, { eager: true })
+  @JoinColumn({ name: 'account_id' })
+  account: AccountEntity;
 
   @Column({
     type: 'enum',

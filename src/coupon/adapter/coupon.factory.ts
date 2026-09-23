@@ -1,12 +1,12 @@
-import { User } from "../../user/domain";
+import { Account } from "../../account/domain/account.model";
 import { ICreateCouponDTO, IUpdateCouponDTO } from "../app/dto";
 import { Coupon } from "../domain";
 
 export abstract class CouponFactory {
-    static async create(data: ICreateCouponDTO, user: User): Promise<Coupon> {
+    static async create(data: ICreateCouponDTO, account: Account): Promise<Coupon> {
         const coupon = new Coupon();
 
-        coupon.user = user;
+        coupon.account = account;
         coupon.couponBets = coupon.couponBets;
         coupon.totalOdds = data.totalOdds;
         coupon.amount = data.amount;
@@ -17,7 +17,6 @@ export abstract class CouponFactory {
     }
 
     static update(coupon: Coupon, data: IUpdateCouponDTO): Coupon {
-
       coupon.etat = data.etat ?? coupon.etat;
       coupon.isDeleted = coupon.isDeleted;
       coupon.isPaid = coupon.isPaid;
@@ -29,7 +28,7 @@ export abstract class CouponFactory {
       if (coupon) {
         return {
           id: coupon.id,
-          user: coupon.user,
+          account: coupon.account,
           totalOdds: coupon.totalOdds,
           gains: coupon.gains,
           amount: coupon.amount,

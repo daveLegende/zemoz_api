@@ -1,10 +1,12 @@
-import { User } from "user/domain";
+import { Account } from "../../account/domain/account.model";
 import { ITimestamp } from "../../_shared/domain/interface";
-import { Player } from "player/domain";
+import { Match } from "../../match/domain";
+import { TeamPlayer } from "../../player/domain/team-player.model";
 
 export class MVP extends ITimestamp {
     id: string;
-    user: User;
-    player: Player;
+    account: Account;
+    match: Match;
+    inscription: TeamPlayer;
     amount: number = 100;
 }

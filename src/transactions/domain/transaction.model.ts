@@ -1,7 +1,6 @@
 import { ITimestamp } from "../../_shared/domain/interface";
 import { TransactionType } from "./transaction.enum";
-import { User } from "../../user/domain";
-import { Admin } from "../../admin/domain";
+import { Account } from "../../account/domain/account.model";
 
 export class Transaction extends ITimestamp {
     id: string;
@@ -9,6 +8,5 @@ export class Transaction extends ITimestamp {
     amount: number;
     frais?: number;
     phone: string;
-    admin?: Admin;
-    user?: User;
+    account?: Account;
 }

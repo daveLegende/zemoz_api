@@ -21,7 +21,7 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { IDParamDTO } from '../../../_shared/adapter/dto/param.dto';
-import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
+import { AccountGuard } from '../../../account/adapter/guard/account.guard';
 import { IParisController, IParisService } from '../../../paris/app/module';
 import { Paris } from '../../../paris/domain';
 import { ParisAccountDto, UpdateParisDTO } from '../dto';
@@ -32,7 +32,7 @@ import { PaginationQueryDTO } from '../../../_shared/adapter/dto';
 import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
 
 @ApiTags('Bet management')
-@UseGuards(AdminGuard)
+@UseGuards(AccountGuard)
 @ApiBearerAuth()
 @Controller('paris')
 export class ParisController implements IParisController {

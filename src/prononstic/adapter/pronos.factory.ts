@@ -1,26 +1,23 @@
 import { Match } from "../../match/domain";
 import { ICreatePronosDTO, IUpdatePronosDTO } from "../app/dto";
-import { Prononstic } from '../domain'
-import { User } from "../../user/domain";
-
+import { Prononstic } from '../domain';
+import { Account } from "../../account/domain/account.model";
 
 export abstract class PrononsticFactory {
-  static async create(data: ICreatePronosDTO, user: User, match: Match): Promise<Prononstic> {
+  static async create(data: ICreatePronosDTO, account: Account, match: Match): Promise<Prononstic> {
     const prono = new Prononstic();
-    prono.user = user;
+    prono.account = account;
     prono.match = match;
     prono.date = data.date;
     prono.homeScore = data.homeScore;
     prono.awayScore = data.awayScore;
     prono.etat = data.etat;
-    
+
     return prono;
   }
 
   static update(pronos: Prononstic, data: IUpdatePronosDTO): Prononstic {
-
     pronos.etat = data.etat ?? pronos.etat;
-
     return pronos;
   }
 
@@ -28,7 +25,7 @@ export abstract class PrononsticFactory {
     if (pronos) {
       return {
         id: pronos.id,
-        user: pronos.user,
+        account: pronos.account,
         match: pronos.match,
         date: pronos.date,
         homeScore: pronos.homeScore,

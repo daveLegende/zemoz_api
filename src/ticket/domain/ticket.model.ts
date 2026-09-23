@@ -1,6 +1,6 @@
 import { ITimestamp } from '../../_shared/domain/interface';
 import { TicketDuration, TicketPosition, TicketState, TicketType } from './ticket.enum';
-import { User } from '../../user/domain';
+import { Account } from '../../account/domain/account.model';
 import { Match } from '../../match/domain';
 
 
@@ -12,7 +12,7 @@ export class Ticket extends ITimestamp {
   date: Date;
   lastScanDate?: Date;
   etat: TicketState;
-  user: User;
+  account: Account;
   position?: TicketPosition;
   qrCode?: string;
   code?: string;

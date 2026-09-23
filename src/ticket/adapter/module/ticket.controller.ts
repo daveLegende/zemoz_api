@@ -18,36 +18,33 @@ import {
   ApiConsumes,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { IDParamDTO } from '../../../_shared/adapter/dto/param.dto';
+import { IDParamDTO, PaginationQueryDTO } from '../../../_shared/adapter/dto';
 import { RegisterAccoutDTO, DocUserOutputDTO } from '../../../user/adapter/dto';
 import { TicketFactory } from '../ticket.factory';
 import { ITicketController, ITicketService } from '../../app/module';
 import { Ticket } from '../../domain';
 import { TicketAccoutDTO, UpdateTicketDTO } from '../dto';
 import { DocTicketOutputDTO } from '../dto/doc.ticket.dto';
-import { UserGuard } from '../../../user/adapter/guard/auth.guard';
-import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
+import { AccountGuard } from '../../../account/adapter/guard/account.guard';
+import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
 
 @ApiTags('tickets management')
 @ApiBearerAuth()
-@UseGuards(UserGuard, AdminGuard)
+@UseGuards(AccountGuard)
 @Controller('tickets')
 export class TicketController implements ITicketController {
   constructor(private readonly ticketService: ITicketService) { }
 
   @Get()
-  // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
   @ApiConsumes('multipart/form-data', 'application/json')
   @ApiOperation({
     summary: 'Tickets list',
     description: 'Fetch all Tickets in the DB',
   })
-  // @ApiResponse({ type: [TicketAccountDTO] })
-  async all(): Promise<Ticket[]> {
-    const Tickets = await this.ticketService.fetchAll();
-    return Tickets?.map((Ticket) => TicketFactory.getTicket(Ticket));
+  async all(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<Ticket>> {
+    const Tickets = await this.ticketService.fetchAll(query);
+    return mapPaginated(Tickets, (Ticket) => TicketFactory.getTicket(Ticket));
   }
-
 
   @Get('search')
   async search(@Query() param: Ticket): Promise<Ticket> {
@@ -57,7 +54,6 @@ export class TicketController implements ITicketController {
   }
 
   @Get(':id')
-  // @HasPermission(AccessEnum.CAN_SHOW_USER)
   @ApiOperation({
     summary: 'One Ticket',
     description: 'Fetch user account by ID',
@@ -72,13 +68,6 @@ export class TicketController implements ITicketController {
     return TicketFactory.getTicket(await this.ticketService.fetchOne(id));
   }
 
-  /**
-   *
-   * @method POST
-   */
-
-  @ApiBearerAuth()
-  @UseGuards(UserGuard)
   @Post()
   @ApiOperation({
     summary: 'Create Ticket',
@@ -92,10 +81,6 @@ export class TicketController implements ITicketController {
     if (Ticket) return TicketFactory.getTicket(Ticket);
   }
 
-  /**
-   * @method PATCH
-   */
-
   @Patch()
   @ApiOperation({ summary: 'Update user account' })
   @ApiBody({ type: UpdateTicketDTO })
@@ -107,7 +92,6 @@ export class TicketController implements ITicketController {
   }
 
   @Patch('state/:id')
-  // @HasPermission(AccessEnum.CAN_SET_USER_STATE)
   @ApiOperation({ summary: 'Set user account state' })
   @ApiParam({ type: String, name: 'id', description: 'ID of the user' })
   @ApiResponse({ type: Boolean })
@@ -115,13 +99,7 @@ export class TicketController implements ITicketController {
     return await this.ticketService.setState(id);
   }
 
-  /**
-   * @method DELETE
-   */
-  @ApiBearerAuth()
-  @UseGuards(UserGuard)
   @Delete(':id')
-  // @HasPermission(AccessEnum.CAN_DELETE_USER)
   @ApiOperation({ summary: 'Remove Account' })
   @ApiParam({
     type: String,

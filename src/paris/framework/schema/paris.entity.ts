@@ -1,8 +1,8 @@
 import { ATimestamp } from "../../../_shared/framework/timestamp.abstract";
 import { MatchEntity } from "../../../match/framework/database/schema/match.entity";
 import { Paris } from "../../../paris/domain";
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from "typeorm";
-import { UserEntity } from "../../../user/framework/database/schema/user.entity";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from "typeorm";
+import { AccountEntity } from "../../../account/framework/database/schema/account.entity";
 
 @Entity('paris')
 export class ParisEntity extends ATimestamp implements Paris {
@@ -34,8 +34,9 @@ export class ParisEntity extends ATimestamp implements Paris {
     @ManyToOne(() => MatchEntity, (match) => match.paris)
     match: MatchEntity;
 
-    @ManyToOne(() => UserEntity, (user) => user.paris)
-    user: UserEntity;
+    @ManyToOne(() => AccountEntity, (account) => account.paris)
+    @JoinColumn({ name: 'account_id' })
+    account: AccountEntity;
 
     @Column({ default: false })
     isWon: boolean;

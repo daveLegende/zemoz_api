@@ -1,6 +1,6 @@
-import { Module, OnModuleInit } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 
@@ -10,8 +10,15 @@ import * as winston from 'winston';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { HttpExceptionFilter } from './_shared/adapter/exception/http-exception.filter';
-import { UserModule } from './user/adapter/module/user';
-import { AuthModule } from './user/adapter/module/auth';
+import { AccountRepositoryModule } from './account/framework/database/account.repository.module';
+import { AuthModule as AccountAuthModule } from './account/adapter/module/auth/auth.module';
+import { AccountGuardModule } from './account/adapter/guard/account-guard.module';
+// Anciens modules utilisateurs & admin remplacés par Account :
+// import { UserModule } from './user/adapter/module/user';
+// import { AuthModule } from './user/adapter/module/auth';
+// import { AdminModule } from './admin/adapter/module/admin';
+// import { AdminAuthModule } from './admin/adapter/module/auth';
+
 import { SeedsModule } from './_shared/framework/seed/seeds.module';
 import { PlayerModule } from './player/adapter/module';
 import { TeamModule } from './team/adapter/module';
@@ -26,8 +33,6 @@ import { CouponModule } from './coupon/adapter/module';
 import { CouponBetModule } from './couponBet/adapter/module';
 import { OtpModule } from './otp/adapter/module';
 import { TwilioModule } from './twilio/twilio.module';
-import { AdminModule } from './admin/adapter/module/admin';
-import { AdminAuthModule } from './admin/adapter/module/auth';
 import { TransactionModule } from './transactions/adapter/module';
 import { PasswordModule } from './password/password.module';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -36,15 +41,17 @@ import { TournoiModule } from './tournoi/adapter/module';
 import { TournoiCouponModule } from './tournoiCoupon/adapter/module';
 import { TournoiCouponBetModule } from './tournoiCouponBet/adapter/module';
 import { MVPModule } from './mvp/adapter/module';
-
 import { OrganizationModule } from './organization/adapter/module/organization.module';
 
 @Module({
   imports: [
-    UserModule, 
-    AuthModule,
-    AdminModule,
-    AdminAuthModule,
+    AccountRepositoryModule,
+    AccountAuthModule,
+    AccountGuardModule, // @Global() — fournit AccountGuard à toute l'application
+    // UserModule, 
+    // AuthModule,
+    // AdminModule,
+    // AdminAuthModule,
     OrganizationModule,
     PlayerModule, 
     TeamModule,
@@ -75,9 +82,7 @@ export class IAppModule {}
 @Module({
   imports: [
     ConfigModule.forRoot({
-      // envFilePath: '.dev.env', //.dev.env, .prod.env
-      // envFilePath: '.prod.env', //.dev.env, .prod.env
-      envFilePath: '.test.env',
+      envFilePath: ['test.env', '.test.env', '.env', '.dev.env', '.prod.env'],
       expandVariables: true,
       isGlobal: true,
     }),
@@ -93,7 +98,6 @@ export class IAppModule {}
         }),
         new winston.transports.File({
           filename: `winston/combine.log`,
-          // level: 'combine',
         }),
         new winston.transports.File({
           filename: `winston/debug.log`,
@@ -111,18 +115,22 @@ export class IAppModule {}
         }),
       ],
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      port: +process.env.DB_PORT,
-      host: process.env.DB_HOST,
-      database: process.env.DB_NAME,
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      logger: 'advanced-console',
-      logging: ['error'],
-      synchronize: process.env.NODE_ENV !== 'production',
-      autoLoadEntities: true,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get<string>('DB_HOST') || process.env.DB_HOST || 'localhost',
+        port: +(configService.get<number>('DB_PORT') || process.env.DB_PORT || 5432),
+        username: configService.get<string>('DB_USERNAME') || process.env.DB_USERNAME || 'postgres',
+        password: String(configService.get<string>('DB_PASSWORD') ?? process.env.DB_PASSWORD ?? ''),
+        database: configService.get<string>('DB_NAME') || process.env.DB_NAME || 'petitpotopro',
+        logger: 'advanced-console',
+        logging: ['error'],
+        synchronize: configService.get<string>('NODE_ENV') !== 'production',
+        autoLoadEntities: true,
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      }),
     }),
     ThrottlerModule.forRoot([{
       ttl: 60000,
@@ -139,14 +147,4 @@ export class IAppModule {}
     { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })
-
 export class AppModule {}
-
-// export class AppModule implements OnModuleInit {
-//   constructor(private readonly passwordService: PasswordService) {}
-
-//   onModuleInit() {
-//     // Démarrer la planification des tâches à l'initialisation du module
-//     this.passwordService.scheduleDailyPasswordGeneration();
-//   }
-// }

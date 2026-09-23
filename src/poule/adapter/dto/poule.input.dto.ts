@@ -1,5 +1,5 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
-import { IsArray, IsString, IsUUID } from "class-validator";
+import { IsArray, IsOptional, IsString, IsUUID } from "class-validator";
 import { Team } from "../../../team/domain";
 
 export class PouleAccountDto {
@@ -20,6 +20,17 @@ export class PouleAccountDto {
     })
     @IsArray()
     equipes: string[];
+
+    @ApiProperty({
+        type: String,
+        name: 'tournoiId',
+        description: 'ID du tournoi auquel rattacher la poule (optionnel)',
+        required: false,
+        example: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
+    })
+    @IsOptional()
+    @IsUUID()
+    tournoiId?: string;
 }
 
 export class UpdatePouleDTO extends PartialType(PouleAccountDto) {

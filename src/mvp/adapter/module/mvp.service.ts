@@ -12,7 +12,7 @@ import { IUserRepository } from '../../../user/domain';
 import { IMatchRepository } from '../../../match/domain';
 import { IPlayerRepository } from '../../../player/domain';
 import { MatchEntity } from '../../../match/framework/database/schema/match.entity';
-import { PlayerEntity } from '../../../player/framework/database/schema/player.entity';
+import { TeamPlayerEntity } from '../../../player/framework/database/schema/team-player.entity';
 import { MVPEntity } from '../../../mvp/framework/database/schema/mvp.entity';
 import { UserEntity } from '../../../user/framework/database/schema/user.entity';
 import { DataSource } from 'typeorm';
@@ -34,7 +34,8 @@ export class MVPService implements IMVPService {
       return await paginateQuery(this.mvpRepository.mvps, query, {
         relations: {
           user: true,
-          player: true,
+          match: { tournoi: true },
+          inscription: { player: true, team: true },
         },
       });
     } catch (error) {
@@ -43,10 +44,48 @@ export class MVPService implements IMVPService {
     }
   }
 
+  async fetchByMatch(matchId: string, query?: PaginationQuery): Promise<PaginatedResult<MVP>> {
+    try {
+      return await paginateQuery(this.mvpRepository.mvps, query, {
+        where: { match: { id: matchId } },
+        relations: {
+          user: true,
+          match: { tournoi: true },
+          inscription: { player: true, team: true },
+        },
+      });
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::MvpService.fetchByMatch');
+      throw error;
+    }
+  }
+
+  async fetchByTournoi(tournoiId: string, query?: PaginationQuery): Promise<PaginatedResult<MVP>> {
+    try {
+      return await paginateQuery(this.mvpRepository.mvps, query, {
+        where: { match: { tournoi: { id: tournoiId } } },
+        relations: {
+          user: true,
+          match: { tournoi: true },
+          inscription: { player: true, team: true },
+        },
+      });
+    } catch (error) {
+      this.logger.error(error.message, 'ERROR::MvpService.fetchByTournoi');
+      throw error;
+    }
+  }
 
   async fetchOne(id: string): Promise<MVP> {
     try {
-      const mvp = await this.mvpRepository.mvps.findOneByID(id);
+      const mvp = await this.mvpRepository.mvps.findOne({
+        where: { id },
+        relations: {
+          account: true,
+          match: { tournoi: true },
+          inscription: { player: true, team: true },
+        },
+      });
       if (mvp) {
         return mvp;
       }
@@ -64,9 +103,9 @@ export class MVPService implements IMVPService {
     await queryRunner.startTransaction();
 
     try {
-      const { userId, playerId } = data;
+      const { userId, matchId, teamPlayerId, playerId } = data;
 
-      console.log('Données reçues :', data);
+      this.logger.log(`Vote MVP reçu : ${JSON.stringify(data)}`);
 
       // 🔒 Lock pessimiste pour éviter double vote / double débit
       const user = await queryRunner.manager.findOne(UserEntity, {
@@ -74,13 +113,48 @@ export class MVPService implements IMVPService {
         lock: { mode: 'pessimistic_write' },
       });
 
-      const player = await queryRunner.manager.findOne(PlayerEntity, {
-        where: { id: playerId },
+      const match = await queryRunner.manager.findOne(MatchEntity, {
+        where: { id: matchId },
+        relations: { home: true, away: true, tournoi: true },
       });
 
+      let inscription: TeamPlayerEntity | null = null;
+      if (teamPlayerId) {
+        inscription = await queryRunner.manager.findOne(TeamPlayerEntity, {
+          where: { id: teamPlayerId },
+          relations: { team: true, player: true },
+        });
+      } else if (playerId && match) {
+        // Fallback si playerId fourni au lieu de teamPlayerId
+        inscription = await queryRunner.manager.findOne(TeamPlayerEntity, {
+          where: [
+            { player: { id: playerId }, team: { id: match.home.id } },
+            { player: { id: playerId }, team: { id: match.away.id } },
+          ],
+          relations: { team: true, player: true },
+        });
+      }
+
       // ❌ Vérification existence
-      if (!user || !player) {
-        throw new NotFoundException('Utilisateur ou joueur introuvable');
+      if (!user) {
+        throw new NotFoundException('Utilisateur introuvable');
+      }
+      if (!match) {
+        throw new NotFoundException('Match introuvable');
+      }
+      if (!inscription) {
+        throw new NotFoundException('Inscription du joueur (TeamPlayer) introuvable');
+      }
+
+      // ❌ Vérification que le joueur appartient à une équipe participant à ce match
+      const homeTeamId = match.home?.id;
+      const awayTeamId = match.away?.id;
+      const playerTeamId = inscription.team?.id;
+
+      if (playerTeamId !== homeTeamId && playerTeamId !== awayTeamId) {
+        throw new BadRequestException(
+          "Le joueur sélectionné n'appartient pas à une équipe participant à ce match",
+        );
       }
 
       // ❌ Vérification solde
@@ -94,9 +168,8 @@ export class MVPService implements IMVPService {
       user.solde -= 100;
       await queryRunner.manager.save(UserEntity, user);
 
-      // 🏆 Création MVP (factory sync uniquement)
-      const mvpData = MVPFactory.create(user, player);
-
+      // 🏆 Création MVP
+      const mvpData = MVPFactory.create(user as any, match, inscription);
       const mvp = await queryRunner.manager.save(MVPEntity, mvpData);
 
       // ✅ Commit
@@ -106,9 +179,9 @@ export class MVPService implements IMVPService {
       return await this.mvpRepository.mvps.findOne({
         where: { id: mvp.id },
         relations: {
-          user: true,
-          player: { inscriptions: { team: { tournoi: true } } },
-
+          account: true,
+          match: { tournoi: true },
+          inscription: { player: true, team: true },
         },
       });
 
@@ -125,9 +198,6 @@ export class MVPService implements IMVPService {
     }
   }
 
-
-
-  
   async remove(id: string): Promise<boolean> {
     try {
       const mvp = await this.mvpRepository.mvps.findOneByID(id);
@@ -136,7 +206,7 @@ export class MVPService implements IMVPService {
       }
       return false;
     } catch (error) {
-      this.logger.error(error.message, 'ERROR::OtpService.remove');
+      this.logger.error(error.message, 'ERROR::MvpService.remove');
       return false;
     }
   }

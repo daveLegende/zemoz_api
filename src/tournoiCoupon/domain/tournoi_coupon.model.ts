@@ -2,6 +2,7 @@ import { ITimestamp } from "../../_shared/domain/interface";
 import { User } from "../../user/domain";
 import { TournoiCouponState } from "./tournoi_coupon.enum";
 import { TournoiCouponBet } from "../../tournoiCouponBet/domain";
+import { Tournoi } from "../../tournoi/domain";
 
 export class TournoiCoupon extends ITimestamp {
     id: string;
@@ -13,4 +14,5 @@ export class TournoiCoupon extends ITimestamp {
     tournoiCouponBets: TournoiCouponBet[];
     isDeleted: boolean;
     isPaid: boolean;
+    tournoi?: Tournoi;
 }

@@ -1,6 +1,6 @@
 import { ITimestamp } from "../../_shared/domain/interface";
 import { Match } from "../../match/domain";
-import { User } from "../../user/domain";
+import { Account } from "../../account/domain/account.model";
 
 
 // export class ParisCategories extends ITimestamp {
@@ -30,7 +30,7 @@ export class Paris extends ITimestamp {
     amount: number;
     potentialGain: number;
     match: Match;
-    user: User;
+    account: Account;
     isWon: boolean;
     isPaid: boolean;
 }

@@ -51,7 +51,7 @@ export class CouponService {
     const coupon = await this.couponsRepository.coupons.findOne({
       where: { id },
       relations: {
-        user: true,
+        account: true,
         couponBets: { bet: { match: true } },
       },
     });
@@ -155,7 +155,7 @@ export class CouponService {
       await manager.save(lockedUser);
 
       // Création du coupon
-      const couponData = await CouponFactory.create({ ...data, totalOdds, gains }, lockedUser);
+      const couponData = await CouponFactory.create({ ...data, totalOdds, gains }, lockedUser as any);
       if (detectedTournoiId) {
         (couponData as any).tournoi = { id: detectedTournoiId };
       }
@@ -174,7 +174,7 @@ export class CouponService {
   async edit(data: UpdateCouponDTO): Promise<Coupon> {
     const coupon = await this.couponsRepository.coupons.findOne({
       where: { id: data.id },
-      relations: { user: true, couponBets: true },
+      relations: { account: true, couponBets: true },
     });
     if (!coupon) throw new NotFoundException();
 
@@ -195,7 +195,7 @@ export class CouponService {
     return await this.couponsRepository.coupons.find({
       where,
       relations: {
-        user: true,
+        account: true,
         couponBets: {
           bet: { match: true },
         },
@@ -250,7 +250,7 @@ export class CouponService {
       where,
       relations: {
         couponBets: { bet: { match: true } },
-        user: true,
+        account: true,
       },
     });
 
@@ -284,7 +284,7 @@ export class CouponService {
             where: { id: coupon.id },
             relations: {
               couponBets: { bet: { match: true } },
-              user: true,
+              account: true,
             },
           });
 
@@ -379,7 +379,7 @@ export class CouponService {
         }
 
         // Récupérer l'ID utilisateur
-        const userId = lockedCoupon.user?.id ?? coupon.user?.id;
+        const userId = lockedCoupon.account?.id ?? (coupon as any).account?.id ?? (coupon as any).user?.id;
         if (!userId) throw new Error('userId introuvable sur le coupon');
 
         // Verrouiller l'utilisateur

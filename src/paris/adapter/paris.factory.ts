@@ -1,14 +1,14 @@
 import { Match } from "../../match/domain";
 import { ICreateParisDTO, IUpdateParisDTO } from "../app/dto";
 import { Paris } from "../domain";
-import { User } from "../../user/domain";
+import { Account } from "../../account/domain/account.model";
 
 export abstract class ParisFactory {
-    static async create(data: ICreateParisDTO, match: Match, user: User): Promise<Paris> {
+    static async create(data: ICreateParisDTO, match: Match, account: Account): Promise<Paris> {
         const paris = new Paris();
 
         paris.match = match;
-        paris.user = user;
+        paris.account = account;
         paris.amount = data.amount;
         paris.potentialGain = data.potentialGain;
         paris.type = data.type;
@@ -20,8 +20,7 @@ export abstract class ParisFactory {
         return paris;
     }
 
-    static update(paris: Paris, data: IUpdateParisDTO, match: Match, user: User): Paris {
-
+    static update(paris: Paris, data: IUpdateParisDTO, match: Match, account: Account): Paris {
       paris.type = data.type ?? paris.type;
       paris.odd = data.odd ?? paris.odd;
       paris.isPaid = data.isPaid ?? paris.isPaid;
@@ -29,10 +28,10 @@ export abstract class ParisFactory {
       paris.amount = data.amount;
       paris.potentialGain = data.potentialGain ?? paris.potentialGain;
       paris.match = match ?? paris.match;
-      paris.user = user ?? paris.user;
+      paris.account = account ?? paris.account;
       paris.state = data.state ?? paris.state;
 
-      return paris
+      return paris;
     }
     
     static getParis(paris: Paris): Paris {
@@ -41,7 +40,7 @@ export abstract class ParisFactory {
           id: paris.id,
           odd: paris.odd,
           match: paris.match,
-          user: paris.user,
+          account: paris.account,
           isPaid: paris.isPaid,
           isWon: paris.isWon,
           potentialGain: paris.potentialGain,

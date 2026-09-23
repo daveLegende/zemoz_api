@@ -1,11 +1,11 @@
 import { ITimestamp } from "../../_shared/domain/interface";
-import { User } from "../../user/domain";
+import { Account } from "../../account/domain/account.model";
 import { CouponState } from "./coupon.enum";
 import { CouponBet } from "../../couponBet/domain";
 
 export class Coupon extends ITimestamp {
     id: string;
-    user: User;
+    account: Account;
     totalOdds: number;
     amount: number;
     gains: number;

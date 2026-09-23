@@ -27,18 +27,17 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Express } from 'express';
-import { IDParamDTO } from '../../../_shared/adapter/dto';
+import { IDParamDTO, TournoiScopedQueryDTO } from '../../../_shared/adapter/dto';
 import { BaseConfig } from '../../../_shared/config/base.config';
 import { IMatchController, IMatchService } from '../../../match/app/module';
 import { Match } from '../../../match/domain';
 import { MatchFactory } from '../match.factory';
 import { MatchAccoutDTO, MatchDocOutputDTO, UpdateMatchDTO, UpdateMatchPenaltyScoreDto, UpdateMatchPenaltyStateDto } from '../dto';
 import { DocArbitreOutputDto } from '../../../arbitre/adapter/dto';
-import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
+import { AccountGuard } from '../../../account/adapter/guard/account.guard';
 import * as multer from 'multer';
 import { MatchEventFactory } from '../../../matchEvents/adapter/match.events.factory';
 import { MatchEvent } from '../../../matchEvents/domain';
-import { PaginationQueryDTO } from '../../../_shared/adapter/dto';
 import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
 
   
@@ -55,8 +54,8 @@ import { PaginatedResult, mapPaginated } from '../../../_shared/domain/paginatio
       description: 'Fetch all matchs in the DB',
     })
     // @ApiResponse({ type: [MatchAccountDTO] })
-    async all(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<Match>> {
-      const matchs = await this.matchService.fetchAll(query);
+    async all(@Query() query?: TournoiScopedQueryDTO): Promise<PaginatedResult<Match>> {
+      const matchs = await this.matchService.fetchAll(query, query?.tournoiId);
       return mapPaginated(matchs, (match) => MatchFactory.getMatch(match));
     }
 
@@ -73,8 +72,11 @@ import { PaginatedResult, mapPaginated } from '../../../_shared/domain/paginatio
       description: 'ID of the needed account',
     })
     // @ApiResponse({ type: MatchDocOutputDTO })
-    async fetchMatchEvents(@Param() { id }: IDParamDTO): Promise<MatchEvent[]> {
-      const events = await this.matchService.fetchMatchEvents(id);
+    async fetchMatchEvents(
+      @Param() { id }: IDParamDTO,
+      @Query('tournoiId') tournoiId?: string,
+    ): Promise<MatchEvent[]> {
+      const events = await this.matchService.fetchMatchEvents(id, tournoiId);
       
       return events?.map((event) => MatchEventFactory.getMatch(event));
     }
@@ -100,8 +102,11 @@ import { PaginatedResult, mapPaginated } from '../../../_shared/domain/paginatio
       description: 'ID of the needed account',
     })
     @ApiResponse({ type: MatchDocOutputDTO })
-    async show(@Param() { id }: IDParamDTO): Promise<Match> {
-      return MatchFactory.getMatch(await this.matchService.fetchOne(id));
+    async show(
+      @Param() { id }: IDParamDTO,
+      @Query('tournoiId') tournoiId?: string,
+    ): Promise<Match> {
+      return MatchFactory.getMatch(await this.matchService.fetchOne(id, tournoiId));
     }
   
     /**
@@ -110,7 +115,7 @@ import { PaginatedResult, mapPaginated } from '../../../_shared/domain/paginatio
      */
     
     @ApiBearerAuth()
-    @UseGuards(AdminGuard)
+    @UseGuards(AccountGuard)
     @Post()
     @ApiConsumes('multipart/form-data', 'application/json')
     @ApiOperation({
@@ -124,7 +129,7 @@ import { PaginatedResult, mapPaginated } from '../../../_shared/domain/paginatio
       // data.logo = file?.filename;
       console.log("creation de match");
       
-      const match = await this.matchService.add(data);
+      const match = await this.matchService.add(data, data.tournoiId);
       if (match) return MatchFactory.getMatch(match);
     }
   
@@ -133,7 +138,7 @@ import { PaginatedResult, mapPaginated } from '../../../_shared/domain/paginatio
      */
     
     @ApiBearerAuth()
-    @UseGuards(AdminGuard)
+    @UseGuards(AccountGuard)
     @Patch()
     // @HasPermission(AccessEnum.CAN_UPDATE_USER)
     @UseInterceptors(
@@ -152,7 +157,7 @@ import { PaginatedResult, mapPaginated } from '../../../_shared/domain/paginatio
     async update(
       @Body() data: UpdateMatchDTO
     ): Promise<Match> {
-      return MatchFactory.getMatch(await this.matchService.edit(data));
+      return MatchFactory.getMatch(await this.matchService.edit(data, data.tournoiId));
     }
     
 
@@ -161,15 +166,18 @@ import { PaginatedResult, mapPaginated } from '../../../_shared/domain/paginatio
     @ApiOperation({ summary: 'Set match account state' })
     @ApiParam({ type: String, name: 'id', description: 'ID of the match' })
     @ApiResponse({ type: Boolean })
-    async setState(@Param() { id }: IDParamDTO): Promise<boolean> {
-      return await this.matchService.setState(id);
+    async setState(
+      @Param() { id }: IDParamDTO,
+      @Query('tournoiId') tournoiId?: string,
+    ): Promise<boolean> {
+      return await this.matchService.setState(id, tournoiId);
     }
   
     /**
      * @method DELETE
      */
     @ApiBearerAuth()
-    @UseGuards(AdminGuard)
+    @UseGuards(AccountGuard)
     @Delete(':id')
     // @HasPermission(AccessEnum.CAN_DELETE_USER)
     @ApiOperation({ summary: 'Remove Account' })
@@ -179,8 +187,11 @@ import { PaginatedResult, mapPaginated } from '../../../_shared/domain/paginatio
       description: 'ID of the match to delete',
     })
     @ApiResponse({ type: Boolean })
-    remove(@Param() { id }: IDParamDTO): Promise<boolean> {
-      return this.matchService.remove(id);
+    remove(
+      @Param() { id }: IDParamDTO,
+      @Query('tournoiId') tournoiId?: string,
+    ): Promise<boolean> {
+      return this.matchService.remove(id, tournoiId);
     }
 
   @Patch(':id/penalty-scores')

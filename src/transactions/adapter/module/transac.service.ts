@@ -41,7 +41,7 @@ import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_share
       try {
         const Transaction = await this.transactionRepository.transactions.findOne({
           where: {id},
-          relations: { admin: true }
+          relations: { account: true }
         });
         if (Transaction) {
           return Transaction;
@@ -82,7 +82,7 @@ import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_share
           userE.solde += amount - pourcentage;
           data.frais = pourcentage;
           const transac = await this.transactionRepository.transactions.create(
-            await TransactionFactory.create(data, adminE, userE),
+            await TransactionFactory.create(data, userE as any),
           );
           await this.userRepository.users.update(userE);
           return transac;
@@ -91,7 +91,7 @@ import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_share
           userE.solde -= amount;
           data.frais = 0;
           const transac = await this.transactionRepository.transactions.create(
-            await TransactionFactory.create(data, adminE, userE),
+            await TransactionFactory.create(data, userE as any),
           );
           await this.userRepository.users.update(userE);
           return transac;

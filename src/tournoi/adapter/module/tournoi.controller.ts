@@ -34,7 +34,7 @@ import { TournoiFactory } from '../tournoi.factory';
 import { ITournoiController, ITournoiService } from '../../app/module';
 import { TournoiAccoutDTO } from '../dto';
 import { DocTournoiOutputDTO } from '../dto/doc.tournoi.dto';
-import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
+import { AccountGuard } from '../../../account/adapter/guard/account.guard';
   
 @ApiTags('Tournois management')
 @Controller('tournois')
@@ -83,7 +83,7 @@ export class TournoiController implements ITournoiController {
    * @method POST
    */
   @ApiBearerAuth()
-  @UseGuards(AdminGuard)
+  @UseGuards(AccountGuard)
   @Post()
   // @HasPermission(AccessEnum.CAN_CREATE_USER)
   @UseInterceptors(
@@ -112,7 +112,7 @@ export class TournoiController implements ITournoiController {
    * @method PATCH
    */
   @ApiBearerAuth()
-  @UseGuards(AdminGuard)
+  @UseGuards(AccountGuard)
   @Patch()
   // @HasPermission(AccessEnum.CAN_UPDATE_USER)
   @ApiOperation({ summary: 'Update user account' })
@@ -137,7 +137,7 @@ export class TournoiController implements ITournoiController {
    * @method DELETE
    */
   @ApiBearerAuth()
-  @UseGuards(AdminGuard)
+  @UseGuards(AccountGuard)
   @Delete(':id')
   // @HasPermission(AccessEnum.CAN_DELETE_USER)
   @ApiOperation({ summary: 'Remove Account' })

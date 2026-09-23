@@ -5,42 +5,46 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { DataSource } from 'typeorm';
 import { OrganizationMemberEntity, OrganizationRole } from '../../framework/database/schema/organization_member.entity';
-import { AdminEntity } from '../../../admin/framework/database/schema/admin.entity';
+import { PlatformRole } from '../../../account/domain/account.enum';
+import { REQUIRE_ROLE_KEY, RequireRoleOptions } from '../../../account/adapter/guard/require-role.decorator';
 
 @Injectable()
 export class OrganizationGuard implements CanActivate {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly reflector: Reflector,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const admin: AdminEntity = request['admin'];
+    const account = request['account'] || request['admin'] || request['user'];
 
-    if (!admin) {
-      throw new UnauthorizedException('Admin non authentifié');
+    if (!account) {
+      throw new UnauthorizedException('Compte non authentifié');
     }
 
     // SUPER_ADMIN a accès à tout
-    if (admin.isSuperAdmin) {
+    if (account.platformRole === PlatformRole.SUPER_ADMIN) {
       return true;
     }
 
-    // Récupérer l'organizationId soit dans les params (/organizations/:organizationId),
-    // soit dans les headers (x-organization-id) ou query
     const organizationId =
       request.params?.organizationId ||
       request.headers['x-organization-id'] ||
-      request.query?.organizationId;
+      request.query?.organizationId ||
+      request.body?.organizationId;
 
     if (!organizationId) {
-      throw new ForbiddenException('Identifiant d\'organisation requis');
+      throw new ForbiddenException("Identifiant d'organisation requis");
     }
 
     const memberRepo = this.dataSource.getRepository(OrganizationMemberEntity);
     const membership = await memberRepo.findOne({
       where: {
-        admin: { id: admin.id },
+        account: { id: account.id },
         organization: { id: organizationId },
         isActive: true,
       },
@@ -50,7 +54,21 @@ export class OrganizationGuard implements CanActivate {
       throw new ForbiddenException('Accès refusé à cette organisation');
     }
 
-    // Attacher l'appartenance à la requête
+    const roleOptions = this.reflector.getAllAndOverride<RequireRoleOptions>(REQUIRE_ROLE_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (roleOptions?.organizationRole) {
+      const requiredRoles = Array.isArray(roleOptions.organizationRole)
+        ? roleOptions.organizationRole
+        : [roleOptions.organizationRole];
+
+      if (membership.role !== OrganizationRole.ADMIN && !requiredRoles.includes(membership.role)) {
+        throw new ForbiddenException('Rôle insuffisant dans cette organisation');
+      }
+    }
+
     request['organizationMembership'] = membership;
     return true;
   }

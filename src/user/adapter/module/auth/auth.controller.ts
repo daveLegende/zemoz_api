@@ -30,7 +30,7 @@ export class AuthController {
   async sendOTP(
     @Body() data: SendOtpDTo
   ) {
-    return await this.authService.sendOTP(data);
+    return await this.authService.sendOTP(data as any);
   }
 
   // @Post()

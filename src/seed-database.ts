@@ -135,9 +135,9 @@ async function seed() {
 
   // Attribution des Membres aux Organisations
   await orgMemberRepo.save([
-    orgMemberRepo.create({ organization: savedOrgs[0], admin: superAdmin, role: OrganizationRole.OWNER, isActive: true }),
-    orgMemberRepo.create({ organization: savedOrgs[1], admin: orgAdmin1, role: OrganizationRole.ADMIN, isActive: true }),
-    orgMemberRepo.create({ organization: savedOrgs[2], admin: orgAdmin2, role: OrganizationRole.MANAGER, isActive: true }),
+    orgMemberRepo.create({ organization: savedOrgs[0], account: superAdmin as any, role: OrganizationRole.OWNER, isActive: true }),
+    orgMemberRepo.create({ organization: savedOrgs[1], account: orgAdmin1 as any, role: OrganizationRole.ADMIN, isActive: true }),
+    orgMemberRepo.create({ organization: savedOrgs[2], account: orgAdmin2 as any, role: OrganizationRole.MANAGER, isActive: true }),
   ]);
 
   // 4. Création des Tournois (3 Tournois par Organisation, chacun avec des Éditions)
@@ -355,7 +355,7 @@ async function seed() {
 
   // Coupons
   const coupon1 = await couponRepo.save(couponRepo.create({
-    user: savedUsers[0],
+    account: savedUsers[0] as any,
     amount: 2000,
     totalOdds: 3.23,
     gains: 6460,
@@ -365,8 +365,8 @@ async function seed() {
   }));
 
   await couponBetRepo.save([
-    couponBetRepo.create({ coupon: coupon1, bet: bet1, selectedOptions: { V1: 1.85 }, status: BetStatus.PENDING }),
-    couponBetRepo.create({ coupon: coupon1, bet: bet2, selectedOptions: { OUI: 1.75 }, status: BetStatus.PENDING }),
+    couponBetRepo.create({ coupon: coupon1 as any, bet: bet1, selectedOptions: { V1: 1.85 }, status: BetStatus.PENDING }),
+    couponBetRepo.create({ coupon: coupon1 as any, bet: bet2, selectedOptions: { OUI: 1.75 }, status: BetStatus.PENDING }),
   ]);
 
   // Infos / Actualités

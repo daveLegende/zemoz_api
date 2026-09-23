@@ -22,12 +22,13 @@ import {
   ApiConsumes,
   ApiQuery,
 } from '@nestjs/swagger';
-import { IDParamDTO } from '../../../../_shared/adapter/dto/param.dto';
+import { IDParamDTO, PaginationQueryDTO } from '../../../../_shared/adapter/dto';
 import { AccessEnum } from '../../../../user/domain';
 import { IUserController, IUserService } from '../../../../user/app/module/user';
 import { User } from '../../../../user/domain/user.model';
 import { HasPermission } from '../../../../_shared/adapter/decorator';
 import { GetAccount } from '../../../../user/adapter/decorator';
+import { PaginatedResult, mapPaginated } from '../../../../_shared/domain/pagination';
 import {
   DocUserOutputDTO,
   DocSignedUserDTO,
@@ -80,9 +81,9 @@ export class UserController implements IUserController {
     description: 'Fetch all users in the DB',
   })
   @ApiResponse({ type: [DocUserOutputDTO] })
-  async all(): Promise<User[]> {
-    const users = await this.userService.fetchAll();
-    return users?.map((user) => UserFactory.getUser(user));
+  async all(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<User>> {
+    const users = await this.userService.fetchAll(query);
+    return mapPaginated(users, (user) => UserFactory.getUser(user));
   }
 
   @Get('token.signin')

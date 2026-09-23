@@ -38,7 +38,7 @@ import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_share
         const pronos = await this.pronosRepository.pronos.findOne(
           {
             where: { id: id },
-            relations: { match: true, user: true }
+            relations: { match: true, account: true }
           }
         );
         if (pronos) {
@@ -67,12 +67,12 @@ import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_share
         }
 
         const existed = await this.pronosRepository.pronos.findOne({
-          where: { user: existUser, match: existMatch }
+          where: { account: { id: existUser.id }, match: { id: existMatch.id } }
         });
         if (existed) throw new ConflictException('Prononstic already exist');
         
         const prononstic = await this.pronosRepository.pronos.create(
-          await PrononsticFactory.create(data, existUser, existMatch),
+          await PrononsticFactory.create(data, existUser as any, existMatch),
         );
 
         return prononstic;
@@ -88,7 +88,7 @@ import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_share
         const prono = id && (await this.pronosRepository.pronos.findOne(
           {
             where: { id: id },
-            relations: { user: true, match: true }
+            relations: { account: true, match: true }
           }
         ));
         if (prono) {
@@ -113,7 +113,7 @@ import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_share
         const pronos = await this.pronosRepository.pronos.findOne(
           {
             where: { id: id },
-            relations: { user: true, match: true }
+            relations: { account: true, match: true }
           }
         );
         if (pronos) {

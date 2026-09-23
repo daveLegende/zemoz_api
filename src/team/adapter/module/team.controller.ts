@@ -23,7 +23,7 @@ import {
   import { FileInterceptor } from '@nestjs/platform-express';
   import { memoryStorage } from 'multer';
   import { Express } from 'express';
-  import { IDParamDTO } from '../../../_shared/adapter/dto';
+  import { IDParamDTO, TournoiScopedQueryDTO } from '../../../_shared/adapter/dto';
   import { BaseConfig } from '../../../_shared/config/base.config';
 import { UpdateTeamDTO } from '../dto';
 import { Team } from '../../domain';
@@ -33,6 +33,7 @@ import { ITeamController, ITeamService } from '../../app/module';
 import { TeamAccoutDTO } from '../dto';
 import { DocTeamOutputDTO } from '../dto/doc.team.dto';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
+import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
   
 @ApiTags('teams management')
 @Controller('teams')
@@ -47,9 +48,9 @@ export class TeamController implements ITeamController {
     description: 'Fetch all Teams in the DB',
   })
   // @ApiResponse({ type: [TeamAccountDTO] })
-  async all(): Promise<Team[]> {
-    const teams = await this.teamService.fetchAll();
-    return teams?.map((team) => TeamFactory.getTeam(team));
+  async all(@Query() query?: TournoiScopedQueryDTO): Promise<PaginatedResult<Team>> {
+    const teams = await this.teamService.fetchAll(query, query?.tournoiId);
+    return mapPaginated(teams, (team) => TeamFactory.getTeam(team));
   }
 
 
@@ -72,8 +73,11 @@ export class TeamController implements ITeamController {
     description: 'ID of the needed account',
   })
   @ApiResponse({ type: DocTeamOutputDTO })
-  async show(@Param() { id }: IDParamDTO): Promise<Team> {
-    return TeamFactory.getTeam(await this.teamService.fetchOne(id));
+  async show(
+    @Param() { id }: IDParamDTO,
+    @Query('tournoiId') tournoiId?: string,
+  ): Promise<Team> {
+    return TeamFactory.getTeam(await this.teamService.fetchOne(id, tournoiId));
   }
 
   /**
@@ -100,7 +104,7 @@ export class TeamController implements ITeamController {
     @Body() data: TeamAccoutDTO,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<Team> {
-    const team = await this.teamService.add(data, file);
+    const team = await this.teamService.add(data, file, data.tournoiId);
     if (team) return TeamFactory.getTeam(team);
   }
 
@@ -125,7 +129,7 @@ export class TeamController implements ITeamController {
     @Body() data: UpdateTeamDTO,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<Team> {
-    return TeamFactory.getTeam(await this.teamService.edit(data, file));
+    return TeamFactory.getTeam(await this.teamService.edit(data, file, data.tournoiId));
   }
 
   @Patch('state/:id')
@@ -133,8 +137,11 @@ export class TeamController implements ITeamController {
   @ApiOperation({ summary: 'Set user account state' })
   @ApiParam({ type: String, name: 'id', description: 'ID of the user' })
   @ApiResponse({ type: Boolean })
-  async setState(@Param() { id }: IDParamDTO): Promise<boolean> {
-    return await this.teamService.setState(id);
+  async setState(
+    @Param() { id }: IDParamDTO,
+    @Query('tournoiId') tournoiId?: string,
+  ): Promise<boolean> {
+    return await this.teamService.setState(id, tournoiId);
   }
 
   /**
@@ -151,7 +158,10 @@ export class TeamController implements ITeamController {
     description: 'ID of the user to delete',
   })
   @ApiResponse({ type: Boolean })
-  remove(@Param() { id }: IDParamDTO): Promise<boolean> {
-    return this.teamService.remove(id);
+  remove(
+    @Param() { id }: IDParamDTO,
+    @Query('tournoiId') tournoiId?: string,
+  ): Promise<boolean> {
+    return this.teamService.remove(id, tournoiId);
   }
 }

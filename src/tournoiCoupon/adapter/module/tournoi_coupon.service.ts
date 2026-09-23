@@ -90,14 +90,35 @@ export class TournoiCouponService implements ITournoiCouponService {
       throw new BadRequestException('Solde insuffisant');
 
     let totalOdds = 1;
+    let detectedTournoiId: string | null = null;
+    let detectedTournoiEntity: any = null;
 
     // Vérification des bets et calcul des cotes
     const betsEntities: TournoiCouponBet[] = [];
     for (const cp of tournoiCouponBets) {
       // @ts-ignore
       const betId = typeof cp.bet === 'string' ? cp.bet : cp.bet.id;
-      const betExisted = await this.betRepository.bets.findOneByID(betId);
+      const betExisted = await this.betRepository.bets.findOne({
+        where: { id: betId },
+        relations: { competition: true, match: { tournoi: true } },
+      });
       if (!betExisted) throw new NotFoundException('Bet non trouvé');
+
+      // Déduire/vérifier le tournoi à partir du bet
+      const betTournoi = betExisted.competition || betExisted.match?.tournoi;
+      if (!detectedTournoiId && betTournoi?.id) {
+        detectedTournoiId = betTournoi.id;
+        detectedTournoiEntity = betTournoi;
+      }
+
+      if (betTournoi && detectedTournoiId && betTournoi.id !== detectedTournoiId) {
+        throw new BadRequestException("Tous les paris d'un coupon doivent appartenir au même tournoi");
+      }
+
+      // Vérification que le betting est activé pour ce tournoi
+      if (betTournoi && betTournoi.bettingEnabled === false) {
+        throw new BadRequestException(`Les paris sont désactivés pour le tournoi "${betTournoi.name || betTournoi.id}"`);
+      }
 
       // Vérification des options sélectionnées
       for (const key of Object.keys(cp.selectedOptions)) {
@@ -125,6 +146,11 @@ export class TournoiCouponService implements ITournoiCouponService {
     const tournoiCouponEntity = await this.tournoiCouponsRepository.tournoiCoupons.create(
       await TournoiCouponFactory.create({ ...data, totalOdds, gains } as any, userExisted),
     );
+
+    if (detectedTournoiEntity) {
+      tournoiCouponEntity.tournoi = detectedTournoiEntity;
+      await this.tournoiCouponsRepository.tournoiCoupons.update(tournoiCouponEntity);
+    }
 
     // Création des CouponBets
     for (const cp of betsEntities) {
@@ -317,77 +343,11 @@ export class TournoiCouponService implements ITournoiCouponService {
     const pendingCoupons = await this.tournoiCouponsRepository.tournoiCoupons.find({
       where: { etat: TournoiCouponState.PENDING },
       relations: {
-        tournoiCouponBets: { bet: true },
+        tournoi: true,
+        tournoiCouponBets: { bet: { match: { tournoi: true }, competition: true } },
         user: true,
       },
     });
-
-    // WINNER
-    let finalMatch;
-    try {
-      finalMatch = await this.matchRepository.matchs.findOne({
-        where: { type: MatchType.FINALE },
-        relations: { home: true, away: true },
-      });
-    } catch (err) {
-      this.logger.error(`Erreur lors de la recherche de la finale: ${err.message}`);
-      throw err;
-    }
-
-    if (!finalMatch) {
-      this.logger.warn('Finale non trouvée, arrêt de checkCoupons');
-      return {
-        success: false,
-        message: 'Finale non trouvée',
-        processedCount: 0,
-        winnersCount: 0,
-        losersCount: 0,
-        paidCount: 0,
-      };
-    }
-
-    let winnerTeam: string;
-    try {
-      const homeScore = finalMatch.scores?.home ?? 0;
-      const awayScore = finalMatch.scores?.away ?? 0;
-      const homePenalty = finalMatch.homePenalty ?? 0;
-      const awayPenalty = finalMatch.awayPenalty ?? 0;
-
-      const isPenalties = (finalMatch.homePenalty !== null && finalMatch.awayPenalty !== null && 
-                          (homePenalty > 0 || awayPenalty > 0 || homePenalty !== awayPenalty));
-
-      if (isPenalties) {
-        winnerTeam = homePenalty > awayPenalty ? finalMatch.home.id : finalMatch.away.id;
-      } else {
-        winnerTeam = homeScore > awayScore ? finalMatch.home.id : finalMatch.away.id;
-      }
-    } catch (err) {
-      this.logger.error(`Erreur lors du calcul du winnerTeam: ${err.message}`);
-      throw err;
-    }
-
-    // Meilleur buteur
-    const topScorerArr = await this.teamPlayerRepository.inscriptions.find({
-      order: { buts: 'DESC' },
-      take: 1,
-      relations: { player: true },
-    }).catch(err => {
-      this.logger.error(`Erreur lors de la recherche du topScorer: ${err.message}`);
-      return [];
-    });
-    const topScorer = topScorerArr[0]?.player || null;
-
-    // Meilleur passeur
-    const topAssistArr = await this.teamPlayerRepository.inscriptions.find({
-      order: { passes: 'DESC' },
-      take: 1,
-      relations: { player: true },
-    }).catch(err => {
-      this.logger.error(`Erreur lors de la recherche du topAssist: ${err.message}`);
-      return [];
-    });
-    const topAssist = topAssistArr[0]?.player || null;
-
 
     let processedCount = 0;
     let winnersCount = 0;
@@ -397,7 +357,65 @@ export class TournoiCouponService implements ITournoiCouponService {
     for (const coupon of pendingCoupons) {
       try {
         let isWinner = false;
-        
+
+        const couponTournoiId = coupon.tournoi?.id ||
+          coupon.tournoiCouponBets?.[0]?.bet?.match?.tournoi?.id ||
+          coupon.tournoiCouponBets?.[0]?.bet?.competition?.id;
+
+        // WINNER pour ce tournoi
+        let winnerTeam: string | null = null;
+        try {
+          const matchWhere: any = { type: MatchType.FINALE };
+          if (couponTournoiId) matchWhere.tournoi = { id: couponTournoiId };
+          const finalMatch = await this.matchRepository.matchs.findOne({
+            where: matchWhere,
+            relations: { home: true, away: true },
+          });
+
+          if (finalMatch) {
+            const homeScore = finalMatch.scores?.home ?? 0;
+            const awayScore = finalMatch.scores?.away ?? 0;
+            const homePenalty = finalMatch.homePenalty ?? 0;
+            const awayPenalty = finalMatch.awayPenalty ?? 0;
+
+            const isPenalties = (finalMatch.homePenalty !== null && finalMatch.awayPenalty !== null &&
+                                (homePenalty > 0 || awayPenalty > 0 || homePenalty !== awayPenalty));
+
+            if (isPenalties) {
+              winnerTeam = homePenalty > awayPenalty ? finalMatch.home.id : finalMatch.away.id;
+            } else {
+              winnerTeam = homeScore > awayScore ? finalMatch.home.id : finalMatch.away.id;
+            }
+          }
+        } catch (err) {
+          this.logger.error(`Erreur lors du calcul du winnerTeam: ${err.message}`);
+        }
+
+        // Meilleur buteur pour ce tournoi
+        const inscriptionWhere: any = couponTournoiId ? { team: { tournoi: { id: couponTournoiId } } } : {};
+        const topScorerArr = await this.teamPlayerRepository.inscriptions.find({
+          where: inscriptionWhere,
+          order: { buts: 'DESC' },
+          take: 1,
+          relations: { player: true },
+        }).catch(err => {
+          this.logger.error(`Erreur lors de la recherche du topScorer: ${err.message}`);
+          return [];
+        });
+        const topScorer = topScorerArr[0]?.player || null;
+
+        // Meilleur passeur pour ce tournoi
+        const topAssistArr = await this.teamPlayerRepository.inscriptions.find({
+          where: inscriptionWhere,
+          order: { passes: 'DESC' },
+          take: 1,
+          relations: { player: true },
+        }).catch(err => {
+          this.logger.error(`Erreur lors de la recherche du topAssist: ${err.message}`);
+          return [];
+        });
+        const topAssist = topAssistArr[0]?.player || null;
+
         await this.dataSource.transaction(
           async (manager) => {
             // ✅ ÉTAPE 1 : Verrouiller le coupon SANS relation (évite l'erreur TypeORM/Postgres avec FOR UPDATE et les Joins)
@@ -426,7 +444,7 @@ export class TournoiCouponService implements ITournoiCouponService {
 
             for (const couponBet of couponWithBets.tournoiCouponBets) {
               const bet = couponBet.bet;
-              
+
               // Sécurité sur les options sélectionnées
               if (!couponBet.selectedOptions || Object.keys(couponBet.selectedOptions).length === 0) {
                 hasPending = true;

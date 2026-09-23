@@ -1,7 +1,7 @@
 import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ATimestamp } from '../../../../_shared/framework/timestamp.abstract';
 import { TicketDuration, TicketPosition, TicketState, TicketType } from '../../../../ticket/domain/ticket.enum';
-import { UserEntity } from '../../../../user/framework/database/schema/user.entity';
+import { AccountEntity } from '../../../../account/framework/database/schema/account.entity';
 import { MatchEntity } from '../../../../match/framework/database/schema/match.entity';
 import { Ticket } from '../../../../ticket/domain';
 import { TournoiEntity } from '../../../../tournoi/framework/database/schema/tournoi.entity';
@@ -21,8 +21,9 @@ import { TournoiEntity } from '../../../../tournoi/framework/database/schema/tou
 //     @Column({ type: 'enum', enum: TicketState, default: TicketState.VALIDE })
 //     etat: TicketState;
 
-//     @ManyToOne(() => UserEntity, (user) => user.tickets, { nullable: false })
-//     user: UserEntity;
+//     @ManyToOne(() => AccountEntity, (account) => account.tickets, { nullable: false })
+//     @JoinColumn({ name: 'account_id' })
+//     account: AccountEntity;
 
 //     @Column({ type: 'decimal' })
 //     amount: number;
@@ -65,8 +66,9 @@ export class TicketEntity extends ATimestamp implements Ticket {
   @Column({ type: 'enum', enum: TicketPosition, default: TicketPosition.SORTIE })
   position: TicketPosition;
 
-  @ManyToOne(() => UserEntity, (user) => user.tickets, { nullable: false })
-  user: UserEntity;
+  @ManyToOne(() => AccountEntity, (account) => account.tickets, { nullable: false })
+  @JoinColumn({ name: 'account_id' })
+  account: AccountEntity;
 
   @ManyToMany(() => MatchEntity)
   @JoinTable()

@@ -10,15 +10,22 @@ export class DocMvpOutputDto {
     id: string;
 
     @ApiProperty({
-    type: String,
-    description: "ID du joueur pour lequel on vote",
+        type: String,
+        description: "ID du match pour lequel on vote",
     })
     @IsString()
-    playerId: string;
+    matchId: string;
 
     @ApiProperty({
-    type: String,
-    description: "ID de l'utilisateur qui vote",
+        type: String,
+        description: "ID de l'inscription du joueur (TeamPlayer) pour lequel on vote",
+    })
+    @IsString()
+    teamPlayerId: string;
+
+    @ApiProperty({
+        type: String,
+        description: "ID de l'utilisateur qui vote",
     })
     @IsString()
     userId: string;

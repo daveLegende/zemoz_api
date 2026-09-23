@@ -4,12 +4,12 @@ import { OrganizationEntity } from '../../framework/database/schema/organization
 import { OrganizationMemberEntity } from '../../framework/database/schema/organization_member.entity';
 import { OrganizationController } from './organization.controller';
 import { OrganizationGuard } from '../guard/organization.guard';
-import { AdminModule } from '../../../admin/adapter/module/admin';
+import { AccountRepositoryModule } from '../../../account/framework/database/account.repository.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([OrganizationEntity, OrganizationMemberEntity]),
-    AdminModule,
+    AccountRepositoryModule,
   ],
   controllers: [OrganizationController],
   providers: [OrganizationGuard],

@@ -20,9 +20,9 @@ export class AdminEntity extends Admin {
     @Column({ default: false })
     isSuperAdmin?: boolean;
 
-    @OneToMany(() => TransactionEntity, (transac) => transac.admin, { nullable: true, onDelete: 'CASCADE' })
+    @OneToMany(() => TransactionEntity, (transac) => transac.account, { nullable: true, onDelete: 'CASCADE' })
     transactions?: TransactionEntity[];
 
-    @OneToMany(() => OrganizationMemberEntity, (member) => member.admin)
+    @OneToMany(() => OrganizationMemberEntity, (member) => member.account)
     memberships?: OrganizationMemberEntity[];
 }

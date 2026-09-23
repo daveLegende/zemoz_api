@@ -37,7 +37,7 @@ export class TicketService implements ITicketService {
   async fetchAll(query?: PaginationQuery): Promise<PaginatedResult<Ticket>> {
     try {
       return await paginateQuery(this.ticketRepository.tickets, query, {
-        relations: { user: true }
+        relations: { account: true }
       });
     } catch (error) {
       this.logger.error(error.message, 'ERROR::TicketService.fetchAll');
@@ -50,7 +50,7 @@ export class TicketService implements ITicketService {
       const ticket = await this.ticketRepository.tickets.findOne(
         {
           where: { id: id },
-          relations: { user: true }
+          relations: { account: true }
         }
       );
       if (ticket) {
@@ -163,7 +163,7 @@ export class TicketService implements ITicketService {
         qrCode: qrCodeImage,
         date: normalizedMatchDate,  // Date des matchs
         position: TicketPosition.SORTIE,  // Initialement en dehors
-      } as any, userExist, matchExist),
+      } as any, userExist as any, matchExist),
     );
 
     userExist.solde -= amount;
@@ -240,7 +240,7 @@ export class TicketService implements ITicketService {
       const { id, etat } = data;
       const ticket = id && (await this.ticketRepository.tickets.findOne({
         where: { id: id },
-        relations: { user: true }
+        relations: { account: true }
       }));
 
       if (ticket) {
@@ -371,7 +371,7 @@ export class TicketService implements ITicketService {
       const ticket = await this.ticketRepository.tickets.findOne(
         {
           where: whereCondition,
-          relations: { user: true }
+          relations: { account: true }
         }
       );
       if (ticket) {
@@ -391,7 +391,7 @@ export class TicketService implements ITicketService {
     // 2. Récupérer ticket avec lock
     const ticket = await this.ticketRepository.tickets.findOne({
       where: { id: payload.ticketId },
-      relations: { matchs: true, user: true, tournoi: true },
+      relations: { matchs: true, account: true, tournoi: true },
     });
 
     if (!ticket) {

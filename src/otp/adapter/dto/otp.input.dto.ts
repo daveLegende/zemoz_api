@@ -1,8 +1,7 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
-import { IsArray, IsBoolean, IsDate, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsBoolean, IsDate, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class OtpAccountDto {
-    
     @ApiProperty({
         type: String,
         name: 'code',
@@ -12,19 +11,23 @@ export class OtpAccountDto {
     @IsString()
     code: string;
 
-    // @ApiProperty({
-    //     type: String,
-    //     name: 'phone',
-    // })
-    // @IsString()
-    // phone: string;
+    @ApiProperty({
+        type: String,
+        name: 'phone',
+        required: false,
+    })
+    @IsOptional()
+    @IsString()
+    phone?: string;
 
     @ApiProperty({
         type: String,
         name: 'email',
+        required: false,
     })
+    @IsOptional()
     @IsString()
-    email: string;
+    email?: string;
 
     @ApiProperty({
         type: Boolean,
@@ -53,41 +56,46 @@ export class UpdateOtpDTO extends PartialType(OtpAccountDto) {
     @IsString()
     @IsUUID()
     id: string;
-  }
-
+}
 
 export class SendOtpDTo {
-
     @ApiProperty({
         type: String,
         name: 'email',
+        required: false,
     })
+    @IsOptional()
     @IsString()
-    email: string;
+    email?: string;
 
-    // @ApiProperty({
-    //     type: String,
-    //     name: 'phone',
-    // })
-    // @IsString()
-    // phone: string;
+    @ApiProperty({
+        type: String,
+        name: 'phone',
+        required: false,
+    })
+    @IsOptional()
+    @IsString()
+    phone?: string;
 }
 
 export class VerifyOtpDTo {
-
-    // @ApiProperty({
-    //     type: String,
-    //     name: 'phone',
-    // })
-    // @IsString()
-    // phone: string;
+    @ApiProperty({
+        type: String,
+        name: 'phone',
+        required: false,
+    })
+    @IsOptional()
+    @IsString()
+    phone?: string;
 
     @ApiProperty({
         type: String,
         name: 'email',
+        required: false,
     })
+    @IsOptional()
     @IsString()
-    email: string;
+    email?: string;
 
     @ApiProperty({
         type: String,

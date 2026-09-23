@@ -80,7 +80,7 @@ export class ParisService implements IParisService {
         paris.type = type;
         paris.odd = currentOdd;
         paris.amount = amount;
-        paris.user = userExisted;
+        paris.account = userExisted as any;
         paris.potentialGain = amount * currentOdd;
 
         userExisted.solde -= amount;
@@ -97,7 +97,7 @@ export class ParisService implements IParisService {
         //   throw new ConflictException('bets already exist');
 
         return await this.parisRepository.paris.create(
-          await ParisFactory.create(data, matchExisted, userExisted),
+          await ParisFactory.create(data, matchExisted, userExisted as any),
         );
       }
     } catch (error) {
@@ -115,7 +115,7 @@ export class ParisService implements IParisService {
       }));
       if (bets) {
         return await this.parisRepository.paris.update(
-          ParisFactory.update(bets, data, bets.match, bets.user),
+          ParisFactory.update(bets, data, bets.match, bets.account as any),
         );
       }
       throw new NotFoundException();
@@ -134,7 +134,7 @@ export class ParisService implements IParisService {
     try {
       const bets = await this.parisRepository.paris.findOne({
         where: { id: id },
-        relations: { match: true , user: true,}
+        relations: { match: true, account: true }
       });
       if (bets) {
         return await this.parisRepository.paris.remove(bets).then(() => true);
@@ -155,7 +155,7 @@ export class ParisService implements IParisService {
 
       const paris = await this.parisRepository.paris.find({
         where: { match: {id: id} },
-        relations: { match: true , user: true,}
+        relations: { match: true, account: true }
       });
       if (paris.length > 0) {
         return paris;
@@ -177,7 +177,7 @@ export class ParisService implements IParisService {
 
       const paris = await this.parisRepository.paris.find({
         where: { match: {id: id} },
-        relations: { match: true , user: true,}
+        relations: { match: true, account: true }
       });
       if (paris.length > 0) {
         return true;

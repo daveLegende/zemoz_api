@@ -23,13 +23,14 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Express } from 'express';
-import { IDParamDTO } from '../../../_shared/adapter/dto';
+import { IDParamDTO, PaginationQueryDTO } from '../../../_shared/adapter/dto';
 import { UserGuard } from '../../../user/adapter/guard/auth.guard';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
 import { ITransactionController, ITransactionService } from '../../app/module';
 import { DocTransactionOutputDto, PassAccountDto, TransactionAccountDto, UpdateTransactionDTO } from '../dto';
 import { TransactionFactory } from '../transac.factory';
 import { Transaction } from '../../domain';
+import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
 
 @ApiTags('Transactions management')
 @Controller('transactions')
@@ -44,9 +45,9 @@ export class TransactionController implements ITransactionController {
     description: 'Fetch all Transactions in the DB',
   })
   // @ApiResponse({ type: [TransactionAccountDTO] })
-  async all(): Promise<Transaction[]> {
-    const transactions = await this.transactionService.fetchAll();
-    return transactions?.map((transaction) => TransactionFactory.getTransaction(transaction));
+  async all(@Query() query?: PaginationQueryDTO): Promise<PaginatedResult<Transaction>> {
+    const transactions = await this.transactionService.fetchAll(query);
+    return mapPaginated(transactions, (transaction) => TransactionFactory.getTransaction(transaction));
   }
 
 

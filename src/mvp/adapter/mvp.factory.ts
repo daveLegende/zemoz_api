@@ -1,28 +1,26 @@
 import { MVP } from "../domain";
-import { PlayerEntity } from "../../player/framework/database/schema/player.entity";
-import { UserEntity } from "../../user/framework/database/schema/user.entity";
+import { MatchEntity } from "../../match/framework/database/schema/match.entity";
+import { TeamPlayerEntity } from "../../player/framework/database/schema/team-player.entity";
+import { AccountEntity } from "../../account/framework/database/schema/account.entity";
 import { MVPEntity } from "../framework/database/schema/mvp.entity";
 
 export abstract class MVPFactory {
-
-    // Création d'un nouveau vote MVP
-    static create(user: UserEntity, player: PlayerEntity): MVPEntity {
+    static create(account: AccountEntity, match: MatchEntity, inscription: TeamPlayerEntity): MVPEntity {
         const mvp = new MVPEntity();
-
-        mvp.user = user;
-        mvp.player = player;
-
+        mvp.account = account;
+        mvp.match = match;
+        mvp.inscription = inscription;
         return mvp;
     }
 
-    // Exemple pour récupérer les infos du vote (DTO)
     static getMvp(mvp: MVP) {
         if (!mvp) return null;
 
         return {
             id: mvp.id,
-            user: mvp.user,
-            player: mvp.player,
+            account: mvp.account,
+            match: mvp.match,
+            inscription: mvp.inscription,
             amount: mvp.amount,
             createdAt: mvp.createdAt,
             updatedAt: mvp.updatedAt,

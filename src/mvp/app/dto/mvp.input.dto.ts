@@ -1,7 +1,6 @@
 export interface ICreateMVPDTO {
-    
   userId: string;
-
-  playerId: string;
-
+  matchId: string;
+  teamPlayerId: string;
+  playerId?: string;
 }
