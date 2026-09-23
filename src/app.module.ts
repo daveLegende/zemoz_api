@@ -37,12 +37,15 @@ import { TournoiCouponModule } from './tournoiCoupon/adapter/module';
 import { TournoiCouponBetModule } from './tournoiCouponBet/adapter/module';
 import { MVPModule } from './mvp/adapter/module';
 
+import { OrganizationModule } from './organization/adapter/module/organization.module';
+
 @Module({
   imports: [
     UserModule, 
     AuthModule,
     AdminModule,
     AdminAuthModule,
+    OrganizationModule,
     PlayerModule, 
     TeamModule,
     PouleModule,
@@ -73,7 +76,8 @@ export class IAppModule {}
   imports: [
     ConfigModule.forRoot({
       // envFilePath: '.dev.env', //.dev.env, .prod.env
-      envFilePath: '.prod.env', //.dev.env, .prod.env
+      // envFilePath: '.prod.env', //.dev.env, .prod.env
+      envFilePath: '.test.env',
       expandVariables: true,
       isGlobal: true,
     }),

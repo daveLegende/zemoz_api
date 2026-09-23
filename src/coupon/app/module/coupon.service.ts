@@ -2,10 +2,11 @@ import { Coupon } from "../../../coupon/domain";
 import { ICreateCouponDTO, IUpdateCouponDTO } from "../dto";
 import { IUpdateMatchDTO } from "../../../match/app/dto";
 
+import { PaginatedResult, PaginationQuery } from '../../../_shared/domain/pagination';
 export abstract class ICouponService {
   abstract add(data: ICreateCouponDTO): Promise<Coupon>;
 
-  abstract fetchAll(): Promise<Coupon[]>;
+  abstract fetchAll(query?: PaginationQuery): Promise<PaginatedResult<Coupon>>;
 
   abstract fetchOne(id: string): Promise<Coupon>;
 

@@ -29,6 +29,7 @@ export class Match extends ITimestamp {
   awayPenalty?: number;
   teamQualify?: string;
   halfPauseState?: HalfPauseState;
+  tournoi?: any;
 
   // A supprimer après
   odds?: {

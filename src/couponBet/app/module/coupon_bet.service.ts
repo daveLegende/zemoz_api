@@ -1,10 +1,11 @@
 import { ICreateCouponBetDTO, IUpdateCouponBetDTO } from "../dto";
 import { CouponBet } from "../../../couponBet/domain";
 
+import { PaginatedResult, PaginationQuery } from '../../../_shared/domain/pagination';
 export abstract class ICouponBetService {
   abstract add(data: ICreateCouponBetDTO): Promise<CouponBet>;
 
-  abstract fetchAll(): Promise<CouponBet[]>;
+  abstract fetchAll(query?: PaginationQuery): Promise<PaginatedResult<CouponBet>>;
 
   abstract fetchOne(id: string): Promise<CouponBet>;
 

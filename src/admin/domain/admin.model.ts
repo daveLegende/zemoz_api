@@ -5,4 +5,5 @@ export class Admin extends ITimestamp {
     nom: string;
     email: string;
     password: string;
+    isSuperAdmin?: boolean;
 }

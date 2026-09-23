@@ -2,8 +2,9 @@ import { IIDParamDTO } from '../../../_shared/app/dto';
 import { Arbitre } from '../../domain';
 import { ICreateArbitreDTO, IUpdateArbitreDTO } from '../dto';
 
+import { PaginatedResult, PaginationQuery } from '../../../_shared/domain/pagination';
 export abstract class IArbitreController {
-  abstract all(): Promise<Arbitre[]>;
+  abstract all(query?: PaginationQuery): Promise<PaginatedResult<Arbitre>>;
 
   abstract show(param: IIDParamDTO): Promise<Arbitre>;
 

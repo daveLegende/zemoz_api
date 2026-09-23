@@ -2,8 +2,9 @@ import { IIDParamDTO } from 'app/dto';
 import { Poule } from '../../domain';
 import { ICreatePouleDTO, IUpdatePouleDTO } from '../dto';
 
+import { PaginatedResult, PaginationQuery } from '../../../_shared/domain/pagination';
 export abstract class IPouleController {
-  abstract all(): Promise<Poule[]>;
+  abstract all(query?: PaginationQuery): Promise<PaginatedResult<Poule>>;
 
   abstract show(param: IIDParamDTO): Promise<Poule>;
 

@@ -12,6 +12,7 @@ import { BetStatus, CouponBet } from '../../../couponBet/domain';
 import { ITournoiCouponBetService } from '../../app/module';
 import { ITournoiCouponBetRepository, TournoiCouponBet } from '../../domain';
 import { ITournoiCouponRepository } from '../../../tournoiCoupon/domain/data.abstract';
+import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_shared/domain/pagination';
 
 @Injectable()
 export class TournoiCouponBetService implements ITournoiCouponBetService {
@@ -27,8 +28,8 @@ export class TournoiCouponBetService implements ITournoiCouponBetService {
     throw new Error('Method not implemented.');
   }
 
-  async fetchAll(): Promise<TournoiCouponBet[]> {
-    return this.tournoiCouponBetsRepository.tournoiCouponBets.find({
+  async fetchAll(query?: PaginationQuery): Promise<PaginatedResult<TournoiCouponBet>> {
+    return paginateQuery(this.tournoiCouponBetsRepository.tournoiCouponBets, query, {
       relations: { bet: true, tournoiCoupon: true },
     });
   }

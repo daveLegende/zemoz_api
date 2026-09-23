@@ -18,4 +18,5 @@ export class Ticket extends ITimestamp {
   code?: string;
   matchs?: Match[];
   isDeleted: boolean;
+  tournoi?: any;
 }

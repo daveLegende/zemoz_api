@@ -30,6 +30,12 @@ export abstract class TournoiFactory {
         name: tournoi.name,
         editionName: tournoi.editionName,
         edition: tournoi.edition,
+        annee: tournoi.annee,
+        status: tournoi.status,
+        slug: tournoi.slug,
+        ticketsEnabled: tournoi.ticketsEnabled,
+        bettingEnabled: tournoi.bettingEnabled,
+        organization: tournoi.organization,
         createdAt: tournoi.createdAt,
         updatedAt: tournoi.updatedAt,
         deletedAt: tournoi.deletedAt

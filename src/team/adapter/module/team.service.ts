@@ -11,9 +11,11 @@ import { TeamAccoutDTO, UpdateTeamDTO } from '../dto';
 import { TeamFactory } from '../team.factory';
 import { PlayerFactory } from '../../../player/adapter/player.factory';
 import { PlayerAccoutDTO } from '../../../player/adapter/dto';
-import { IPlayerRepository } from '../../../player/domain';
+import { IPlayerRepository, ITeamPlayerRepository } from '../../../player/domain';
+import { TeamPlayerFactory } from '../../../player/adapter/team-player.factory';
 import { IFileStorage } from '../../../shared/domain/file-storage.interface';
 import { Express } from 'express';
+import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_shared/domain/pagination';
 
 
   @Injectable()
@@ -22,14 +24,16 @@ import { Express } from 'express';
     constructor(
       private teamRepository: ITeamRepository,
       private playerRepository: IPlayerRepository,
+      private teamPlayerRepository: ITeamPlayerRepository,
       @Inject('IFileStorage') private cloudinaryService: IFileStorage,
     ) {}
   
-    async fetchAll(): Promise<Team[]> {
+    async fetchAll(query?: PaginationQuery, tournoiId?: string): Promise<PaginatedResult<Team>> {
       try {
-        return await this.teamRepository.teams.find({
-          relations: { joueurs: true, poule: true },
-          // withDeleted: true
+        const where = tournoiId ? { tournoi: { id: tournoiId } } : {};
+        return await paginateQuery(this.teamRepository.teams, query, {
+          where,
+          relations: { inscriptions: { player: true }, poule: true },
         });
       } catch (error) {
         this.logger.error(error.message, 'ERROR::TeamService.fetchAll');
@@ -37,15 +41,14 @@ import { Express } from 'express';
       }
     }
   
-    async fetchOne(id: string): Promise<Team> {
+    async fetchOne(id: string, tournoiId?: string): Promise<Team> {
       try {
-        const team = await this.teamRepository.teams.findOne(
-          {
-            where: { id: id },
-            relations: { poule: true, joueurs: true },
-            // withDeleted: true
-          }
-        );
+        const where: any = { id: id };
+        if (tournoiId) where.tournoi = { id: tournoiId };
+        const team = await this.teamRepository.teams.findOne({
+          where,
+          relations: { poule: true, inscriptions: { player: true } },
+        });
         if (team) {
           return TeamFactory.getTeam(team);
         }
@@ -56,80 +59,58 @@ import { Express } from 'express';
       }
     }
   
-    async search(data: Partial<Team>): Promise<Team> {
-      return await this.teamRepository.teams.findOneBy({ ...data });
+    async search(data: Partial<Team>, tournoiId?: string): Promise<Team> {
+      const where: any = { ...data };
+      if (tournoiId) where.tournoi = { id: tournoiId };
+      return await this.teamRepository.teams.findOne({ where });
     }
   
-    // async add(data: TeamAccoutDTO): Promise<Team> {
-    //   try {
-    //     const { name, joueurs } = data; // Assurez-vous que 'joueurs' est extrait des données.
-    //     const existed = await this.teamRepository.teams.findOneBy({ name });
-    //     if (existed) throw new ConflictException('Team already exist');
-        
-    //     const team = await this.teamRepository.teams.create(
-    //       await TeamFactory.create(data),
-    //     );
-
-    //     console.log(team);
-        
-    //     // Une fois l'équipe enregistrée, enregistrer les joueurs
-    //     if (joueurs && joueurs.length > 0) {
-    //       for (let joueur of joueurs) {
-    //         const playerDTO = new PlayerAccoutDTO();
-  
-    //         playerDTO.firstname = joueur.firstname;
-    //         playerDTO.lastname = joueur.lastname;
-    //         playerDTO.age = joueur.age;
-    //         playerDTO.phone = joueur.phone;
-    //         playerDTO.buts = joueur.buts;
-    //         playerDTO.passes = joueur.passes;
-    //         playerDTO.team = team.id;  // Utilisation de l'ID de l'équipe nouvellement créée
-    //         playerDTO.avatar = joueur.avatar;
-  
-    //         await this.playerRepository.players.create(
-    //           await PlayerFactory.create(playerDTO, team),
-    //         );
-    //       }
-    //     }
-
-    //     return team;
-    //   } catch (error) {
-    //     this.logger.error(error.message, 'ERROR::TeamService.add');
-    //     throw error;
-    //   }
-    // }
-
-    async add(data: TeamAccoutDTO, file?: Express.Multer.File): Promise<Team> {
-      // console.log('=== SERVICE ADD APPELÉ ===');
-      // console.log('Data:', JSON.stringify(data, null, 2));
-      // console.log('File reçu:', !!file, file?.originalname, !!file?.buffer);
+    async add(data: TeamAccoutDTO, file?: Express.Multer.File, tournoiId?: string): Promise<Team> {
       try {
-        // Upload du logo si un fichier est fourni
         let logoUrl: string | undefined;
-        // console.log('Fichier reçu:', file.originalname); // Debug
-        // console.log('Buffer size:', file.buffer?.length); // Debug
         if (file) {
-          // console.log('Fichier reçu:', file.originalname); // Debug
-          // console.log('Buffer size:', file.buffer?.length); // Debug
           logoUrl = await this.cloudinaryService.upload(file, 'teams');
-          // console.log('Uploaded logo URL:', logoUrl);
         }
 
-        const existed = await this.teamRepository.teams.findOneBy({ name: data.name });
+        const findWhere: any = { name: data.name };
+        if (tournoiId) findWhere.tournoi = { id: tournoiId };
+        const existed = await this.teamRepository.teams.findOneBy(findWhere);
         if (existed) throw new ConflictException('Team already exist');
 
         const team = await this.teamRepository.teams.create(await TeamFactory.create({...data, logo: logoUrl}));
+        if (tournoiId) {
+          team.tournoi = { id: tournoiId } as any;
+          await this.teamRepository.teams.update(team);
+        }
 
-        // Création des joueurs liés
         if (data.joueurs && data.joueurs.length > 0) {
           for (let joueur of data.joueurs) {
             const playerDTO = new PlayerAccoutDTO();
             Object.assign(playerDTO, joueur);
             playerDTO.team = team.id;
 
-            await this.playerRepository.players.create(
-              await PlayerFactory.create(playerDTO, team),
-            );
+            let player = playerDTO.phone
+              ? await this.playerRepository.players.findOne({
+                  where: { name: playerDTO.name, phone: playerDTO.phone },
+                })
+              : await this.playerRepository.players.findOne({
+                  where: { name: playerDTO.name },
+                });
+
+            if (!player) {
+              player = await this.playerRepository.players.create(
+                await PlayerFactory.create(playerDTO),
+              );
+            }
+
+            const already = await this.teamPlayerRepository.inscriptions.findOne({
+              where: { player: { id: player.id }, team: { id: team.id } },
+            });
+            if (!already) {
+              await this.teamPlayerRepository.inscriptions.create(
+                TeamPlayerFactory.create(player, team, playerDTO),
+              );
+            }
           }
         }
 
@@ -140,33 +121,13 @@ import { Express } from 'express';
       }
     }
   
-    // async edit(data: UpdateTeamDTO): Promise<Team> {
-    //   try {
-    //     const { id } = data;
-    //     const team = id && (await this.teamRepository.teams.findOne(
-    //       {
-    //         where: { id: id },
-    //         relations: { poule: true, joueurs: true }
-    //       }
-    //     ));
-    //     if (team) {
-    //       return await this.teamRepository.teams.update(
-    //         TeamFactory.update(team, data),
-    //       );
-    //     }
-    //     throw new NotFoundException();
-    //   } catch (error) {
-    //     this.logger.error(error.message, 'ERROR::TeamService.editTeam');
-  
-    //     throw error;
-    //   }
-    // }
-
-    async edit(data: UpdateTeamDTO, file?: Express.Multer.File): Promise<Team> {
+    async edit(data: UpdateTeamDTO, file?: Express.Multer.File, tournoiId?: string): Promise<Team> {
       try {
+        const where: any = { id: data.id };
+        if (tournoiId) where.tournoi = { id: tournoiId };
         const team = await this.teamRepository.teams.findOne({
-          where: { id: data.id },
-          relations: { poule: true, joueurs: true },
+          where,
+          relations: { poule: true, inscriptions: { player: true } },
         });
         if (!team) throw new NotFoundException();
 
@@ -182,21 +143,19 @@ import { Express } from 'express';
       }
     }
   
-    async setState(id: string): Promise<boolean> {
+    async setState(id: string, tournoiId?: string): Promise<boolean> {
       return false;
     }
   
-    async remove(id: string): Promise<boolean> {
+    async remove(id: string, tournoiId?: string): Promise<boolean> {
       try {
-        const Team = await this.teamRepository.teams.findOne(
-          {
-            where: { id: id },
-            relations: { poule: true, joueurs: true },
-            order:{
-              createdAt: 'ASC',
-            }
-          }
-        );
+        const where: any = { id: id };
+        if (tournoiId) where.tournoi = { id: tournoiId };
+        const Team = await this.teamRepository.teams.findOne({
+          where,
+          relations: { poule: true, inscriptions: { player: true } },
+          order: { createdAt: 'ASC' }
+        });
         if (Team) {
           return await this.teamRepository.teams.remove(Team).then(() => true);
         }
@@ -207,4 +166,3 @@ import { Express } from 'express';
       }
     }
   }
-  

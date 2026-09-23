@@ -11,6 +11,7 @@ import { PassAccountDto, TransactionAccountDto, UpdateTransactionDTO } from '../
 import { IUserRepository } from '../../../user/domain';
 import { IAdminRepository } from '../../../admin/domain';
 import { HashFactory } from '../../../admin/adapter/guard/hash.factory';
+import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_shared/domain/pagination';
   
   
   @Injectable()
@@ -22,9 +23,9 @@ import { HashFactory } from '../../../admin/adapter/guard/hash.factory';
       private adminRepository: IAdminRepository,
     ) {}
   
-    async fetchAll(): Promise<Transaction[]> {
+    async fetchAll(query?: PaginationQuery): Promise<PaginatedResult<Transaction>> {
       try {
-        return await this.transactionRepository.transactions.find({
+        return await paginateQuery(this.transactionRepository.transactions, query, {
           relations: { admin: true, user: true },
           order: {
             createdAt: 'ASC',

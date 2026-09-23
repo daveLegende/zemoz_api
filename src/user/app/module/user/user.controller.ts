@@ -1,3 +1,4 @@
+import { PaginatedResult, PaginationQuery } from '../../../../_shared/domain/pagination';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
@@ -14,7 +15,7 @@ import { User } from '../../../../user/domain/user.model';
 export abstract class IUserController {
   abstract getCurrentUser(param: IIDParamDTO, file?: any): Promise<User>
 
-  abstract all(): Promise<User[]>;
+  abstract all(query?: PaginationQuery): Promise<PaginatedResult<User>>;
 
   abstract show(param: IIDParamDTO): Promise<User>;
 

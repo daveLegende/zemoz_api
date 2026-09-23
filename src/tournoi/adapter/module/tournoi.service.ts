@@ -8,18 +8,19 @@ import { ITournoiService } from '../../app/module';
 import { ITournoiRepository, Tournoi } from '../../domain';
 import { TournoiAccoutDTO, UpdateTournoiDTO } from '../dto';
 import { TournoiFactory } from '../tournoi.factory';
-import { PlayerFactory } from '../../../player/adapter/player.factory';
-import { PlayerAccoutDTO } from '../../../player/adapter/dto';
 import { IPlayerRepository } from '../../../player/domain';
+import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_shared/domain/pagination';
   
 @Injectable()
 export class TournoiService implements ITournoiService {
   private readonly logger = new Logger();
   constructor(private tournoiRepository: ITournoiRepository) {}
 
-  async fetchAll(): Promise<Tournoi[]> {
+  async fetchAll(query?: PaginationQuery): Promise<PaginatedResult<Tournoi>> {
     try {
-      return await this.tournoiRepository.tournois.find();
+      return await paginateQuery(this.tournoiRepository.tournois, query, {
+        relations: { organization: true },
+      });
     } catch (error) {
       this.logger.error(error.message, 'ERROR::TournoiService.fetchAll');
       throw error;
@@ -31,6 +32,7 @@ export class TournoiService implements ITournoiService {
       const tournoi = await this.tournoiRepository.tournois.findOne(
         {
           where: { id: id },
+          relations: { organization: true },
         }
       );
       if (tournoi) {

@@ -13,4 +13,5 @@ export class Coupon extends ITimestamp {
     couponBets: CouponBet[];
     isDeleted: boolean;
     isPaid: boolean;
+    tournoi?: any;
 }

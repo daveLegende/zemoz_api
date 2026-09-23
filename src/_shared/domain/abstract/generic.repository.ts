@@ -15,6 +15,8 @@ export abstract class IFindGeneric<T> {
 
   abstract find(options?: RepoParam<T>): Promise<T[]>;
 
+  abstract findAndCount(options?: RepoParam<T>): Promise<[T[], number]>;
+
   abstract findByIds(ids: string[], options?: PartialDeep<T>): Promise<T[]>;
 }
 export abstract class IFindOneGeneric<T> {

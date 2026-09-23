@@ -26,6 +26,10 @@ export class DBGenericRepository<T>
     return this._repository.find(options);
   }
 
+  findAndCount(options?: any): Promise<[T[], number]> {
+    return this._repository.findAndCount(options);
+  }
+
   findBy(options: any): Promise<T[]> {
     return this._repository.find({ ...options });
   }

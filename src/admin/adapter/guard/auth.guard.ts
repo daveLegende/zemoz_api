@@ -45,15 +45,19 @@ export class AdminGuard implements CanActivate {
     }
     try {
       const admin = await this.authAPIServices.api.tokenLogin(token, permission);
-      if (admin) {
-        const account = await this.dataServices.admins.findOneBy({
-          email: admin.email,
-        });
-        if (account) request['admin'] = account;
+      if (!admin) {
+        throw new UnauthorizedException('Admin non trouvé');
       }
+      const account = await this.dataServices.admins.findOneBy({
+        email: admin.email,
+      });
+      if (!account) {
+        throw new UnauthorizedException('Compte admin inexistant ou supprimé');
+      }
+      request['admin'] = account;
+      return true;
     } catch (error) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(error.message || 'Non autorisé');
     }
-    return true;
   }
 }

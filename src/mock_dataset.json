@@ -1,0 +1,211 @@
+{
+  "organizationsCount": 3,
+  "tournamentsCount": 27,
+  "usersCount": 105,
+  "organizations": [
+    {
+      "id": "a2163b1c-ec6f-4d47-8a39-d572ba194d38",
+      "name": "ZEMOZ Sports League",
+      "slug": "zemoz-sports"
+    },
+    {
+      "id": "ca91f2bc-fa6f-45d7-992d-9529c88f950b",
+      "name": "Lomé Football Association",
+      "slug": "lome-fa"
+    },
+    {
+      "id": "d5aa61b4-9c1b-45ef-9268-76fbf43127fe",
+      "name": "West Africa Champions Cup",
+      "slug": "wacc-org"
+    }
+  ],
+  "tournamentsSample": [
+    {
+      "id": "390a2d15-24fe-4582-9486-8168f09691ed",
+      "name": "ZEMOZ Trophy - Édition 2024",
+      "slug": "zemoz-trophy-ed1",
+      "org": "ZEMOZ Sports League"
+    },
+    {
+      "id": "20cabf50-28f3-4215-b08c-78617bcff6d8",
+      "name": "ZEMOZ Trophy - Édition 2025",
+      "slug": "zemoz-trophy-ed2",
+      "org": "ZEMOZ Sports League"
+    },
+    {
+      "id": "fb9d1cbf-9480-4992-ad3f-2fa312d77592",
+      "name": "ZEMOZ Trophy - Édition 2026",
+      "slug": "zemoz-trophy-ed3",
+      "org": "ZEMOZ Sports League"
+    },
+    {
+      "id": "ef061b32-f11b-48bd-bae2-177b0346dbef",
+      "name": "ZEMOZ Junior Cup - Saison 1",
+      "slug": "zemoz-junior-ed1",
+      "org": "ZEMOZ Sports League"
+    },
+    {
+      "id": "a1dede8c-71e3-4125-a43a-24ff27e378c3",
+      "name": "ZEMOZ Junior Cup - Saison 2",
+      "slug": "zemoz-junior-ed2",
+      "org": "ZEMOZ Sports League"
+    },
+    {
+      "id": "91fa40ab-1f00-4edd-a7f5-86edda174545",
+      "name": "ZEMOZ Junior Cup - Saison 3",
+      "slug": "zemoz-junior-ed3",
+      "org": "ZEMOZ Sports League"
+    },
+    {
+      "id": "c032dbb5-d765-4fab-b3a3-3999c8464e6a",
+      "name": "ZEMOZ Corporate League - Édition Printemps",
+      "slug": "zemoz-corp-ed1",
+      "org": "ZEMOZ Sports League"
+    },
+    {
+      "id": "2eccc9e6-a790-47ae-9124-d3fd1fdb86d6",
+      "name": "ZEMOZ Corporate League - Édition Été",
+      "slug": "zemoz-corp-ed2",
+      "org": "ZEMOZ Sports League"
+    },
+    {
+      "id": "1388ee20-39c5-432c-b5c1-0278b7a887ba",
+      "name": "ZEMOZ Corporate League - Édition Hiver",
+      "slug": "zemoz-corp-ed3",
+      "org": "ZEMOZ Sports League"
+    }
+  ],
+  "usersSample": [
+    {
+      "id": "d6be5be4-a5a4-47c3-9aa7-bd7f885ffaea",
+      "name": "Kodjo Amouzou",
+      "email": "kodjo.amouzou1@gmail.com",
+      "solde": 16619
+    },
+    {
+      "id": "40a233d5-14c5-4888-8626-4211df40a84a",
+      "name": "Komla Kpogholou",
+      "email": "komla.kpogholou2@gmail.com",
+      "solde": 36431
+    },
+    {
+      "id": "0340248b-f89e-466d-a76a-eb71b28bb414",
+      "name": "Kossi Kodjo",
+      "email": "kossi.kodjo3@gmail.com",
+      "solde": 30552
+    },
+    {
+      "id": "a1c2ad43-d922-4f5d-a92a-e0281f268626",
+      "name": "Yao Wome",
+      "email": "yao.wome4@gmail.com",
+      "solde": 32371
+    },
+    {
+      "id": "30cb253c-fef4-44e5-9ff8-06d4da3935af",
+      "name": "Afi Sunu",
+      "email": "afi.sunu5@gmail.com",
+      "solde": 8515
+    },
+    {
+      "id": "b8e6c98c-6139-4634-8bb1-5f40aa6ef97b",
+      "name": "Ama Song",
+      "email": "ama.song6@gmail.com",
+      "solde": 2818
+    },
+    {
+      "id": "a62b6db9-fbcc-44c5-8d11-9dba0aa5c3c1",
+      "name": "Akossiwa Lawson",
+      "email": "akossiwa.lawson7@gmail.com",
+      "solde": 20480
+    },
+    {
+      "id": "3d8f4fbd-ba64-4b94-a90d-6379c062429a",
+      "name": "Adjo Doe",
+      "email": "adjo.doe8@gmail.com",
+      "solde": 28740
+    },
+    {
+      "id": "9136bed9-4abf-4144-9b6d-7371839df3a2",
+      "name": "Abra Adebayor",
+      "email": "abra.adebayor9@gmail.com",
+      "solde": 6879
+    },
+    {
+      "id": "34ba76cd-93c0-43ab-9059-34bb36abf81c",
+      "name": "Emmanuel Ayite",
+      "email": "emmanuel.ayite10@gmail.com",
+      "solde": 5189
+    }
+  ],
+  "teamsSample": [
+    {
+      "id": "0c71ee6b-7d36-48ec-aa2f-38fe27136a98",
+      "name": "AS Togo-Port",
+      "poule": "Poule A"
+    },
+    {
+      "id": "b2e01c02-9aa1-4e96-8818-f90883472bc3",
+      "name": "Etoile Filante",
+      "poule": "Poule A"
+    },
+    {
+      "id": "b01fa1e1-6af4-40d8-941a-bd65330461d5",
+      "name": "Dynamic Togolais",
+      "poule": "Poule A"
+    },
+    {
+      "id": "0305709e-f580-4413-9506-081de8385fca",
+      "name": "Semassi FC",
+      "poule": "Poule A"
+    },
+    {
+      "id": "3e1cc075-e63b-419c-a291-53be5ec5d395",
+      "name": "ASKO de Kara",
+      "poule": "Poule B"
+    },
+    {
+      "id": "99bf81fe-9c87-4c4b-b5b3-b9262695388f",
+      "name": "Gomido FC",
+      "poule": "Poule B"
+    },
+    {
+      "id": "f42c5a0c-8442-4722-ac7e-5bbc6098d7dd",
+      "name": "Koroki Metete",
+      "poule": "Poule B"
+    },
+    {
+      "id": "5b7cb166-36ef-43a0-8cb8-13151089c5b7",
+      "name": "Entente II",
+      "poule": "Poule B"
+    }
+  ],
+  "matchesSample": [
+    {
+      "id": "866fae53-2c03-4f7b-830b-e22e95e8a57d",
+      "type": "PHASE DE POULE",
+      "teams": "AS Togo-Port vs Etoile Filante",
+      "score": {
+        "away": 1,
+        "home": 2
+      }
+    },
+    {
+      "id": "93a8ac6e-e5ad-48e5-9f5f-cf1f82f35d6e",
+      "type": "PHASE DE POULE",
+      "teams": "Dynamic Togolais vs Semassi FC",
+      "score": {
+        "away": 0,
+        "home": 0
+      }
+    },
+    {
+      "id": "93d78d00-b262-4943-9334-cc6810a15c2a",
+      "type": "1/2 FINALE",
+      "teams": "AS Togo-Port vs ASKO de Kara",
+      "score": {
+        "away": 1,
+        "home": 1
+      }
+    }
+  ]
+}

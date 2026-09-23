@@ -1,11 +1,10 @@
-import { Column, Entity, Index, JoinColumn, JoinTable, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ATimestamp } from '../../../../_shared/framework/timestamp.abstract';
 import { Player } from '../../../../player/domain';
-import { TeamEntity } from '../../../../team/framework/database/schema/team.entity';
+import { TeamPlayerEntity } from './team-player.entity';
 
 @Entity('players')
-// @Index(['email'], { unique: true, where: `deleted_at IS NULL` })
-export class PlayerEntity extends ATimestamp implements Player {  
+export class PlayerEntity extends ATimestamp implements Player {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
@@ -18,16 +17,9 @@ export class PlayerEntity extends ATimestamp implements Player {
     @Column({ nullable: true })
     phone?: string;
 
-    @Column({ nullable: true, default: 0 })
-    buts?: number;
-
-    @Column({ nullable: true, default: 0 })
-    passes?: number;
-
     @Column({ nullable: true })
     avatar?: string;
 
-    @ManyToOne(() => TeamEntity, (team) => team.joueurs)
-    @JoinColumn({name: "team"})
-    team: TeamEntity
+    @OneToMany(() => TeamPlayerEntity, (inscription) => inscription.player)
+    inscriptions?: TeamPlayerEntity[];
 }

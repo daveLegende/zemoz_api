@@ -1,10 +1,11 @@
 import { Transaction } from "../../domain";
 import { ICreatePassDTO, ICreateTransactionDTO, IUpdateTransactionDTO } from "../dto";
 
+import { PaginatedResult, PaginationQuery } from '../../../_shared/domain/pagination';
 export abstract class ITransactionService {
   abstract add(data: ICreateTransactionDTO): Promise<Transaction>;
 
-  abstract fetchAll(): Promise<Transaction[]>;
+  abstract fetchAll(query?: PaginationQuery): Promise<PaginatedResult<Transaction>>;
 
   abstract fetchOne(id: string): Promise<Transaction>;
 

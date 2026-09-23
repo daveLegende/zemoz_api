@@ -3,12 +3,14 @@ import {
     Injectable,
     Logger,
     NotFoundException,
+    BadRequestException,
   } from '@nestjs/common';
 import { IPouleService } from '../../app/module';
 import { IPouleRepository, Poule } from '../../domain';
 import { PouleFactory } from '../poule.factory';
 import { PouleAccountDto, UpdatePouleDTO } from '../dto';
 import { ITeamRepository } from '../../../team/domain';
+import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_shared/domain/pagination';
   
   @Injectable()
   export class PouleService implements IPouleService {
@@ -18,9 +20,11 @@ import { ITeamRepository } from '../../../team/domain';
       private teamRepository: ITeamRepository
     ) {}
   
-    async fetchAll(): Promise<Poule[]> {
+    async fetchAll(query?: PaginationQuery, tournoiId?: string): Promise<PaginatedResult<Poule>> {
       try {
-        return await this.pouleRepository.poules.find({
+        const where = tournoiId ? { tournoi: { id: tournoiId } } : {};
+        return await paginateQuery(this.pouleRepository.poules, query, {
+          where,
           relations: {
             equipes: true
           }
@@ -31,9 +35,14 @@ import { ITeamRepository } from '../../../team/domain';
       }
     }
   
-    async fetchOne(id: string): Promise<Poule> {
+    async fetchOne(id: string, tournoiId?: string): Promise<Poule> {
       try {
-        const poule = await this.pouleRepository.poules.findOneByID(id);
+        const where: any = { id };
+        if (tournoiId) where.tournoi = { id: tournoiId };
+        const poule = await this.pouleRepository.poules.findOne({
+          where,
+          relations: { equipes: true }
+        });
         if (poule) {
           return poule;
         }
@@ -44,33 +53,51 @@ import { ITeamRepository } from '../../../team/domain';
       }
     }
   
-    async search(data: Partial<Poule>): Promise<Poule> {
-      // const poule = new Poule()
-      return await this.pouleRepository.poules.findOneBy({ ...data });
+    async search(data: Partial<Poule>, tournoiId?: string): Promise<Poule> {
+      const where: any = { ...data };
+      if (tournoiId) where.tournoi = { id: tournoiId };
+      return await this.pouleRepository.poules.findOne({ where });
     }
   
-    async add(data: PouleAccountDto): Promise<Poule> {
+    async add(data: PouleAccountDto, tournoiId?: string): Promise<Poule> {
       try {
         const { name, equipes } = data;
-        const existed = await this.pouleRepository.poules.findOneBy({ name });
+        const findWhere: any = { name };
+        if (tournoiId) findWhere.tournoi = { id: tournoiId };
+        const existed = await this.pouleRepository.poules.findOne({ where: findWhere });
         if (existed)
-          throw new ConflictException('Poule already exist');
+          throw new ConflictException('Poule already exist in this tournament');
 
-        const team = await this.teamRepository.teams.findByIds(equipes);
+        // Only teams from this tournament if tournoiId specified
+        const teamWhere = tournoiId ? equipes.map(id => ({ id, tournoi: { id: tournoiId } })) : equipes.map(id => ({ id }));
+        const teams = await this.teamRepository.teams.find({
+          where: teamWhere,
+        });
 
-        return await this.pouleRepository.poules.create(
-          await PouleFactory.create(data, team),
+        if (teams.length !== equipes.length) {
+          throw new BadRequestException('One or more teams do not belong to this tournament');
+        }
+
+        const poule = await this.pouleRepository.poules.create(
+          await PouleFactory.create(data, teams),
         );
+        if (tournoiId) {
+          poule.tournoi = { id: tournoiId } as any;
+          await this.pouleRepository.poules.update(poule);
+        }
+        return poule;
       } catch (error) {
         this.logger.error(error.message, 'ERROR::PouleService.add');
         throw error;
       }
     }
   
-    async edit(data: UpdatePouleDTO): Promise<Poule> {
+    async edit(data: UpdatePouleDTO, tournoiId?: string): Promise<Poule> {
       try {
         const { id } = data;
-        const poule = id && (await this.pouleRepository.poules.findOneByID(id));
+        const where: any = { id };
+        if (tournoiId) where.tournoi = { id: tournoiId };
+        const poule = await this.pouleRepository.poules.findOne({ where });
         if (poule) {
           return await this.pouleRepository.poules.update(
             PouleFactory.update(poule, data),
@@ -79,21 +106,19 @@ import { ITeamRepository } from '../../../team/domain';
         throw new NotFoundException();
       } catch (error) {
         this.logger.error(error.message, 'ERROR::PouleService.editPoule');
-  
         throw error;
       }
     }
   
-    async setState(id: string): Promise<boolean> {
+    async setState(id: string, tournoiId?: string): Promise<boolean> {
       return false;
     }
   
-    async remove(id: string): Promise<boolean> {
+    async remove(id: string, tournoiId?: string): Promise<boolean> {
       try {
-        // Correction: Utiliser findOne au lieu de findOneByID
-        const poule = await this.pouleRepository.poules.findOne({ 
-          where: { id } 
-        });
+        const where: any = { id };
+        if (tournoiId) where.tournoi = { id: tournoiId };
+        const poule = await this.pouleRepository.poules.findOne({ where });
         
         if (poule) {
           await this.pouleRepository.poules.remove(poule);
@@ -106,4 +131,3 @@ import { ITeamRepository } from '../../../team/domain';
       }
     }
   }
-  

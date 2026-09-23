@@ -11,6 +11,7 @@ import { IParisRepository } from '../../../paris/domain/data.abstract';
 import { ParisAccountDto, UpdateParisDTO } from '../dto';
 import { IUserRepository } from '../../../user/domain';
 import { ParisFactory } from '../paris.factory';
+import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_shared/domain/pagination';
 
 @Injectable()
 export class ParisService implements IParisService {

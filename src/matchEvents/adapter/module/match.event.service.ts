@@ -74,7 +74,7 @@ import { MatchEventFactory } from '../match.events.factory';
 
         const player = await this.playerRepository.players.findOne({
             where: { id: joueur },
-            relations: { team: true }
+            relations: { inscriptions: { team: true } }
         });
         
         if (!match) {

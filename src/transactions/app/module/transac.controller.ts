@@ -2,8 +2,9 @@ import { IIDParamDTO } from 'app/dto';
 import { Transaction } from '../../domain';
 import { ICreatePassDTO, ICreateTransactionDTO, IUpdateTransactionDTO } from '../dto';
 
+import { PaginatedResult, PaginationQuery } from '../../../_shared/domain/pagination';
 export abstract class ITransactionController {
-  abstract all(): Promise<Transaction[]>;
+  abstract all(query?: PaginationQuery): Promise<PaginatedResult<Transaction>>;
 
   abstract show(param: IIDParamDTO): Promise<Transaction>;
 

@@ -24,6 +24,8 @@ import {
   import { diskStorage } from 'multer';
   import { Express } from 'express';
   import { IDParamDTO } from '../../../_shared/adapter/dto';
+import { PaginationQueryDTO } from '../../../_shared/adapter/dto/pagination.dto';
+import { PaginatedResult, mapPaginated } from '../../../_shared/domain/pagination';
   import { BaseConfig } from '../../../_shared/config/base.config';
 import { UpdateTournoiDTO } from '../dto';
 import { Tournoi } from '../../domain';
@@ -47,9 +49,9 @@ export class TournoiController implements ITournoiController {
     description: 'Fetch all Tournois in the DB',
   })
   // @ApiResponse({ type: [TournoiAccountDTO] })
-  async all(): Promise<Tournoi[]> {
-    const tournois = await this.tournoiService.fetchAll();
-    return tournois?.map((tournoi) => TournoiFactory.getTournoi(tournoi));
+  async all(@Query() query: PaginationQueryDTO): Promise<PaginatedResult<Tournoi>> {
+    const tournois = await this.tournoiService.fetchAll(query);
+    return mapPaginated(tournois, (tournoi) => TournoiFactory.getTournoi(tournoi));
   }
 
 

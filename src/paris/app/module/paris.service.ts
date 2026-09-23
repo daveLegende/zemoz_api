@@ -2,10 +2,11 @@ import { Paris } from "../../domain";
 import { ICreateParisDTO, IUpdateParisDTO } from "../dto";
 
 
+import { PaginatedResult, PaginationQuery } from '../../../_shared/domain/pagination';
 export abstract class IParisService {
   abstract add(data: ICreateParisDTO): Promise<Paris>;
 
-  abstract fetchAll(): Promise<Paris[]>;
+  abstract fetchAll(query?: PaginationQuery): Promise<PaginatedResult<Paris>>;
 
   abstract fetchOne(id: string): Promise<Paris>;
 

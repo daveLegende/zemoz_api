@@ -8,6 +8,7 @@ import { MatchEventEntity } from '../../../../matchEvents/framework/database/sch
 import { PrononsticEntity } from '../../../../prononstic/framework/database/schema/prono.entity';
 import { BetEntity } from '../../../../bet/framework/schema/bet.entity';
 import { ParisEntity } from '../../../../paris/framework/schema/paris.entity';
+import { TournoiEntity } from '../../../../tournoi/framework/database/schema/tournoi.entity';
 
 @Entity('matchs')
 // @Index(['email'], { unique: true, where: `deleted_at IS NULL` })
@@ -100,4 +101,8 @@ export class MatchEntity extends ATimestamp implements Match {
         default: HalfPauseState.FIRST_HALF
     })
     halfPauseState?: HalfPauseState;
+
+    @ManyToOne(() => TournoiEntity, { nullable: true })
+    @JoinColumn({ name: 'tournoi_id' })
+    tournoi?: TournoiEntity;
 }

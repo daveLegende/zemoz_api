@@ -1,12 +1,13 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { ATimestamp } from '../../../../_shared/framework/timestamp.abstract';
 import { Team } from '../../../../team/domain';
-import { PlayerEntity } from '../../../../player/framework/database/schema/player.entity';
 import { PouleEntity } from '../../../../poule/framework/database/schema/poule.entity';
 import { MatchEntity } from '../../../../match/framework/database/schema/match.entity';
+import { TournoiEntity } from '../../../../tournoi/framework/database/schema/tournoi.entity';
+import { TeamPlayerEntity } from '../../../../player/framework/database/schema/team-player.entity';
 
 @Entity('teams')
-// @Index(['email'], { unique: true, where: `deleted_at IS NULL` })
+@Unique(['name', 'tournoi'])
 export class TeamEntity extends ATimestamp implements Team {
     @PrimaryGeneratedColumn('uuid')
     id: string;
@@ -35,9 +36,8 @@ export class TeamEntity extends ATimestamp implements Team {
     @Column({ nullable: true })
     logo?: string;
 
-    @OneToMany(() => PlayerEntity, (player) => player.team)
-    // @JoinColumn({ name:  })
-    joueurs: PlayerEntity[]
+    @OneToMany(() => TeamPlayerEntity, (inscription) => inscription.team)
+    inscriptions?: TeamPlayerEntity[];
 
     @ManyToOne(() => PouleEntity, (poule) => poule.equipes, { nullable: true })
     poule: PouleEntity;
@@ -46,5 +46,9 @@ export class TeamEntity extends ATimestamp implements Team {
     matchHome: MatchEntity[];
 
     @OneToMany(() => MatchEntity, (match) => match.away)
-    matchAway: MatchEntity[]
+    matchAway: MatchEntity[];
+
+    @ManyToOne(() => TournoiEntity, { nullable: true }) // nullable temporarily for migration
+    @JoinColumn({ name: 'tournoi_id' })
+    tournoi?: TournoiEntity;
 }

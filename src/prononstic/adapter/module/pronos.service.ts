@@ -10,6 +10,7 @@ import { PrononsticAccoutDTO, UpdatePrononsticDTO } from '../dto';
 import { IUserRepository } from '../../../user/domain';
 import { IMatchRepository } from '../../../match/domain';
 import { PrononsticFactory } from '../pronos.factory';
+import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_shared/domain/pagination';
   
   @Injectable()
   export class PrononsticService implements IPrononsticService {
@@ -21,9 +22,9 @@ import { PrononsticFactory } from '../pronos.factory';
 
     ) {}
   
-    async fetchAll(): Promise<Prononstic[]> {
+    async fetchAll(query?: PaginationQuery): Promise<PaginatedResult<Prononstic>> {
       try {
-        return await this.pronosRepository.pronos.find({
+        return await paginateQuery(this.pronosRepository.pronos, query, {
           relations: { match: true, user: true }
         });
       } catch (error) {

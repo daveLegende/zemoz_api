@@ -1,6 +1,7 @@
 import { Arbitre, RoleArbitre } from "../../../domain";
 import { MatchEntity } from "../../../../match/framework/database/schema/match.entity";
-import { Column, DeleteDateColumn, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, DeleteDateColumn, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from "typeorm";
+import { TournoiEntity } from "../../../../tournoi/framework/database/schema/tournoi.entity";
 
 @Entity('arbitres')
 export class ArbitreEntity extends Arbitre {
@@ -25,4 +26,7 @@ export class ArbitreEntity extends Arbitre {
     @DeleteDateColumn()
     deleteDate?: Date; 
 
+    @ManyToOne(() => TournoiEntity, { nullable: true })
+    @JoinColumn({ name: 'tournoi_id' })
+    tournoi?: TournoiEntity;
 }

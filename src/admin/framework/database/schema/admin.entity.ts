@@ -1,6 +1,7 @@
 import { Admin } from "../../../domain";
 import { TransactionEntity } from "../../../../transactions/framework/database/schema/transac.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { OrganizationMemberEntity } from "../../../../organization/framework/database/schema/organization_member.entity";
 
 @Entity('admins')
 export class AdminEntity extends Admin {
@@ -16,6 +17,12 @@ export class AdminEntity extends Admin {
     @Column()
     password: string;
 
+    @Column({ default: false })
+    isSuperAdmin?: boolean;
+
     @OneToMany(() => TransactionEntity, (transac) => transac.admin, { nullable: true, onDelete: 'CASCADE' })
     transactions?: TransactionEntity[];
+
+    @OneToMany(() => OrganizationMemberEntity, (member) => member.admin)
+    memberships?: OrganizationMemberEntity[];
 }

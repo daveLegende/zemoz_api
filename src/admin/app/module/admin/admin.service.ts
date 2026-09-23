@@ -3,10 +3,11 @@ import { IChangeAdminPasswordDTO, ICreateAdminDTO, IUpdateAdminDTO } from "../..
 import { Coupon } from "../../../../coupon/domain";
 import { TournoiCoupon } from "../../../../tournoiCoupon/domain";
 
+import { PaginatedResult, PaginationQuery } from '../../../../_shared/domain/pagination';
 export abstract class IAdminService {
   abstract add(data: ICreateAdminDTO): Promise<Admin>;
 
-  abstract fetchAll(): Promise<Admin[]>;
+  abstract fetchAll(query?: PaginationQuery): Promise<PaginatedResult<Admin>>;
 
   abstract fetchOne(id: string): Promise<Admin>;
 

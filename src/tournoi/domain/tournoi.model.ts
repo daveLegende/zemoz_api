@@ -10,4 +10,10 @@ export class Tournoi extends ITimestamp {
   annee?: Date;
   winner?: Team;
   bets?: Bet[];
+  status?: string;
+  slug?: string;
+  ticketsEnabled?: boolean;
+  bettingEnabled?: boolean;
+  organization?: any;
 }
+

@@ -1,3 +1,4 @@
+import { PaginatedResult, PaginationQuery } from '../../../_shared/domain/pagination';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
@@ -6,7 +7,7 @@ import { Ticket } from '../../domain';
 import { ICreateTicketDTO, IUpdateTicketDTO } from '../dto';
 
 export abstract class ITicketController {
-  abstract all(): Promise<Ticket[]>;
+  abstract all(query?: PaginationQuery): Promise<PaginatedResult<Ticket>>;
 
   abstract show(param: IIDParamDTO): Promise<Ticket>;
 

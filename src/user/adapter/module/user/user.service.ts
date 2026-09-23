@@ -30,6 +30,7 @@ import { Paris } from '../../../../paris/domain';
 import { IParisRepository } from '../../../../paris/domain/data.abstract';
 import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
 import { ITournoiCouponRepository } from '../../../../tournoiCoupon/domain/data.abstract';
+import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../../_shared/domain/pagination';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -42,9 +43,9 @@ export class UserService implements IUserService {
     private tournoiCouponRepository: ITournoiCouponRepository,
   ) { }
 
-  async fetchAll(): Promise<User[]> {
+  async fetchAll(query?: PaginationQuery): Promise<PaginatedResult<User>> {
     try {
-      return await this.userRepository.users.find();
+      return await paginateQuery(this.userRepository.users, query);
     } catch (error) {
       this.logger.error(error.message, 'ERROR::UserService.fetchAll');
       throw error;

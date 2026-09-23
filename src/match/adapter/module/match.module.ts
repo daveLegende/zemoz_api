@@ -8,6 +8,7 @@ import { TeamRepositoryModule } from '../../../team/framework/database/team.repo
 import { PouleRepositoryModule } from '../../../poule/framework/database/poule.repository.module';
 import { MatchGateway } from './match.gateway';
 import { PlayerRepositoryModule } from '../../../player/framework/database/player.repository.module';
+import { TeamPlayerRepositoryModule } from '../../../player/framework/database/team-player.repository.module';
 import { MatchEventRepositoryModule } from '../../../matchEvents/framework/database/match.event.repository.module';
 import { AdminAuthApiModule } from '../../../admin/framework/API';
 import { AdminRepositoryModule } from '../../../admin/framework/database/admin.repository.module';
@@ -30,6 +31,7 @@ import { CouponModule } from '../../../coupon/adapter/module';
     TeamRepositoryModule, 
     PouleRepositoryModule, 
     PlayerRepositoryModule,
+    TeamPlayerRepositoryModule,
     MatchEventRepositoryModule,
     CouponRepositoryModule,
     CouponBetRepositoryModule,

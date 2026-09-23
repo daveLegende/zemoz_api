@@ -1,0 +1,334 @@
+{
+  "description": "Données mock complètes et réelles pour l'écosystème PetitPoto / ZEMOZ API (Multi-Org, Multi-Tournois, Phase de Poules, Phases Finales)",
+  "generatedAt": "2026-09-22T16:50:00Z",
+  "statistics": {
+    "organizations": 3,
+    "tournaments": 9,
+    "editionsPerTournament": 3,
+    "users": 105,
+    "teams": 16,
+    "players": 96,
+    "referees": 8,
+    "matches": 18,
+    "tickets": 15,
+    "coupons": 10
+  },
+  "organizations": [
+    {
+      "id": "org-zemoz-001",
+      "name": "ZEMOZ Sports League",
+      "slug": "zemoz-sports",
+      "description": "Organisation principale ZEMOZ Afrique de l'Ouest",
+      "status": "ACTIVE",
+      "tournaments": [
+        {
+          "id": "t-zemoz-trophy-2024",
+          "name": "ZEMOZ Trophy - Édition 2024",
+          "slug": "zemoz-trophy-ed2024",
+          "editionName": "Édition 2024",
+          "edition": 1,
+          "ticketsEnabled": true,
+          "bettingEnabled": true
+        },
+        {
+          "id": "t-zemoz-trophy-2025",
+          "name": "ZEMOZ Trophy - Édition 2025",
+          "slug": "zemoz-trophy-ed2025",
+          "editionName": "Édition 2025",
+          "edition": 2,
+          "ticketsEnabled": true,
+          "bettingEnabled": true
+        },
+        {
+          "id": "t-zemoz-trophy-2026",
+          "name": "ZEMOZ Trophy - Édition 2026",
+          "slug": "zemoz-trophy-ed2026",
+          "editionName": "Édition 2026",
+          "edition": 3,
+          "ticketsEnabled": true,
+          "bettingEnabled": true
+        }
+      ]
+    },
+    {
+      "id": "org-lome-fa-002",
+      "name": "Lomé Football Association",
+      "slug": "lome-fa",
+      "description": "Association Régionale du Grand Lomé",
+      "status": "ACTIVE",
+      "tournaments": [
+        {
+          "id": "t-coupe-lome-2024",
+          "name": "Coupe Inter-Quartiers Lomé - Édition 2024",
+          "slug": "coupe-lome-ed2024",
+          "editionName": "Édition 2024",
+          "edition": 1,
+          "ticketsEnabled": true,
+          "bettingEnabled": true
+        },
+        {
+          "id": "t-coupe-lome-2025",
+          "name": "Coupe Inter-Quartiers Lomé - Édition 2025",
+          "slug": "coupe-lome-ed2025",
+          "editionName": "Édition 2025",
+          "edition": 2,
+          "ticketsEnabled": true,
+          "bettingEnabled": true
+        },
+        {
+          "id": "t-coupe-lome-2026",
+          "name": "Coupe Inter-Quartiers Lomé - Édition 2026",
+          "slug": "coupe-lome-ed2026",
+          "editionName": "Édition 2026",
+          "edition": 3,
+          "ticketsEnabled": true,
+          "bettingEnabled": true
+        }
+      ]
+    },
+    {
+      "id": "org-wacc-003",
+      "name": "West Africa Champions Cup",
+      "slug": "wacc-org",
+      "description": "Organisation des tournois régionaux sous-régionaux",
+      "status": "ACTIVE",
+      "tournaments": [
+        {
+          "id": "t-wacc-2024",
+          "name": "West Africa Challenge - Édition 2024",
+          "slug": "wacc-ed2024",
+          "editionName": "Édition 2024",
+          "edition": 1,
+          "ticketsEnabled": true,
+          "bettingEnabled": true
+        },
+        {
+          "id": "t-wacc-2025",
+          "name": "West Africa Challenge - Édition 2025",
+          "slug": "wacc-ed2025",
+          "editionName": "Édition 2025",
+          "edition": 2,
+          "ticketsEnabled": true,
+          "bettingEnabled": true
+        },
+        {
+          "id": "t-wacc-2026",
+          "name": "West Africa Challenge - Édition 2026",
+          "slug": "wacc-ed2026",
+          "editionName": "Édition 2026",
+          "edition": 3,
+          "ticketsEnabled": true,
+          "bettingEnabled": true
+        }
+      ]
+    }
+  ],
+  "usersSample": [
+    {
+      "id": "usr-001",
+      "firstname": "Koffi",
+      "lastname": "Mensah",
+      "email": "koffi.mensah@gmail.com",
+      "phone": "+22890100001",
+      "solde": 15000,
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=KoffiMensah"
+    },
+    {
+      "id": "usr-002",
+      "firstname": "Kodjo",
+      "lastname": "Lawson",
+      "email": "kodjo.lawson@gmail.com",
+      "phone": "+22890100002",
+      "solde": 32500,
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=KodjoLawson"
+    },
+    {
+      "id": "usr-003",
+      "firstname": "Ama",
+      "lastname": "Afanou",
+      "email": "ama.afanou@gmail.com",
+      "phone": "+22890100003",
+      "solde": 8000,
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=AmaAfanou"
+    },
+    {
+      "id": "usr-004",
+      "firstname": "Emmanuel",
+      "lastname": "Adebayor",
+      "email": "emmanuel.adebayor@gmail.com",
+      "phone": "+22890100004",
+      "solde": 120000,
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Adebayor"
+    },
+    {
+      "id": "usr-005",
+      "firstname": "Delali",
+      "lastname": "Doe",
+      "email": "delali.doe@gmail.com",
+      "phone": "+22890100005",
+      "solde": 45000,
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=DelaliDoe"
+    }
+  ],
+  "arbitres": [
+    {
+      "id": "arb-001",
+      "name": "Eric Otogo-Castane",
+      "phone": "+22892200000",
+      "role": "PRINCIPAL"
+    },
+    {
+      "id": "arb-002",
+      "name": "Janny Sikazwe",
+      "phone": "+22892200001",
+      "role": "PRINCIPAL"
+    },
+    {
+      "id": "arb-003",
+      "name": "Bakary Gassama",
+      "phone": "+22892200002",
+      "role": "ASSISTANT"
+    },
+    {
+      "id": "arb-004",
+      "name": "Mustapha Ghorbal",
+      "phone": "+22892200003",
+      "role": "ASSISTANT"
+    }
+  ],
+  "tournamentStructure": {
+    "tournoiId": "t-zemoz-trophy-2024",
+    "poules": [
+      {
+        "id": "poule-a",
+        "name": "Poule A",
+        "teams": [
+          { "id": "team-01", "name": "AS Togo-Port", "points": 6, "matchJoues": 3, "butMarques": 5, "butConcedes": 2 },
+          { "id": "team-02", "name": "Etoile Filante", "points": 4, "matchJoues": 3, "butMarques": 3, "butConcedes": 3 },
+          { "id": "team-03", "name": "Dynamic Togolais", "points": 3, "matchJoues": 3, "butMarques": 2, "butConcedes": 3 },
+          { "id": "team-04", "name": "Semassi FC", "points": 1, "matchJoues": 3, "butMarques": 1, "butConcedes": 3 }
+        ]
+      },
+      {
+        "id": "poule-b",
+        "name": "Poule B",
+        "teams": [
+          { "id": "team-05", "name": "ASKO de Kara", "points": 7, "matchJoues": 3, "butMarques": 6, "butConcedes": 1 },
+          { "id": "team-06", "name": "Gomido FC", "points": 5, "matchJoues": 3, "butMarques": 4, "butConcedes": 2 },
+          { "id": "team-07", "name": "Entente II", "points": 3, "matchJoues": 3, "butMarques": 2, "butConcedes": 4 },
+          { "id": "team-08", "name": "Sara Sport", "points": 0, "matchJoues": 3, "butMarques": 0, "butConcedes": 5 }
+        ]
+      }
+    ],
+    "matches": [
+      {
+        "id": "match-poule-01",
+        "type": "POULE",
+        "poule": "Poule A",
+        "home": "AS Togo-Port",
+        "away": "Etoile Filante",
+        "score": { "home": 2, "away": 1 },
+        "date": "2026-09-20T15:00:00Z",
+        "etat": "TERMINER",
+        "arbitre": "Eric Otogo-Castane",
+        "events": [
+          { "minute": 23, "type": "BUT", "joueur": "Ihlas Bebou", "equipe": "AS Togo-Port" },
+          { "minute": 67, "type": "BUT", "joueur": "Laba Kodjo", "equipe": "AS Togo-Port" },
+          { "minute": 85, "type": "BUT", "joueur": "Floyd Ayité", "equipe": "Etoile Filante" }
+        ]
+      },
+      {
+        "id": "match-poule-02",
+        "type": "POULE",
+        "poule": "Poule B",
+        "home": "ASKO de Kara",
+        "away": "Gomido FC",
+        "score": { "home": 3, "away": 0 },
+        "date": "2026-09-21T17:00:00Z",
+        "etat": "TERMINER",
+        "arbitre": "Janny Sikazwe",
+        "events": [
+          { "minute": 12, "type": "BUT", "joueur": "Djene Dakonam", "equipe": "ASKO de Kara" }
+        ]
+      },
+      {
+        "id": "match-quart-01",
+        "type": "QUART",
+        "home": "AS Togo-Port",
+        "away": "Gomido FC",
+        "score": { "home": 1, "away": 0 },
+        "date": "2026-09-24T16:00:00Z",
+        "etat": "TERMINER",
+        "arbitre": "Eric Otogo-Castane"
+      },
+      {
+        "id": "match-demi-01",
+        "type": "DEMI",
+        "home": "AS Togo-Port",
+        "away": "ASKO de Kara",
+        "score": { "home": 1, "away": 1 },
+        "date": "2026-09-26T18:00:00Z",
+        "etat": "EN_COURS",
+        "arbitre": "Victor Gomes"
+      },
+      {
+        "id": "match-finale-01",
+        "type": "FINALE",
+        "home": "À déterminer",
+        "away": "À déterminer",
+        "score": { "home": 0, "away": 0 },
+        "date": "2026-09-30T19:00:00Z",
+        "etat": "A_VENIR",
+        "arbitre": "Bakary Gassama"
+      }
+    ]
+  },
+  "tickets": [
+    {
+      "id": "tkt-001",
+      "user": "Koffi Mensah",
+      "type": "VIP",
+      "duree": "TOURNOI_COMPLET",
+      "amount": 10000,
+      "code": "TKT20260922001",
+      "etat": "VALIDE",
+      "position": "ENTREE"
+    },
+    {
+      "id": "tkt-002",
+      "user": "Kodjo Lawson",
+      "type": "STANDARD",
+      "duree": "SIMPLE",
+      "amount": 2000,
+      "code": "TKT20260922002",
+      "etat": "UTILISER",
+      "position": "ENTREE"
+    }
+  ],
+  "coupons": [
+    {
+      "id": "cpn-001",
+      "user": "Koffi Mensah",
+      "amount": 2000,
+      "totalOdds": 3.23,
+      "gainsPotentiels": 6460,
+      "etat": "PENDING",
+      "bets": [
+        {
+          "match": "AS Togo-Port vs ASKO de Kara (DEMI)",
+          "category": "MATCH_RESULT",
+          "selection": "V1",
+          "odds": 1.85,
+          "status": "PENDING"
+        },
+        {
+          "match": "AS Togo-Port vs ASKO de Kara (DEMI)",
+          "category": "BOTH_TEAMS_SCORE",
+          "selection": "OUI",
+          "odds": 1.75,
+          "status": "PENDING"
+        }
+      ]
+    }
+  ]
+}

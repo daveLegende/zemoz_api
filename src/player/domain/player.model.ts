@@ -1,5 +1,5 @@
 import { ITimestamp } from '../../_shared/domain/interface';
-import { Team } from '../../team/domain';
+import { TeamPlayer } from './team-player.model';
 
 export class Player extends ITimestamp {
   id: string;
@@ -7,7 +7,5 @@ export class Player extends ITimestamp {
   age?: number;
   phone?: string;
   avatar?: string;
-  buts?: number;
-  passes?: number;
-  team: Team;
+  inscriptions?: TeamPlayer[];
 }

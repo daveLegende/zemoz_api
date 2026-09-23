@@ -14,7 +14,7 @@ import { MatchFactory } from '../match.factory';
 import { IArbitreRepository } from '../../../arbitre/domain';
 import { ITeamRepository } from '../../../team/domain';
 import { IPouleRepository, Poule } from '../../../poule/domain';
-import { IPlayerRepository } from '../../../player/domain';
+import { IPlayerRepository, ITeamPlayerRepository } from '../../../player/domain';
 import { IMatchEventRepository, MatchEvent } from '../../../matchEvents/domain';
 import { MatchEventFactory } from '../../../matchEvents/adapter/match.events.factory';
 import { MatchGateway } from './match.gateway';
@@ -27,6 +27,7 @@ import { Coupon, CouponState } from '../../../coupon/domain';
 import { DataSource } from 'typeorm';
 import { CouponEntity } from '../../../coupon/framework/schema/coupon.entity';
 import { UserEntity } from '../../../user/framework/database/schema/user.entity';
+import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_shared/domain/pagination';
 
 @Injectable()
 export class MatchService implements IMatchService {
@@ -37,6 +38,7 @@ export class MatchService implements IMatchService {
     private teamRepository: ITeamRepository,
     private pouleRepository: IPouleRepository,
     private playerRepository: IPlayerRepository,
+    private teamPlayerRepository: ITeamPlayerRepository,
     private eventRepository: IMatchEventRepository,
     private couponRepository: ICouponRepository,
     private couponBetService: ICouponBetService,
@@ -48,41 +50,36 @@ export class MatchService implements IMatchService {
 
   ) { }
 
-  async fetchAll(): Promise<Match[]> {
+  async fetchAll(query?: PaginationQuery, tournoiId?: string): Promise<PaginatedResult<Match>> {
     try {
-      const matches = await this.matchRepository.matchs.find({
+      const where: any = {};
+      if (tournoiId) where.tournoi = { id: tournoiId };
+      return await paginateQuery(this.matchRepository.matchs, query, {
+        where,
         relations: {
-          home: { joueurs: true },
-          away: { joueurs: true },
-          // arbitres: true,
-          // events: { joueur: true, equipe: true },
+          home: { inscriptions: { player: true } },
+          away: { inscriptions: { player: true } },
           bets: true,
         },
         order:{
           createdAt: 'ASC',
         }
-        // withDeleted: true
       });
-      // Ajouter les URLs complets pour les images
-      return matches;
     } catch (error) {
       this.logger.error(error.message, 'ERROR::MatchService.fetchAll');
       throw error;
     }
   }
   
-  async fetchMatchEvents(id: string): Promise<MatchEvent[]> {
+  async fetchMatchEvents(id: string, tournoiId?: string): Promise<MatchEvent[]> {
     try {
+      const whereMatch: any = { id };
+      if (tournoiId) whereMatch.tournoi = { id: tournoiId };
       const events = await this.eventRepository.events.find({
-          where: { match: { id: id } },
+          where: { match: whereMatch },
           relations: { match: true, joueur: true, equipe: true }
       });
       if (events) {
-        // const referee = await this.arbitreRepository.arbitres.findByIds(match.arbitres);
-        // const domicile = await this.teamRepository.teams.findOneByID(match.home.id);
-        // const exterieure = await this.teamRepository.teams.findOneByID(match.away.id);
-
-      
         return events;
       }
       throw new NotFoundException('Events not found');
@@ -92,25 +89,19 @@ export class MatchService implements IMatchService {
     }
   }
 
-  async fetchOne(id: string): Promise<Match> {
+  async fetchOne(id: string, tournoiId?: string): Promise<Match> {
     try {
+      const where: any = { id };
+      if (tournoiId) where.tournoi = { id: tournoiId };
       const match = await this.matchRepository.matchs.findOne({
-        where: { id: id },
+        where,
         relations: {
-          home: { joueurs: true },
-          away: { joueurs: true },
-          // arbitres: true,
+          home: { inscriptions: { player: true } },
+          away: { inscriptions: { player: true } },
           bets: true,
-          // events: { joueur: true, equipe: true }
         },
-        // withDeleted: true
       });
       if (match) {
-        // const referee = await this.arbitreRepository.arbitres.findByIds(match.arbitres);
-        // const domicile = await this.teamRepository.teams.findOneByID(match.home.id);
-        // const exterieure = await this.teamRepository.teams.findOneByID(match.away.id);
-
-
         return match;
       }
       throw new NotFoundException('Match not found');
@@ -120,35 +111,33 @@ export class MatchService implements IMatchService {
     }
   }
 
-  async search(data: Partial<Match>): Promise<Match> {
-    return await this.matchRepository.matchs.findOneBy({ ...data });
+  async search(data: Partial<Match>, tournoiId?: string): Promise<Match> {
+    const where: any = { ...data };
+    if (tournoiId) where.tournoi = { id: tournoiId };
+    return await this.matchRepository.matchs.findOne({ where });
   }
 
-  async add(data: MatchAccoutDTO): Promise<Match> {
+  async add(data: MatchAccoutDTO, tournoiId?: string): Promise<Match> {
     try {
-
-      console.log('Données reçues :', data); // `data` étant l'objet JSON reçu par l'API
+      console.log('Données reçues :', data);
 
       const { away, home, arbitres, type, odds, poule } = data;
-      // const existed = await this.matchRepository.matchs.findOne({ where: {
-      //   home: home,
-      //   away: away,
-      // }, });
-      // if (existed)
-      //   throw new ConflictException('Match already exist');
-      console.log("referee   ----------------" + data);
 
       const referee = await this.arbitreRepository.arbitres.findByIds(arbitres);
 
+      const domWhere: any = { id: home };
+      if (tournoiId) domWhere.tournoi = { id: tournoiId };
       const domicile = await this.teamRepository.teams.findOne({
-        where: { id: home },
+        where: domWhere,
         relations: { poule: true }
       });
+
+      const extWhere: any = { id: away };
+      if (tournoiId) extWhere.tournoi = { id: tournoiId };
       const exterieure = await this.teamRepository.teams.findOne({
-        where: { id: away },
+        where: extWhere,
         relations: { poule: true }
       });
-      console.log("referee   ----------------" + data.home);
 
       if (!domicile || !exterieure) {
         throw new NotFoundException('L\'une des équipes spécifiées est introuvable.');
@@ -159,11 +148,18 @@ export class MatchService implements IMatchService {
           throw new NotFoundException("L'une des équipes n'a pas de poule associée.");
         } else {
           if (domicile.poule.id === exterieure.poule.id) {
+            if (tournoiId) {
+              const pouleEntity = await this.pouleRepository.poules.findOne({
+                where: { id: domicile.poule.id, tournoi: { id: tournoiId } }
+              });
+              if (!pouleEntity) {
+                throw new NotFoundException("La poule n'appartient pas à ce tournoi.");
+              }
+            }
             const match = await this.matchRepository.matchs.create(
               await MatchFactory.create(data, referee, domicile, exterieure, domicile.poule),
             );
-
-            // Utilisez save pour persister le match avec toutes ses relations
+            if (tournoiId) match.tournoi = { id: tournoiId } as any;
             return await this.matchRepository.save(match);
           } else {
             throw new NotFoundException("Les équipes ne sont pas dans la même poule", 'ERROR::MatchService.editMatch');
@@ -173,6 +169,7 @@ export class MatchService implements IMatchService {
         const match = await this.matchRepository.matchs.create(
           await MatchFactory.create(data, referee, domicile, exterieure, null),
         );
+        if (tournoiId) match.tournoi = { id: tournoiId } as any;
         return await this.matchRepository.save(match);
       };
     } catch (error) {
@@ -213,21 +210,28 @@ export class MatchService implements IMatchService {
     return match;
   }
 
-  async edit(data: UpdateMatchDTO): Promise<Match> {
+  async edit(data: UpdateMatchDTO, tournoiId?: string): Promise<Match> {
     try {
       const { id, home, away, arbitres, date, type } = data;
+      const matchWhere: any = { id };
+      if (tournoiId) matchWhere.tournoi = { id: tournoiId };
       const match = id && (await this.matchRepository.matchs.findOne({
-        where: { id: id },
+        where: matchWhere,
         relations: { home: true, away: true, arbitres: true, poule: true, events: { joueur: true, equipe: true } }
       }));
 
       if (match) {
+        const domWhere: any = { id: home };
+        if (tournoiId) domWhere.tournoi = { id: tournoiId };
         const domicile = await this.teamRepository.teams.findOne({
-          where: { id: home },
+          where: domWhere,
           relations: { poule: true }
         });
+
+        const extWhere: any = { id: away };
+        if (tournoiId) extWhere.tournoi = { id: tournoiId };
         const exterieure = await this.teamRepository.teams.findOne({
-          where: { id: away },
+          where: extWhere,
           relations: { poule: true }
         });
 
@@ -245,14 +249,16 @@ export class MatchService implements IMatchService {
     }
   }
 
-  async setState(id: string): Promise<boolean> {
+  async setState(id: string, tournoiId?: string): Promise<boolean> {
     return false;
   }
 
-  async remove(id: string): Promise<boolean> {
+  async remove(id: string, tournoiId?: string): Promise<boolean> {
     try {
+      const where: any = { id };
+      if (tournoiId) where.tournoi = { id: tournoiId };
       const match = await this.matchRepository.matchs.findOne(({
-        where: { id: id },
+        where,
         relations: { home: true, away: true, arbitres: true, poule: true, events: { joueur: true, equipe: true } }
       }));
       if (match) {
@@ -266,15 +272,17 @@ export class MatchService implements IMatchService {
   }
 
   // web socket 
-  async updateScore(data: UpdateMatchScoreEventDto) {
+  async updateScore(data: UpdateMatchScoreEventDto, tournoiId?: string): Promise<Match> {
     try {
       const { id, homeScore, awayScore, eventType, teamId, playerId, minuite } = data;
       if (minuite === undefined || minuite === null) {
         throw new BadRequestException('Minuite doit être définie');
       }
 
+      const matchWhere: any = { id };
+      if (tournoiId) matchWhere.tournoi = { id: tournoiId };
       const match = await this.matchRepository.matchs.findOne({
-        where: { id: id },
+        where: matchWhere,
         relations: { home: true, away: true, arbitres: true, events: { joueur: true, equipe: true } }
       });
 
@@ -289,8 +297,18 @@ export class MatchService implements IMatchService {
 
       const player = await this.playerRepository.players.findOne({
         where: { id: playerId },
-        relations: { team: true }
       });
+      if (!player) {
+        throw new NotFoundException('Joueur introuvable');
+      }
+
+      const inscription = await this.teamPlayerRepository.inscriptions.findOne({
+        where: { player: { id: playerId }, team: { id: teamId } },
+      });
+      if (!inscription) {
+        throw new NotFoundException('Inscription du joueur introuvable pour cette équipe');
+      }
+
       const events = new MatchEvent();
 
       if (!match) {
@@ -298,10 +316,10 @@ export class MatchService implements IMatchService {
       }
 
       if (eventType === EventType.BUT) {
+        inscription.buts += 1;
         if (home.id === teamId) {
           match.scores.home = homeScore ?? match.scores.home;
           events.equipe = home;
-          player.buts += 1;
           events.joueur = player;
           events.type = eventType;
           events.minute = minuite;
@@ -309,7 +327,6 @@ export class MatchService implements IMatchService {
         } else {
           match.scores.away = awayScore ?? match.scores.away;
           events.equipe = away;
-          player.buts += 1;
           events.joueur = player;
           events.type = eventType;
           events.minute = minuite;
@@ -347,7 +364,7 @@ export class MatchService implements IMatchService {
         }
       }
 
-      await this.playerRepository.players.update(player);
+      await this.teamPlayerRepository.inscriptions.update(inscription);
       const matchUpdated = await this.matchRepository.matchs.update(
         MatchFactory.updateScore(match, data),
       );
@@ -366,12 +383,14 @@ export class MatchService implements IMatchService {
     }
   }
 
-  async updateState(data: UpdateStateDto): Promise<Match> {
+  async updateState(data: UpdateStateDto, tournoiId?: string): Promise<Match> {
     try {
       const { id } = data;
 
+      const where: any = { id };
+      if (tournoiId) where.tournoi = { id: tournoiId };
       const match = await this.matchRepository.matchs.findOne({
-        where: { id: id },
+        where,
         relations: { home: true, away: true, arbitres: true, poule: true, events: true },
       });
 
@@ -445,10 +464,12 @@ export class MatchService implements IMatchService {
   }
 
   // Fonction pour mettre à jour l'état de mi-temps/pause
-  async updateHalfTimeState(id: string, halfPauseState: HalfPauseState): Promise<Match> {
+  async updateHalfTimeState(id: string, halfPauseState: HalfPauseState, tournoiId?: string): Promise<Match> {
     try {
+      const where: any = { id };
+      if (tournoiId) where.tournoi = { id: tournoiId };
       const match = await this.matchRepository.matchs.findOne({
-        where: { id: id },
+        where,
         relations: { home: true, away: true, arbitres: true, poule: true }
       });
 
@@ -509,12 +530,14 @@ export class MatchService implements IMatchService {
   /**
  * Met à jour les scores des tirs aux buts
  */
-  async updatePenaltyScores(data: UpdateMatchPenaltyScoreDto): Promise<Match> {
+  async updatePenaltyScores(data: UpdateMatchPenaltyScoreDto, tournoiId?: string): Promise<Match> {
     try {
       const { id, homePenalty, awayPenalty } = data;
       // Récupération du match avec toutes les relations nécessaires
+      const where: any = { id };
+      if (tournoiId) where.tournoi = { id: tournoiId };
       const match = await this.matchRepository.matchs.findOne({
-        where: { id: id },
+        where,
         relations: {
           home: true,
           away: true,
@@ -564,11 +587,13 @@ export class MatchService implements IMatchService {
    * Met à jour uniquement le statut isTirAuxButs
    * Utile pour indiquer que le match passe en tirs aux buts
    */
-  async updateTirAuxButsStatus(data: UpdateMatchPenaltyStateDto): Promise<Match> {
+  async updateTirAuxButsStatus(data: UpdateMatchPenaltyStateDto, tournoiId?: string): Promise<Match> {
     try {
       const { id } = data;
+      const where: any = { id };
+      if (tournoiId) where.tournoi = { id: tournoiId };
       const match = await this.matchRepository.matchs.findOne({
-        where: { id: id },
+        where,
         relations: { home: true, away: true }
       });
 

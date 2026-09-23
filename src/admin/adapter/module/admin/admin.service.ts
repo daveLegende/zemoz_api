@@ -15,6 +15,7 @@ import { ITournoiCouponRepository } from '../../../../tournoiCoupon/domain/data.
 import { ITransactionRepository, TransactionType } from '../../../../transactions/domain';
 import { Coupon, CouponState } from '../../../../coupon/domain';
 import { TournoiCoupon, TournoiCouponState } from '../../../../tournoiCoupon/domain';
+import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../../_shared/domain/pagination';
   
 @Injectable()
 export class AdminService implements IAdminService {
@@ -26,9 +27,9 @@ export class AdminService implements IAdminService {
     private tournoicouponRepository: ITournoiCouponRepository,
   ) {}
 
-  async fetchAll(): Promise<Admin[]> {
+  async fetchAll(query?: PaginationQuery): Promise<PaginatedResult<Admin>> {
     try {
-      return await this.adminRepository.admins.find();
+      return await paginateQuery(this.adminRepository.admins, query);
     } catch (error) {
       this.logger.error(error.message, 'ERROR::AdminService.fetchAll');
       throw error;

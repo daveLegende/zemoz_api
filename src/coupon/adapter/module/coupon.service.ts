@@ -17,6 +17,7 @@ import { CouponEntity } from '../../../coupon/framework/schema/coupon.entity';
 import { UserEntity } from '../../../user/framework/database/schema/user.entity';
 import { CouponBetEntity } from '../../../couponBet/framework/schema/coupon_bet.entity';
 import { IUpdateMatchDTO } from '../../../match/app/dto';
+import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_shared/domain/pagination';
 
 // Limite maximale des gains pour éviter les calculs aberrants
 const MAX_GAINS = 10_000_000;
@@ -34,12 +35,12 @@ export class CouponService {
   ) { }
 
   // Récupérer tous les coupons avec relations
-  async fetchAll(): Promise<Coupon[]> {
-    return await this.couponsRepository.coupons.find({
+  async fetchAll(query?: PaginationQuery): Promise<PaginatedResult<Coupon>> {
+    return await paginateQuery(this.couponsRepository.coupons, query, {
       relations: {
         user: true,
         couponBets: {
-          bet: { match: { home: { joueurs: true }, away: { joueurs: true } } },
+          bet: { match: { home: { inscriptions: { player: true } }, away: { inscriptions: { player: true } } } },
         },
       },
       order: { createdAt: 'DESC' },
@@ -64,7 +65,7 @@ export class CouponService {
   }
 
   // Ajouter un coupon avec ses CouponBets (TRANSACTIONNEL)
-  async add(data: CouponAccountDto): Promise<Coupon> {
+  async add(data: CouponAccountDto, tournoiId?: string): Promise<Coupon> {
     const { amount, user, couponBets } = data;
 
     const userExisted = await this.userRepository.users.findOneByID(user);
@@ -80,11 +81,31 @@ export class CouponService {
 
     // Vérification des bets et calcul des cotes
     const betsEntities: CouponBet[] = [];
+    let detectedTournoiId = tournoiId;
+
     for (const cp of couponBets) {
       // @ts-ignore
       const betId = typeof cp.bet === 'string' ? cp.bet : cp.bet.id;
-      const betExisted = await this.betRepository.bets.findOneByID(betId);
+      const betExisted = await this.betRepository.bets.findOne({
+        where: { id: betId },
+        relations: { competition: true, match: { tournoi: true } }
+      });
       if (!betExisted) throw new NotFoundException('Bet non trouvé');
+
+      // Déduire/vérifier le tournoi à partir du bet
+      const betTournoi = betExisted.competition || betExisted.match?.tournoi;
+      if (!detectedTournoiId && betTournoi?.id) {
+        detectedTournoiId = betTournoi.id;
+      }
+
+      if (betTournoi && detectedTournoiId && betTournoi.id !== detectedTournoiId) {
+        throw new BadRequestException('Tous les paris d\'un coupon doivent appartenir au même tournoi');
+      }
+
+      // Vérification que le betting est activé pour ce tournoi
+      if (betTournoi && betTournoi.bettingEnabled === false) {
+        throw new BadRequestException(`Les paris sont désactivés pour le tournoi "${betTournoi.name || betTournoi.id}"`);
+      }
 
       // Vérification null/undefined pour selectedOptions
       if (!cp.selectedOptions || Object.keys(cp.selectedOptions).length === 0) {
@@ -114,8 +135,6 @@ export class CouponService {
       throw new BadRequestException(`Gains potentiels trop élevés (max: ${MAX_GAINS} FCFA)`);
     }
 
-    // this.logger.log(`📝 Création coupon: user=${user}, mise=${amount}, totalOdds=${totalOdds.toFixed(2)}, gains=${gains.toFixed(2)}`);
-
     // TRANSACTION SÉCURISÉE: Débit + Création coupon + Création bets
     return await this.dataSource.transaction(async (manager) => {
       // Verrouiller l'utilisateur pour éviter les races
@@ -135,13 +154,12 @@ export class CouponService {
       lockedUser.solde -= amount;
       await manager.save(lockedUser);
 
-      // this.logger.log(`💰 Débit de ${amount} FCFA pour l'utilisateur ${lockedUser.id} (nouveau solde: ${lockedUser.solde})`);
-
       // Création du coupon
       const couponData = await CouponFactory.create({ ...data, totalOdds, gains }, lockedUser);
+      if (detectedTournoiId) {
+        (couponData as any).tournoi = { id: detectedTournoiId };
+      }
       const couponEntity = await manager.save(CouponEntity, couponData as any);
-
-      // this.logger.log(`✅ Coupon ${couponEntity.id} créé avec succès`);
 
       // Création des CouponBets
       for (const cp of betsEntities) {
@@ -169,9 +187,13 @@ export class CouponService {
 
 
   // Récupérer tous les coupons avec relations
-  async getPendingCoupons(): Promise<Coupon[]> {
+  async getPendingCoupons(tournoiId?: string): Promise<Coupon[]> {
+    const where: any = { etat: CouponState.PENDING };
+    if (tournoiId) {
+      where.tournoi = { id: tournoiId };
+    }
     return await this.couponsRepository.coupons.find({
-      where: { etat: CouponState.PENDING },
+      where,
       relations: {
         user: true,
         couponBets: {
@@ -216,11 +238,16 @@ export class CouponService {
   }
 
   /* ================= CHECK COUPONS ================= */
-  async checkCoupons(data: IUpdateMatchDTO): Promise<any> {
-    this.logger.log(`🔍 Vérification des coupons pour le match ${data?.id ?? 'N/A'}`);
+  async checkCoupons(tournoiId?: string, data?: IUpdateMatchDTO): Promise<any> {
+    this.logger.log(`🔍 Vérification des coupons pour le tournoi ${tournoiId ?? 'TOUS'} (match ${data?.id ?? 'N/A'})`);
+
+    const where: any = { etat: CouponState.PENDING };
+    if (tournoiId) {
+      where.tournoi = { id: tournoiId };
+    }
 
     const pendingCoupons = await this.couponsRepository.coupons.find({
-      where: { etat: CouponState.PENDING },
+      where,
       relations: {
         couponBets: { bet: { match: true } },
         user: true,

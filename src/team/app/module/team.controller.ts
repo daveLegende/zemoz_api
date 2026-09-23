@@ -1,3 +1,4 @@
+import { PaginatedResult, PaginationQuery } from '../../../_shared/domain/pagination';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
@@ -6,7 +7,7 @@ import { Team } from '../../domain';
 import { ICreateTeamDTO, IUpdateTeamDTO } from '../dto';
 
 export abstract class ITeamController {
-  abstract all(): Promise<Team[]>;
+  abstract all(query?: PaginationQuery): Promise<PaginatedResult<Team>>;
 
   abstract show(param: IIDParamDTO): Promise<Team>;
 

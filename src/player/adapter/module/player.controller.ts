@@ -19,7 +19,6 @@ import {
     ApiResponse,
     ApiParam,
     ApiConsumes,
-    ApiQuery,
   } from '@nestjs/swagger';
   import { FileInterceptor } from '@nestjs/platform-express';
   import { memoryStorage } from 'multer';
@@ -31,9 +30,10 @@ import {
     RegisterAccoutDTO,
   } from '../../../user/adapter/dto';
 import { IPlayerController, IPlayerService } from '../../app/module';
-import { Player } from '../../domain';
-import { PlayerAccoutDTO, UpdatePlayerDTO } from '../dto';
+import { Player, TeamPlayer } from '../../domain';
+import { PlayerAccoutDTO, TeamPlayerInputDTO, UpdatePlayerDTO, UpdateTeamPlayerDTO } from '../dto';
 import { PlayerFactory } from '../player.factory';
+import { TeamPlayerFactory } from '../team-player.factory';
 import { DocPlayerOutputDTO } from '../dto/doc.player.dto';
 import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
   
@@ -44,7 +44,6 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
     constructor(private readonly playerService: IPlayerService) {}
   
     @Get()
-    // @HasPermission(AccessEnum.CAN_SHOW_USER_LIST)
     @ApiConsumes('multipart/form-data', 'application/json')
     @ApiOperation({
       summary: 'players list',
@@ -63,9 +62,19 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
         return PlayerFactory.getPlayer(await this.playerService.search(param));
       }
     }
+
+    @Get('tournoi/:tournoiId')
+    @ApiOperation({
+      summary: 'Joueurs d\'un tournoi',
+      description: 'Retourne toutes les inscriptions TeamPlayer d\'un tournoi',
+    })
+    @ApiParam({ type: String, name: 'tournoiId' })
+    async byTournoi(@Param('tournoiId') tournoiId: string): Promise<TeamPlayer[]> {
+      const inscriptions = await this.playerService.fetchByTournoi(tournoiId);
+      return inscriptions?.map((inscription) => TeamPlayerFactory.getTeamPlayer(inscription));
+    }
   
     @Get(':id')
-    // @HasPermission(AccessEnum.CAN_SHOW_USER)
     @ApiOperation({
       summary: 'One player',
       description: 'Fetch user account by ID',
@@ -79,6 +88,17 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
     async show(@Param() { id }: IDParamDTO): Promise<Player> {
       return PlayerFactory.getPlayer(await this.playerService.fetchOne(id));
     }
+
+    @Get(':id/history')
+    @ApiOperation({
+      summary: 'Historique d\'un joueur',
+      description: 'Toutes les inscriptions du joueur, tous tournois confondus',
+    })
+    @ApiParam({ type: String, name: 'id', description: 'ID du joueur' })
+    async history(@Param() { id }: IDParamDTO): Promise<TeamPlayer[]> {
+      const inscriptions = await this.playerService.fetchPlayerHistory(id);
+      return inscriptions?.map((inscription) => TeamPlayerFactory.getTeamPlayer(inscription));
+    }
   
     /**
      *
@@ -87,10 +107,9 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
     @ApiBearerAuth()
     @UseGuards(AdminGuard)
     @Post()
-    // @HasPermission(AccessEnum.CAN_CREATE_USER)
     @UseInterceptors(
       FileInterceptor('avatar', {
-        storage: memoryStorage(), // <= stocke en mémoire pour Cloudinary
+        storage: memoryStorage(),
         fileFilter: BaseConfig.imageFileFilter,
       }),
     )
@@ -107,6 +126,23 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
       const player = await this.playerService.add(data, file);
       if (player) return PlayerFactory.getPlayer(player);
     }
+
+    @ApiBearerAuth()
+    @UseGuards(AdminGuard)
+    @Post(':id/inscriptions')
+    @ApiOperation({
+      summary: 'Inscrire un joueur existant dans une nouvelle équipe/tournoi',
+    })
+    @ApiParam({ type: String, name: 'id', description: 'ID du joueur' })
+    @ApiBody({ type: TeamPlayerInputDTO })
+    async createInscription(
+      @Param() { id }: IDParamDTO,
+      @Body() data: TeamPlayerInputDTO,
+    ): Promise<TeamPlayer> {
+      return TeamPlayerFactory.getTeamPlayer(
+        await this.playerService.addInscription(id, data),
+      );
+    }
   
     /**
      * @method PATCH
@@ -115,26 +151,37 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
     @ApiBearerAuth()
     @UseGuards(AdminGuard)
     @Patch()
-    // @HasPermission(AccessEnum.CAN_UPDATE_USER)
     @UseInterceptors(
       FileInterceptor('avatar', {
-        storage: memoryStorage(), // <= stocke en mémoire pour Cloudinary
+        storage: memoryStorage(),
         fileFilter: BaseConfig.imageFileFilter,
       }),
     )
     @ApiConsumes('multipart/form-data', 'application/json')
-    @ApiOperation({ summary: 'Update user account' })
+    @ApiOperation({ summary: 'Update player identity (name/age/phone/avatar)' })
     @ApiBody({ type: UpdatePlayerDTO })
     @ApiResponse({ type: DocPlayerOutputDTO })
     async update(
       @Body() data: UpdatePlayerDTO,
       @UploadedFile() file: Express.Multer.File,
     ): Promise<Player> {
-      return PlayerFactory.getPlayer(await this.playerService.edit(data, file));
+      return PlayerFactory.getPlayer(await this.playerService.editPlayer(data, file));
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(AdminGuard)
+    @Patch('inscriptions')
+    @ApiOperation({ summary: 'Update une inscription (maillot/poste/statut)' })
+    @ApiBody({ type: UpdateTeamPlayerDTO })
+    async updateInscription(
+      @Body() data: UpdateTeamPlayerDTO,
+    ): Promise<TeamPlayer> {
+      return TeamPlayerFactory.getTeamPlayer(
+        await this.playerService.editInscription(data),
+      );
     }
   
     @Patch('state/:id')
-    // @HasPermission(AccessEnum.CAN_SET_USER_STATE)
     @ApiOperation({ summary: 'Set user account state' })
     @ApiParam({ type: String, name: 'id', description: 'ID of the user' })
     @ApiResponse({ type: Boolean })
@@ -147,8 +194,21 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
      */
     @ApiBearerAuth()
     @UseGuards(AdminGuard)
+    @Delete('inscriptions/:id')
+    @ApiOperation({ summary: 'Supprimer une inscription (ne supprime pas le joueur)' })
+    @ApiParam({
+      type: String,
+      name: 'id',
+      description: "ID de l'inscription TeamPlayer",
+    })
+    @ApiResponse({ type: Boolean })
+    removeInscription(@Param() { id }: IDParamDTO): Promise<boolean> {
+      return this.playerService.removeInscription(id);
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(AdminGuard)
     @Delete(':id')
-    // @HasPermission(AccessEnum.CAN_DELETE_USER)
     @ApiOperation({ summary: 'Remove Account' })
     @ApiParam({
       type: String,
@@ -160,4 +220,3 @@ import { AdminGuard } from '../../../admin/adapter/guard/auth.guard';
       return this.playerService.remove(id);
     }
   }
-  

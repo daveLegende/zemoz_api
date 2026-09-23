@@ -17,6 +17,7 @@ import { randomUUID } from 'crypto';
 import * as crypto from 'crypto';
 import * as QRCode from 'qrcode';
 import { Between, FindOptionsWhere } from 'typeorm';
+import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_shared/domain/pagination';
 
 @Injectable()
 export class TicketService implements ITicketService {
@@ -33,9 +34,9 @@ export class TicketService implements ITicketService {
   }
 
 
-  async fetchAll(): Promise<Ticket[]> {
+  async fetchAll(query?: PaginationQuery): Promise<PaginatedResult<Ticket>> {
     try {
-      return await this.ticketRepository.tickets.find({
+      return await paginateQuery(this.ticketRepository.tickets, query, {
         relations: { user: true }
       });
     } catch (error) {
@@ -293,7 +294,7 @@ export class TicketService implements ITicketService {
             : TicketPosition.SORTIE;
 
           // Si les phases de poule sont terminées, on passe l'état à UTILISER
-          if (await this.areGroupStagesOver()) {
+          if (await this.areGroupStagesOver(ticket.tournoi?.id)) {
             data.etat = TicketState.UTILISER;
           }
         }
@@ -301,7 +302,7 @@ export class TicketService implements ITicketService {
         // Cas des tickets pour tout le tournoi
         if (ticket.duree === TicketDuration.TOURNOI_COMPLET) {
           // Vérifier si c'est un jour de match
-          const isMatchDay = await this.isMatchDay(today);
+          const isMatchDay = await this.isMatchDay(today, ticket.tournoi?.id);
           if (!isMatchDay) {
             throw new BadRequestException('Aucun match prévu aujourd\'hui');
           }
@@ -319,7 +320,7 @@ export class TicketService implements ITicketService {
             : TicketPosition.SORTIE;
 
           // Si le tournoi est terminé, on passe l'état à UTILISER
-          if (await this.isTournamentOver()) {
+          if (await this.isTournamentOver(ticket.tournoi?.id)) {
             data.etat = TicketState.UTILISER;
           }
         }
@@ -345,12 +346,14 @@ export class TicketService implements ITicketService {
   }
 
   // Simuler une vérification de la fin des phases de poule
-  async areGroupStagesOver(): Promise<boolean> {
-    const matchs = await this.matchRepository.matchs.find({
-      where: { type: MatchType.POULE }
-    });
+  async areGroupStagesOver(tournoiId?: string): Promise<boolean> {
+    const where: any = { type: MatchType.POULE };
+    if (tournoiId) {
+      where.tournoi = { id: tournoiId };
+    }
+    const matchs = await this.matchRepository.matchs.find({ where });
     // Vérifier si tous les matchs ont l'état 'terminé'
-    const allMatchesFinished = matchs.every(match => match.etat === MatchState.TERMINER);
+    const allMatchesFinished = matchs.length > 0 && matchs.every(match => match.etat === MatchState.TERMINER);
 
     return allMatchesFinished;
   }
@@ -359,11 +362,15 @@ export class TicketService implements ITicketService {
     return false;
   }
 
-  async remove(id: string): Promise<boolean> {
+  async remove(id: string, tournoiId?: string): Promise<boolean> {
     try {
+      const whereCondition: FindOptionsWhere<any> = { id: id };
+      if (tournoiId) {
+        whereCondition.tournoi = { id: tournoiId };
+      }
       const ticket = await this.ticketRepository.tickets.findOne(
         {
-          where: { id: id },
+          where: whereCondition,
           relations: { user: true }
         }
       );
@@ -377,63 +384,6 @@ export class TicketService implements ITicketService {
     }
   }
 
-  // async scanTicket(qrCode: string): Promise<Ticket> {
-
-  //   const ticket = await this.ticketRepository.tickets.findOne({
-  //     where: { qrCode },
-  //     relations: { matchs: true, user: true },
-  //   });
-
-  //   if (!ticket) {
-  //     throw new NotFoundException('QR Code invalide');
-  //   }
-
-  //   if (ticket.etat === TicketState.SUPPRIMER) {
-  //     throw new BadRequestException('Ticket supprimé');
-  //   }
-
-  //   const now = new Date();
-
-  //   switch (ticket.duree) {
-
-  //     // Ticket SIMPLE
-  //     case TicketDuration.SIMPLE:
-  //       if (ticket.etat === TicketState.UTILISER) {
-  //         throw new BadRequestException('Ticket déjà utilisé');
-  //       }
-  //       ticket.etat = TicketState.UTILISER;
-  //       break;
-
-  //     // PHASE DE POULE
-  //     case TicketDuration.PHASE_POULE:
-  //       if (ticket.lastScanDate && this.isSameDay(ticket.lastScanDate, now)) {
-  //         throw new BadRequestException('Ticket déjà scanné aujourd’hui');
-  //       }
-
-  //       ticket.lastScanDate = now;
-
-  //       if (await this.areGroupStagesOver()) {
-  //         ticket.etat = TicketState.UTILISER;
-  //       }
-  //       break;
-
-  //     // TOURNOI COMPLET
-  //     case TicketDuration.TOURNOI_COMPLET:
-  //       if (ticket.lastScanDate && this.isSameDay(ticket.lastScanDate, now)) {
-  //         throw new BadRequestException('Ticket déjà scanné aujourd’hui');
-  //       }
-
-  //       ticket.lastScanDate = now;
-
-  //       if (await this.isTournamentOver()) {
-  //         ticket.etat = TicketState.UTILISER;
-  //       }
-  //       break;
-  //   }
-
-  //   return await this.ticketRepository.tickets.update(ticket);
-  // }
-
   async scanTicket(qrCode: string): Promise<Ticket> {
     // 1. Vérifier signature QR
     const payload = this.verifyQrCode(qrCode);
@@ -441,7 +391,7 @@ export class TicketService implements ITicketService {
     // 2. Récupérer ticket avec lock
     const ticket = await this.ticketRepository.tickets.findOne({
       where: { id: payload.ticketId },
-      relations: { matchs: true, user: true },
+      relations: { matchs: true, user: true, tournoi: true },
     });
 
     if (!ticket) {
@@ -451,6 +401,8 @@ export class TicketService implements ITicketService {
     if (ticket.etat === TicketState.SUPPRIMER) {
       throw new BadRequestException('Ticket supprimé');
     }
+
+    const tournoiId = ticket.tournoi?.id;
 
     const now = new Date();
     const today = new Date();
@@ -482,12 +434,12 @@ export class TicketService implements ITicketService {
         ticket.lastScanDate = now;
         break;
 
-      // PHASE DE POULE - valable pour tous les matchs de poule
+      // PHASE DE POULE - valable pour tous les matchs de poule du tournoi
       case TicketDuration.PHASE_POULE:
         // Vérifier si c'est un jour de match de poule
-        const isGroupMatchDay = await this.isGroupMatchDay(today);
+        const isGroupMatchDay = await this.isGroupMatchDay(today, tournoiId);
         if (!isGroupMatchDay) {
-          throw new BadRequestException('Aucun match de poule prévu aujourd\'hui');
+          throw new BadRequestException('Aucun match de poule prévu aujourd\'hui pour ce tournoi');
         }
 
         // Vérifier si déjà scanné aujourd'hui
@@ -506,7 +458,7 @@ export class TicketService implements ITicketService {
         ticket.lastScanDate = now;
 
         // Si toutes les phases de poule sont terminées, le ticket est utilisé
-        if (await this.areGroupStagesOver()) {
+        if (tournoiId && await this.areGroupStagesOver(tournoiId)) {
           ticket.etat = TicketState.UTILISER;
         }
         break;
@@ -514,9 +466,9 @@ export class TicketService implements ITicketService {
       // TOURNOI COMPLET - valable pour toute la durée du tournoi
       case TicketDuration.TOURNOI_COMPLET:
         // Vérifier si c'est un jour de match
-        const isMatchDay = await this.isMatchDay(today);
+        const isMatchDay = await this.isMatchDay(today, tournoiId);
         if (!isMatchDay) {
-          throw new BadRequestException('Aucun match prévu aujourd\'hui');
+          throw new BadRequestException('Aucun match prévu aujourd\'hui pour ce tournoi');
         }
 
         // Vérifier si déjà scanné aujourd'hui
@@ -535,7 +487,7 @@ export class TicketService implements ITicketService {
         ticket.lastScanDate = now;
 
         // Si le tournoi est terminé, le ticket est utilisé
-        if (await this.isTournamentOver()) {
+        if (tournoiId && await this.isTournamentOver(tournoiId)) {
           ticket.etat = TicketState.UTILISER;
         }
         break;
@@ -544,9 +496,8 @@ export class TicketService implements ITicketService {
     return await this.ticketRepository.tickets.update(ticket);
   }
 
-
-  // Vérifier si c'est un jour avec des matchs de poule
-  async isGroupMatchDay(date: Date): Promise<boolean> {
+  // Vérifier si c'est un jour avec des matchs de poule pour un tournoi donné
+  async isGroupMatchDay(date: Date, tournoiId?: string): Promise<boolean> {
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
 
@@ -558,13 +509,17 @@ export class TicketService implements ITicketService {
       date: Between(startOfDay, endOfDay)
     };
 
+    if (tournoiId) {
+      where.tournoi = { id: tournoiId };
+    }
+
     const matchs = await this.matchRepository.matchs.find({ where });
 
     return matchs.length > 0;
   }
 
-  // Vérifier si c'est un jour avec des matchs (tous types)
-  async isMatchDay(date: Date): Promise<boolean> {
+  // Vérifier si c'est un jour avec des matchs (tous types) pour un tournoi donné
+  async isMatchDay(date: Date, tournoiId?: string): Promise<boolean> {
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
 
@@ -575,13 +530,21 @@ export class TicketService implements ITicketService {
       date: Between(startOfDay, endOfDay)
     };
 
+    if (tournoiId) {
+      where.tournoi = { id: tournoiId };
+    }
+
     const matchs = await this.matchRepository.matchs.find({ where });
 
     return matchs.length > 0;
   }
 
-  async isTournamentOver(): Promise<boolean> {
-    const matchs = await this.matchRepository.matchs.find();
-    return matchs.every(m => m.etat === MatchState.TERMINER);
+  async isTournamentOver(tournoiId?: string): Promise<boolean> {
+    const where: FindOptionsWhere<any> = {};
+    if (tournoiId) {
+      where.tournoi = { id: tournoiId };
+    }
+    const matchs = await this.matchRepository.matchs.find({ where });
+    return matchs.length > 0 && matchs.every(m => m.etat === MatchState.TERMINER);
   }
 }

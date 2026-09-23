@@ -13,7 +13,6 @@ export abstract class TeamFactory {
     team.matchJoues = data.matchJoues;
     team.butMarques = data.butMarques;
     team.butConcedes = data.butConcedes;
-    team.joueurs = data.joueurs;
     
     return team;
   }
@@ -28,7 +27,6 @@ export abstract class TeamFactory {
     team.matchJoues = data.matchJoues ?? team.matchJoues;
     team.butMarques = data.butMarques ?? team.butMarques;
     team.butConcedes = data.butConcedes ?? team.butConcedes;
-    team.joueurs = data.joueurs ?? team.joueurs;
 
     return team;
   }
@@ -50,7 +48,8 @@ export abstract class TeamFactory {
         butMarques: team.butMarques,
         butConcedes: team.butConcedes,
         matchJoues: team.matchJoues,
-        joueurs: team.joueurs,
+        inscriptions: team.inscriptions,
+        joueurs: team.inscriptions?.map((inscription) => inscription.player) ?? team.joueurs,
         logo: team.logo,
         poule: team.poule,
         createdAt: team.createdAt,

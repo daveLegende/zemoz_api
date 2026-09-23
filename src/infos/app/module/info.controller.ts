@@ -2,8 +2,9 @@ import { IIDParamDTO } from '../../../_shared/app/dto';
 import { Info } from '../../../infos/domain';
 import { ICreateInfoDTO, IUpdateInfoDTO } from '../dto';
 
+import { PaginatedResult, PaginationQuery } from '../../../_shared/domain/pagination';
 export abstract class IInfoController {
-  abstract all(): Promise<Info[]>;
+  abstract all(query?: PaginationQuery): Promise<PaginatedResult<Info>>;
 
   abstract show(param: IIDParamDTO): Promise<Info>;
 

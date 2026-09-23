@@ -1,8 +1,9 @@
 import { ATimestamp } from "../../../_shared/framework/timestamp.abstract";
 import { Coupon, CouponState } from "../../../coupon/domain";
 import { CouponBetEntity } from "../../../couponBet/framework/schema/coupon_bet.entity";
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from "typeorm";
 import { UserEntity } from "../../../user/framework/database/schema/user.entity";
+import { TournoiEntity } from "../../../tournoi/framework/database/schema/tournoi.entity";
 
 @Entity('coupons')
 export class CouponEntity extends ATimestamp implements Coupon {
@@ -32,4 +33,8 @@ export class CouponEntity extends ATimestamp implements Coupon {
 
     @Column({ default: false })
     isPaid: boolean;
+
+    @ManyToOne(() => TournoiEntity, { nullable: true })
+    @JoinColumn({ name: 'tournoi_id' })
+    tournoi?: TournoiEntity;
 }

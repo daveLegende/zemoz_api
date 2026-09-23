@@ -2,8 +2,9 @@ import { IIDParamDTO } from '../../../_shared/app/dto';
 import { ICreateCouponBetDTO, IUpdateCouponBetDTO } from '../dto';
 import { CouponBet } from '../../../couponBet/domain';
 
+import { PaginatedResult, PaginationQuery } from '../../../_shared/domain/pagination';
 export abstract class ICouponBetController {
-  abstract all(): Promise<CouponBet[]>;
+  abstract all(query?: PaginationQuery): Promise<PaginatedResult<CouponBet>>;
 
   abstract show(param: IIDParamDTO): Promise<CouponBet>;
 

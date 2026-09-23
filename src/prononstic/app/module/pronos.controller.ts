@@ -1,3 +1,4 @@
+import { PaginatedResult, PaginationQuery } from '../../../_shared/domain/pagination';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
@@ -5,7 +6,7 @@ import { IIDParamDTO } from 'app/dto';
 import { Prononstic } from '../../domain';
 import { ICreatePronosDTO, IUpdatePronosDTO } from '../dto';
 export abstract class IPrononsticController {
-  abstract all(): Promise<Prononstic[]>;
+  abstract all(query?: PaginationQuery): Promise<PaginatedResult<Prononstic>>;
 
   abstract show(param: IIDParamDTO): Promise<Prononstic>;
 

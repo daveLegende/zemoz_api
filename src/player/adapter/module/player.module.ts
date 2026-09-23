@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { IPlayerService } from '../../../player/app/module';
 import { PlayerRepositoryModule } from '../../../player/framework/database/player.repository.module';
+import { TeamPlayerRepositoryModule } from '../../../player/framework/database/team-player.repository.module';
 import { PlayerController } from './player.controller';
 import { PlayerService } from './player.service';
 import { TeamRepositoryModule } from '../../../team/framework/database/team.repository.module';
@@ -13,7 +14,8 @@ import { CloudinaryModule } from '../../../shared/infrastructure/cloudinary/clou
 
 @Module({
   imports: [
-    PlayerRepositoryModule, 
+    PlayerRepositoryModule,
+    TeamPlayerRepositoryModule,
     TeamRepositoryModule,
     UserRepositoryModule,
     AuthApiModule,
@@ -23,6 +25,6 @@ import { CloudinaryModule } from '../../../shared/infrastructure/cloudinary/clou
   ],
   controllers: [PlayerController],
   providers: [{ provide: IPlayerService, useClass: PlayerService }],
-  exports: [IPlayerService, PlayerRepositoryModule],
+  exports: [IPlayerService, PlayerRepositoryModule, TeamPlayerRepositoryModule],
 })
 export class PlayerModule {}

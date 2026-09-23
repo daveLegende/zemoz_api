@@ -3,8 +3,9 @@ import { Match } from '../../../match/domain';
 import { ICreateMatchDTO, IUpdateMatchDTO } from '../dto';
 import { MatchEvent } from '../../../matchEvents/domain';
 
+import { PaginatedResult, PaginationQuery } from '../../../_shared/domain/pagination';
 export abstract class IMatchController {
-  abstract all(): Promise<Match[]>;
+  abstract all(query?: PaginationQuery): Promise<PaginatedResult<Match>>;
   
   abstract fetchMatchEvents(id: IIDParamDTO): Promise<MatchEvent[]>;
 

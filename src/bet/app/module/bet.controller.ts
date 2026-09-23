@@ -2,8 +2,9 @@ import { IIDParamDTO } from '../../../_shared/app/dto';
 import { Bet } from '../../../bet/domain';
 import { ICreateBetDTO, IUpdateBetDTO } from '../dto';
 
+import { PaginatedResult, PaginationQuery } from '../../../_shared/domain/pagination';
 export abstract class IBetController {
-  abstract all(): Promise<Bet[]>;
+  abstract all(query?: PaginationQuery): Promise<PaginatedResult<Bet>>;
 
   abstract show(param: IIDParamDTO): Promise<Bet>;
 

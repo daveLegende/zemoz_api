@@ -2,8 +2,9 @@ import { IIDParamDTO } from '../../../_shared/app/dto';
 import { ICreateForgotPassDTO, IUpdateForgotPassDTO } from '../dto';
 import { ForgotPass } from '../../../forgotpass/domain';
 
+import { PaginatedResult, PaginationQuery } from '../../../_shared/domain/pagination';
 export abstract class IForgotPassController {
-  abstract all(): Promise<ForgotPass[]>;
+  abstract all(query?: PaginationQuery): Promise<PaginatedResult<ForgotPass>>;
 
   abstract show(param: IIDParamDTO): Promise<ForgotPass>;
 

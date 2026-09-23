@@ -34,22 +34,6 @@ export class DocPlayerOutputDTO {
     @IsPhoneNumber()
     phone: string;
 
-    @ApiProperty({
-        type: Number,
-        name: 'buts',
-        description: 'Le nombre de buts marqué',
-    })
-    @IsInt()
-    buts: number;
-
-    @ApiProperty({
-        type: Number,
-        name: 'passes',
-        description: 'Le nombre de passes d',
-    })
-    @IsInt()
-    passes: number;
-
     @ApiProperty({ type: String, format: 'binary', name: 'avatar' })
     avatar?: string;
 }

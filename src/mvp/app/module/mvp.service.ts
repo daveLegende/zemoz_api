@@ -1,6 +1,7 @@
 import { MVP } from "../../../mvp/domain";
 import { ICreateMVPDTO } from "../dto";
 
+import { PaginatedResult, PaginationQuery } from '../../../_shared/domain/pagination';
 export abstract class IMVPService {
   abstract add(data: ICreateMVPDTO): Promise<MVP>;
 
@@ -8,5 +9,5 @@ export abstract class IMVPService {
 
   abstract remove(id: string): Promise<boolean>;
 
-  abstract fetchAll(): Promise<MVP[]>;
+  abstract fetchAll(query?: PaginationQuery): Promise<PaginatedResult<MVP>>;
 }

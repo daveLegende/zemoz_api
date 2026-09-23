@@ -22,6 +22,7 @@ import { DataSource } from 'typeorm';
 import { UserEntity } from '../../../user/framework/database/schema/user.entity';
 
 import { TournoiCouponGateway } from './tournoi_coupon.gateway';
+import { PaginatedResult, PaginationQuery, paginateQuery } from '../../../_shared/domain/pagination';
 
 @Injectable()
 export class TournoiCouponService implements ITournoiCouponService {
@@ -45,8 +46,8 @@ export class TournoiCouponService implements ITournoiCouponService {
   }
 
   // Récupérer tous les coupons avec relations
-  async fetchAll(): Promise<TournoiCoupon[]> {
-    return await this.tournoiCouponsRepository.tournoiCoupons.find({
+  async fetchAll(query?: PaginationQuery): Promise<PaginatedResult<TournoiCoupon>> {
+    return await paginateQuery(this.tournoiCouponsRepository.tournoiCoupons, query, {
       relations: {
         user: true,
         tournoiCouponBets: {

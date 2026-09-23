@@ -2,8 +2,9 @@ import { IIDParamDTO } from '../../../_shared/app/dto';
 import { Paris } from '../../domain';
 import { ICreateParisDTO, IUpdateParisDTO } from '../dto';
 
+import { PaginatedResult, PaginationQuery } from '../../../_shared/domain/pagination';
 export abstract class IParisController {
-  abstract all(): Promise<Paris[]>;
+  abstract all(query?: PaginationQuery): Promise<PaginatedResult<Paris>>;
 
   abstract show(param: IIDParamDTO): Promise<Paris>;
 

@@ -4,8 +4,9 @@ import { IChangeAdminPasswordDTO, ICreateAdminDTO, IUpdateAdminDTO } from '../..
 import { Coupon } from '../../../../coupon/domain';
 import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
 
+import { PaginatedResult, PaginationQuery } from '../../../../_shared/domain/pagination';
 export abstract class IAdminController {
-  abstract all(): Promise<Admin[]>;
+  abstract all(query?: PaginationQuery): Promise<PaginatedResult<Admin>>;
 
   abstract show(param: IIDParamDTO): Promise<Admin>;
 

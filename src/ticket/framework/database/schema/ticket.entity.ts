@@ -4,6 +4,7 @@ import { TicketDuration, TicketPosition, TicketState, TicketType } from '../../.
 import { UserEntity } from '../../../../user/framework/database/schema/user.entity';
 import { MatchEntity } from '../../../../match/framework/database/schema/match.entity';
 import { Ticket } from '../../../../ticket/domain';
+import { TournoiEntity } from '../../../../tournoi/framework/database/schema/tournoi.entity';
 
 // @Entity('tickets')
 // // @Index(['email'], { unique: true, where: `deleted_at IS NULL` })
@@ -82,5 +83,8 @@ export class TicketEntity extends ATimestamp implements Ticket {
 
   @Column({ default: false })
   isDeleted: boolean;
-}
 
+  @ManyToOne(() => TournoiEntity, { nullable: true })
+  @JoinColumn({ name: 'tournoi_id' })
+  tournoi?: TournoiEntity;
+}

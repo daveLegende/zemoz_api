@@ -3,8 +3,9 @@ import { Coupon } from '../../../coupon/domain';
 import { ICreateCouponDTO, IUpdateCouponDTO } from '../dto';
 import { IUpdateMatchDTO } from '../../../match/app/dto';
 
+import { PaginatedResult, PaginationQuery } from '../../../_shared/domain/pagination';
 export abstract class ICouponController {
-  abstract all(): Promise<Coupon[]>;
+  abstract all(query?: PaginationQuery): Promise<PaginatedResult<Coupon>>;
 
   abstract show(param: IIDParamDTO): Promise<Coupon>;
 

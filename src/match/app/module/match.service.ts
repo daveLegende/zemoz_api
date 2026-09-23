@@ -3,32 +3,33 @@ import { ICreateMatchDTO, IUpdateMatchDTO } from "../dto";
 import { UpdateMatchPenaltyScoreDto, UpdateMatchPenaltyStateDto, UpdateMatchScoreEventDto, UpdateStateDto } from "../../../match/adapter/dto";
 import { MatchEvent } from "../../../matchEvents/domain";
 
+import { PaginatedResult, PaginationQuery } from '../../../_shared/domain/pagination';
 export abstract class IMatchService {
-  abstract add(data: ICreateMatchDTO): Promise<Match>;
+  abstract add(data: ICreateMatchDTO, tournoiId?: string): Promise<Match>;
 
-  abstract fetchAll(): Promise<Match[]>;
+  abstract fetchAll(query?: PaginationQuery, tournoiId?: string): Promise<PaginatedResult<Match>>;
   
-  abstract fetchMatchEvents(id: string): Promise<MatchEvent[]>;
+  abstract fetchMatchEvents(id: string, tournoiId?: string): Promise<MatchEvent[]>;
 
-  abstract fetchOne(id: string): Promise<Match>;
+  abstract fetchOne(id: string, tournoiId?: string): Promise<Match>;
 
-  abstract edit(data: IUpdateMatchDTO): Promise<Match>;
+  abstract edit(data: IUpdateMatchDTO, tournoiId?: string): Promise<Match>;
 
-  abstract setState(id: string): Promise<boolean>;
+  abstract setState(id: string, tournoiId?: string): Promise<boolean>;
 
-  abstract search(data: Partial<Match>): Promise<Match>;
+  abstract search(data: Partial<Match>, tournoiId?: string): Promise<Match>;
 
-  abstract remove(id: string): Promise<boolean>;
+  abstract remove(id: string, tournoiId?: string): Promise<boolean>;
 
-  abstract updateScore(data: UpdateMatchScoreEventDto): Promise<Match>;
+  abstract updateScore(data: UpdateMatchScoreEventDto, tournoiId?: string): Promise<Match>;
 
-  abstract updateState(data: UpdateStateDto): Promise<Match>;
+  abstract updateState(data: UpdateStateDto, tournoiId?: string): Promise<Match>;
 
-  abstract updatePenaltyScores(data: UpdateMatchPenaltyScoreDto): Promise<Match>;
+  abstract updatePenaltyScores(data: UpdateMatchPenaltyScoreDto, tournoiId?: string): Promise<Match>;
 
-  abstract updateTirAuxButsStatus(data: UpdateMatchPenaltyStateDto): Promise<Match>;
+  abstract updateTirAuxButsStatus(data: UpdateMatchPenaltyStateDto, tournoiId?: string): Promise<Match>;
 
-  abstract updateHalfTimeState(id: string, halfPauseState: HalfPauseState): Promise<Match>;
+  abstract updateHalfTimeState(id: string, halfPauseState: HalfPauseState, tournoiId?: string): Promise<Match>;
 
   // abstract uploadLogo(id: string, file: Express.Multer.File): Promise<Match>;
 }

@@ -5,12 +5,13 @@ import { TournoiCoupon } from '../../../../tournoiCoupon/domain';
 import { IChangePasswordDTO, ICreateUserDTO, IDeleteUserBetOrTicketDTO, IReinitialisePassDTO, IUpdateUserDTO } from '../../dto';
 import { User } from '../../../domain';
 
+import { PaginatedResult, PaginationQuery } from '../../../../_shared/domain/pagination';
 export abstract class IUserService {
   abstract getCurrentUser(id: string): Promise<User>
 
   abstract add(data: ICreateUserDTO): Promise<User>;
 
-  abstract fetchAll(): Promise<User[]>;
+  abstract fetchAll(query?: PaginationQuery): Promise<PaginatedResult<User>>;
 
   abstract fetchOne(id: string): Promise<User>;
 
